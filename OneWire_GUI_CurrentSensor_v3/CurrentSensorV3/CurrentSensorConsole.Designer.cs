@@ -79,8 +79,8 @@
             this.label14 = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.panel8 = new System.Windows.Forms.Panel();
-            this.rbtn_CSResistorFilterDefault_EngT = new System.Windows.Forms.RadioButton();
-            this.rbtn_CSResistorFilterOff_EngT = new System.Windows.Forms.RadioButton();
+            this.rbtn_CSResistorSet_EngT = new System.Windows.Forms.RadioButton();
+            this.rbtn_CSResistorByPass_EngT = new System.Windows.Forms.RadioButton();
             this.label29 = new System.Windows.Forms.Label();
             this.label17 = new System.Windows.Forms.Label();
             this.panel4 = new System.Windows.Forms.Panel();
@@ -157,15 +157,15 @@
             this.btn_SaveConfig_PreT = new System.Windows.Forms.Button();
             this.btn_GainCtrlMinus_PreT = new System.Windows.Forms.Button();
             this.btn_GainCtrlPlus_PreT = new System.Windows.Forms.Button();
-            this.btn_DefaultGain_PreT = new System.Windows.Forms.Button();
+            this.btn_Vout_PreT = new System.Windows.Forms.Button();
             this.label41 = new System.Windows.Forms.Label();
             this.label42 = new System.Windows.Forms.Label();
             this.label43 = new System.Windows.Forms.Label();
             this.label44 = new System.Windows.Forms.Label();
-            this.txt_Reg4_PreT = new System.Windows.Forms.TextBox();
-            this.txt_Reg3_PreT = new System.Windows.Forms.TextBox();
-            this.txt_Reg2_PreT = new System.Windows.Forms.TextBox();
-            this.txt_Reg1_PreT = new System.Windows.Forms.TextBox();
+            this.txt_Reg83_PreT = new System.Windows.Forms.TextBox();
+            this.txt_Reg82_PreT = new System.Windows.Forms.TextBox();
+            this.txt_Reg81_PreT = new System.Windows.Forms.TextBox();
+            this.txt_Reg80_PreT = new System.Windows.Forms.TextBox();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
             this.label40 = new System.Windows.Forms.Label();
             this.label39 = new System.Windows.Forms.Label();
@@ -183,7 +183,9 @@
             this.cmb_SensitivityAdapt_PreT = new System.Windows.Forms.ComboBox();
             this.label35 = new System.Windows.Forms.Label();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.btn_PowerOn_PreT = new System.Windows.Forms.Button();
             this.cmb_Module_PreT = new System.Windows.Forms.ComboBox();
+            this.btn_PowerOff_PreT = new System.Windows.Forms.Button();
             this.label54 = new System.Windows.Forms.Label();
             this.btn_ModuleCurrent_PreT = new System.Windows.Forms.Button();
             this.txt_ModuleCurrent_PreT = new System.Windows.Forms.TextBox();
@@ -193,7 +195,7 @@
             this.AutoTrimTab = new System.Windows.Forms.TabPage();
             this.groupBox8 = new System.Windows.Forms.GroupBox();
             this.txt_IP_AutoT = new System.Windows.Forms.TextBox();
-            this.button1 = new System.Windows.Forms.Button();
+            this.btn_loadconfig_AutoT = new System.Windows.Forms.Button();
             this.txt_TargetGain_AutoT = new System.Windows.Forms.TextBox();
             this.txt_IPRange_AutoT = new System.Windows.Forms.TextBox();
             this.txt_TempComp_AutoT = new System.Windows.Forms.TextBox();
@@ -222,6 +224,9 @@
             this.contextMenuStrip_Clear = new System.Windows.Forms.ToolStripMenuItem();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.txt_OutputLogInfo = new System.Windows.Forms.RichTextBox();
+            this.txt_ChosenGain_AutoT = new System.Windows.Forms.TextBox();
+            this.label58 = new System.Windows.Forms.Label();
+            this.label57 = new System.Windows.Forms.Label();
             this.statusStrip.SuspendLayout();
             this.toolStrip.SuspendLayout();
             this.tabControl1.SuspendLayout();
@@ -268,7 +273,7 @@
             this.statusStrip.Location = new System.Drawing.Point(0, 525);
             this.statusStrip.Name = "statusStrip";
             this.statusStrip.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-            this.statusStrip.Size = new System.Drawing.Size(1234, 22);
+            this.statusStrip.Size = new System.Drawing.Size(978, 22);
             this.statusStrip.TabIndex = 3;
             this.statusStrip.Text = "StatusStrip";
             // 
@@ -301,7 +306,7 @@
             this.toolStripSeparator2});
             this.toolStrip.Location = new System.Drawing.Point(0, 0);
             this.toolStrip.Name = "toolStrip";
-            this.toolStrip.Size = new System.Drawing.Size(1234, 25);
+            this.toolStrip.Size = new System.Drawing.Size(978, 25);
             this.toolStrip.TabIndex = 4;
             this.toolStrip.Text = "ToolStrip";
             // 
@@ -367,9 +372,11 @@
             this.tabControl1.Controls.Add(this.AutoTrimTab);
             this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabControl1.Location = new System.Drawing.Point(0, 0);
+            this.tabControl1.MaximumSize = new System.Drawing.Size(683, 500);
+            this.tabControl1.MinimumSize = new System.Drawing.Size(683, 500);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(676, 500);
+            this.tabControl1.Size = new System.Drawing.Size(683, 500);
             this.tabControl1.TabIndex = 5;
             // 
             // EngineeringTab
@@ -392,7 +399,7 @@
             this.EngineeringTab.Location = new System.Drawing.Point(4, 22);
             this.EngineeringTab.Name = "EngineeringTab";
             this.EngineeringTab.Padding = new System.Windows.Forms.Padding(3);
-            this.EngineeringTab.Size = new System.Drawing.Size(668, 474);
+            this.EngineeringTab.Size = new System.Drawing.Size(675, 474);
             this.EngineeringTab.TabIndex = 0;
             this.EngineeringTab.Text = "Engineering";
             this.EngineeringTab.UseVisualStyleBackColor = true;
@@ -531,11 +538,12 @@
             // 
             // txt_ModuleCurrent_EngT
             // 
-            this.txt_ModuleCurrent_EngT.BackColor = System.Drawing.Color.CadetBlue;
+            this.txt_ModuleCurrent_EngT.BackColor = System.Drawing.SystemColors.ControlDarkDark;
             this.txt_ModuleCurrent_EngT.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Pixel);
             this.txt_ModuleCurrent_EngT.ForeColor = System.Drawing.Color.White;
             this.txt_ModuleCurrent_EngT.Location = new System.Drawing.Point(275, 17);
             this.txt_ModuleCurrent_EngT.Name = "txt_ModuleCurrent_EngT";
+            this.txt_ModuleCurrent_EngT.ReadOnly = true;
             this.txt_ModuleCurrent_EngT.Size = new System.Drawing.Size(56, 20);
             this.txt_ModuleCurrent_EngT.TabIndex = 85;
             this.txt_ModuleCurrent_EngT.Text = "0";
@@ -616,6 +624,7 @@
             this.cmb_PolaritySelect_EngT.Name = "cmb_PolaritySelect_EngT";
             this.cmb_PolaritySelect_EngT.Size = new System.Drawing.Size(137, 21);
             this.cmb_PolaritySelect_EngT.TabIndex = 9;
+            this.cmb_PolaritySelect_EngT.SelectedIndexChanged += new System.EventHandler(this.cmb_PolaritySelect_EngT_SelectedIndexChanged);
             // 
             // label45
             // 
@@ -640,6 +649,7 @@
             this.cmb_OffsetOption_EngT.Name = "cmb_OffsetOption_EngT";
             this.cmb_OffsetOption_EngT.Size = new System.Drawing.Size(137, 21);
             this.cmb_OffsetOption_EngT.TabIndex = 7;
+            this.cmb_OffsetOption_EngT.SelectedIndexChanged += new System.EventHandler(this.cmb_OffsetOption_EngT_SelectedIndexChanged);
             // 
             // label26
             // 
@@ -681,6 +691,7 @@
             this.rbtn_InsideFilterOff_EngT.TabStop = true;
             this.rbtn_InsideFilterOff_EngT.Text = "Filter Off";
             this.rbtn_InsideFilterOff_EngT.UseVisualStyleBackColor = true;
+            this.rbtn_InsideFilterOff_EngT.CheckedChanged += new System.EventHandler(this.rbtn_InsideFilterOff_EngT_CheckedChanged);
             // 
             // label25
             // 
@@ -722,6 +733,7 @@
             this.rbtn_VoutOptionHigh_EngT.TabStop = true;
             this.rbtn_VoutOptionHigh_EngT.Text = "Vout High";
             this.rbtn_VoutOptionHigh_EngT.UseVisualStyleBackColor = true;
+            this.rbtn_VoutOptionHigh_EngT.CheckedChanged += new System.EventHandler(this.rbtn_VoutOptionHigh_EngT_CheckedChanged);
             // 
             // label24
             // 
@@ -743,9 +755,11 @@
             "Invert Default",
             "Invert Resistor Type"});
             this.cmb_SensingDirection_EngT.Location = new System.Drawing.Point(113, 15);
+            this.cmb_SensingDirection_EngT.MinimumSize = new System.Drawing.Size(137, 0);
             this.cmb_SensingDirection_EngT.Name = "cmb_SensingDirection_EngT";
             this.cmb_SensingDirection_EngT.Size = new System.Drawing.Size(137, 21);
             this.cmb_SensingDirection_EngT.TabIndex = 1;
+            this.cmb_SensingDirection_EngT.SelectedIndexChanged += new System.EventHandler(this.cmb_SensingDirection_EngT_SelectedIndexChanged);
             // 
             // label23
             // 
@@ -831,34 +845,35 @@
             // 
             // panel8
             // 
-            this.panel8.Controls.Add(this.rbtn_CSResistorFilterDefault_EngT);
-            this.panel8.Controls.Add(this.rbtn_CSResistorFilterOff_EngT);
+            this.panel8.Controls.Add(this.rbtn_CSResistorSet_EngT);
+            this.panel8.Controls.Add(this.rbtn_CSResistorByPass_EngT);
             this.panel8.Location = new System.Drawing.Point(126, 155);
             this.panel8.Name = "panel8";
             this.panel8.Size = new System.Drawing.Size(83, 47);
             this.panel8.TabIndex = 12;
             // 
-            // rbtn_CSResistorFilterDefault_EngT
+            // rbtn_CSResistorSet_EngT
             // 
-            this.rbtn_CSResistorFilterDefault_EngT.AutoSize = true;
-            this.rbtn_CSResistorFilterDefault_EngT.Location = new System.Drawing.Point(3, 24);
-            this.rbtn_CSResistorFilterDefault_EngT.Name = "rbtn_CSResistorFilterDefault_EngT";
-            this.rbtn_CSResistorFilterDefault_EngT.Size = new System.Drawing.Size(59, 17);
-            this.rbtn_CSResistorFilterDefault_EngT.TabIndex = 1;
-            this.rbtn_CSResistorFilterDefault_EngT.Text = "Default";
-            this.rbtn_CSResistorFilterDefault_EngT.UseVisualStyleBackColor = true;
+            this.rbtn_CSResistorSet_EngT.AutoSize = true;
+            this.rbtn_CSResistorSet_EngT.Location = new System.Drawing.Point(3, 24);
+            this.rbtn_CSResistorSet_EngT.Name = "rbtn_CSResistorSet_EngT";
+            this.rbtn_CSResistorSet_EngT.Size = new System.Drawing.Size(41, 17);
+            this.rbtn_CSResistorSet_EngT.TabIndex = 1;
+            this.rbtn_CSResistorSet_EngT.Text = "Set";
+            this.rbtn_CSResistorSet_EngT.UseVisualStyleBackColor = true;
             // 
-            // rbtn_CSResistorFilterOff_EngT
+            // rbtn_CSResistorByPass_EngT
             // 
-            this.rbtn_CSResistorFilterOff_EngT.AutoSize = true;
-            this.rbtn_CSResistorFilterOff_EngT.Checked = true;
-            this.rbtn_CSResistorFilterOff_EngT.Location = new System.Drawing.Point(3, 3);
-            this.rbtn_CSResistorFilterOff_EngT.Name = "rbtn_CSResistorFilterOff_EngT";
-            this.rbtn_CSResistorFilterOff_EngT.Size = new System.Drawing.Size(64, 17);
-            this.rbtn_CSResistorFilterOff_EngT.TabIndex = 0;
-            this.rbtn_CSResistorFilterOff_EngT.TabStop = true;
-            this.rbtn_CSResistorFilterOff_EngT.Text = "Filter Off";
-            this.rbtn_CSResistorFilterOff_EngT.UseVisualStyleBackColor = true;
+            this.rbtn_CSResistorByPass_EngT.AutoSize = true;
+            this.rbtn_CSResistorByPass_EngT.Checked = true;
+            this.rbtn_CSResistorByPass_EngT.Location = new System.Drawing.Point(3, 3);
+            this.rbtn_CSResistorByPass_EngT.Name = "rbtn_CSResistorByPass_EngT";
+            this.rbtn_CSResistorByPass_EngT.Size = new System.Drawing.Size(59, 17);
+            this.rbtn_CSResistorByPass_EngT.TabIndex = 0;
+            this.rbtn_CSResistorByPass_EngT.TabStop = true;
+            this.rbtn_CSResistorByPass_EngT.Text = "Bypass";
+            this.rbtn_CSResistorByPass_EngT.UseVisualStyleBackColor = true;
+            this.rbtn_CSResistorByPass_EngT.CheckedChanged += new System.EventHandler(this.rbtn_CSResistorByPass_EngT_CheckedChanged);
             // 
             // label29
             // 
@@ -1102,6 +1117,7 @@
             this.btn_SafetyRead_EngT.TabIndex = 82;
             this.btn_SafetyRead_EngT.Text = "Safety Read";
             this.btn_SafetyRead_EngT.UseVisualStyleBackColor = true;
+            this.btn_SafetyRead_EngT.Click += new System.EventHandler(this.btn_SafetyRead_EngT_Click);
             // 
             // btn_burstRead_EngT
             // 
@@ -1591,6 +1607,7 @@
             this.txt_IP_EngT.TabIndex = 74;
             this.txt_IP_EngT.Text = "20";
             this.txt_IP_EngT.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.txt_IP_EngT.TextChanged += new System.EventHandler(this.txt_IP_EngT_TextChanged);
             // 
             // lbl_devAddr_onewire
             // 
@@ -1716,7 +1733,7 @@
             this.PriTrimTab.Controls.Add(this.groupBox4);
             this.PriTrimTab.Location = new System.Drawing.Point(4, 22);
             this.PriTrimTab.Name = "PriTrimTab";
-            this.PriTrimTab.Size = new System.Drawing.Size(668, 474);
+            this.PriTrimTab.Size = new System.Drawing.Size(675, 474);
             this.PriTrimTab.TabIndex = 2;
             this.PriTrimTab.Text = "PreTrim";
             this.PriTrimTab.UseVisualStyleBackColor = true;
@@ -1726,16 +1743,16 @@
             this.groupBox7.Controls.Add(this.btn_SaveConfig_PreT);
             this.groupBox7.Controls.Add(this.btn_GainCtrlMinus_PreT);
             this.groupBox7.Controls.Add(this.btn_GainCtrlPlus_PreT);
-            this.groupBox7.Controls.Add(this.btn_DefaultGain_PreT);
+            this.groupBox7.Controls.Add(this.btn_Vout_PreT);
             this.groupBox7.Controls.Add(this.label41);
             this.groupBox7.Controls.Add(this.label42);
             this.groupBox7.Controls.Add(this.label43);
             this.groupBox7.Controls.Add(this.label44);
-            this.groupBox7.Controls.Add(this.txt_Reg4_PreT);
-            this.groupBox7.Controls.Add(this.txt_Reg3_PreT);
-            this.groupBox7.Controls.Add(this.txt_Reg2_PreT);
-            this.groupBox7.Controls.Add(this.txt_Reg1_PreT);
-            this.groupBox7.Location = new System.Drawing.Point(31, 291);
+            this.groupBox7.Controls.Add(this.txt_Reg83_PreT);
+            this.groupBox7.Controls.Add(this.txt_Reg82_PreT);
+            this.groupBox7.Controls.Add(this.txt_Reg81_PreT);
+            this.groupBox7.Controls.Add(this.txt_Reg80_PreT);
+            this.groupBox7.Location = new System.Drawing.Point(31, 294);
             this.groupBox7.Name = "groupBox7";
             this.groupBox7.Size = new System.Drawing.Size(506, 158);
             this.groupBox7.TabIndex = 85;
@@ -1751,6 +1768,7 @@
             this.btn_SaveConfig_PreT.TabIndex = 91;
             this.btn_SaveConfig_PreT.Text = "Save Config";
             this.btn_SaveConfig_PreT.UseVisualStyleBackColor = true;
+            this.btn_SaveConfig_PreT.Click += new System.EventHandler(this.btn_SaveConfig_PreT_Click);
             // 
             // btn_GainCtrlMinus_PreT
             // 
@@ -1773,15 +1791,15 @@
             this.btn_GainCtrlPlus_PreT.UseVisualStyleBackColor = true;
             this.btn_GainCtrlPlus_PreT.Click += new System.EventHandler(this.btn_GainCtrlPlus_PreT_Click);
             // 
-            // btn_DefaultGain_PreT
+            // btn_Vout_PreT
             // 
-            this.btn_DefaultGain_PreT.Location = new System.Drawing.Point(130, 87);
-            this.btn_DefaultGain_PreT.Name = "btn_DefaultGain_PreT";
-            this.btn_DefaultGain_PreT.Size = new System.Drawing.Size(87, 32);
-            this.btn_DefaultGain_PreT.TabIndex = 88;
-            this.btn_DefaultGain_PreT.Text = "Default Gain";
-            this.btn_DefaultGain_PreT.UseVisualStyleBackColor = true;
-            this.btn_DefaultGain_PreT.Click += new System.EventHandler(this.btn_DefaultGain_PreT_Click);
+            this.btn_Vout_PreT.Location = new System.Drawing.Point(130, 87);
+            this.btn_Vout_PreT.Name = "btn_Vout_PreT";
+            this.btn_Vout_PreT.Size = new System.Drawing.Size(87, 32);
+            this.btn_Vout_PreT.TabIndex = 88;
+            this.btn_Vout_PreT.Text = "Vout";
+            this.btn_Vout_PreT.UseVisualStyleBackColor = true;
+            this.btn_Vout_PreT.Click += new System.EventHandler(this.btn_Vout_PreT_Click);
             // 
             // label41
             // 
@@ -1823,53 +1841,57 @@
             this.label44.TabIndex = 84;
             this.label44.Text = "Reg1";
             // 
-            // txt_Reg4_PreT
+            // txt_Reg83_PreT
             // 
-            this.txt_Reg4_PreT.BackColor = System.Drawing.Color.CadetBlue;
-            this.txt_Reg4_PreT.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Pixel);
-            this.txt_Reg4_PreT.ForeColor = System.Drawing.Color.White;
-            this.txt_Reg4_PreT.Location = new System.Drawing.Point(412, 33);
-            this.txt_Reg4_PreT.Name = "txt_Reg4_PreT";
-            this.txt_Reg4_PreT.Size = new System.Drawing.Size(56, 20);
-            this.txt_Reg4_PreT.TabIndex = 83;
-            this.txt_Reg4_PreT.Text = "0x00";
-            this.txt_Reg4_PreT.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.txt_Reg83_PreT.BackColor = System.Drawing.Color.CadetBlue;
+            this.txt_Reg83_PreT.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Pixel);
+            this.txt_Reg83_PreT.ForeColor = System.Drawing.Color.White;
+            this.txt_Reg83_PreT.Location = new System.Drawing.Point(412, 33);
+            this.txt_Reg83_PreT.Name = "txt_Reg83_PreT";
+            this.txt_Reg83_PreT.Size = new System.Drawing.Size(56, 20);
+            this.txt_Reg83_PreT.TabIndex = 83;
+            this.txt_Reg83_PreT.Text = "0x00";
+            this.txt_Reg83_PreT.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.txt_Reg83_PreT.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txt_RegValue_KeyPress);
             // 
-            // txt_Reg3_PreT
+            // txt_Reg82_PreT
             // 
-            this.txt_Reg3_PreT.BackColor = System.Drawing.Color.CadetBlue;
-            this.txt_Reg3_PreT.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Pixel);
-            this.txt_Reg3_PreT.ForeColor = System.Drawing.Color.White;
-            this.txt_Reg3_PreT.Location = new System.Drawing.Point(295, 33);
-            this.txt_Reg3_PreT.Name = "txt_Reg3_PreT";
-            this.txt_Reg3_PreT.Size = new System.Drawing.Size(56, 20);
-            this.txt_Reg3_PreT.TabIndex = 82;
-            this.txt_Reg3_PreT.Text = "0x00";
-            this.txt_Reg3_PreT.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.txt_Reg82_PreT.BackColor = System.Drawing.Color.CadetBlue;
+            this.txt_Reg82_PreT.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Pixel);
+            this.txt_Reg82_PreT.ForeColor = System.Drawing.Color.White;
+            this.txt_Reg82_PreT.Location = new System.Drawing.Point(295, 33);
+            this.txt_Reg82_PreT.Name = "txt_Reg82_PreT";
+            this.txt_Reg82_PreT.Size = new System.Drawing.Size(56, 20);
+            this.txt_Reg82_PreT.TabIndex = 82;
+            this.txt_Reg82_PreT.Text = "0x00";
+            this.txt_Reg82_PreT.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.txt_Reg82_PreT.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txt_RegValue_KeyPress);
             // 
-            // txt_Reg2_PreT
+            // txt_Reg81_PreT
             // 
-            this.txt_Reg2_PreT.BackColor = System.Drawing.Color.CadetBlue;
-            this.txt_Reg2_PreT.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Pixel);
-            this.txt_Reg2_PreT.ForeColor = System.Drawing.Color.White;
-            this.txt_Reg2_PreT.Location = new System.Drawing.Point(178, 33);
-            this.txt_Reg2_PreT.Name = "txt_Reg2_PreT";
-            this.txt_Reg2_PreT.Size = new System.Drawing.Size(56, 20);
-            this.txt_Reg2_PreT.TabIndex = 81;
-            this.txt_Reg2_PreT.Text = "0x00";
-            this.txt_Reg2_PreT.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.txt_Reg81_PreT.BackColor = System.Drawing.Color.CadetBlue;
+            this.txt_Reg81_PreT.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Pixel);
+            this.txt_Reg81_PreT.ForeColor = System.Drawing.Color.White;
+            this.txt_Reg81_PreT.Location = new System.Drawing.Point(178, 33);
+            this.txt_Reg81_PreT.Name = "txt_Reg81_PreT";
+            this.txt_Reg81_PreT.Size = new System.Drawing.Size(56, 20);
+            this.txt_Reg81_PreT.TabIndex = 81;
+            this.txt_Reg81_PreT.Text = "0x00";
+            this.txt_Reg81_PreT.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.txt_Reg81_PreT.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txt_RegValue_KeyPress);
             // 
-            // txt_Reg1_PreT
+            // txt_Reg80_PreT
             // 
-            this.txt_Reg1_PreT.BackColor = System.Drawing.Color.CadetBlue;
-            this.txt_Reg1_PreT.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Pixel);
-            this.txt_Reg1_PreT.ForeColor = System.Drawing.Color.White;
-            this.txt_Reg1_PreT.Location = new System.Drawing.Point(61, 33);
-            this.txt_Reg1_PreT.Name = "txt_Reg1_PreT";
-            this.txt_Reg1_PreT.Size = new System.Drawing.Size(56, 20);
-            this.txt_Reg1_PreT.TabIndex = 80;
-            this.txt_Reg1_PreT.Text = "0x00";
-            this.txt_Reg1_PreT.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.txt_Reg80_PreT.BackColor = System.Drawing.Color.CadetBlue;
+            this.txt_Reg80_PreT.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Pixel);
+            this.txt_Reg80_PreT.ForeColor = System.Drawing.Color.White;
+            this.txt_Reg80_PreT.Location = new System.Drawing.Point(61, 33);
+            this.txt_Reg80_PreT.Name = "txt_Reg80_PreT";
+            this.txt_Reg80_PreT.Size = new System.Drawing.Size(56, 20);
+            this.txt_Reg80_PreT.TabIndex = 80;
+            this.txt_Reg80_PreT.Text = "0x00";
+            this.txt_Reg80_PreT.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.txt_Reg80_PreT.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txt_RegValue_KeyPress);
             // 
             // groupBox6
             // 
@@ -1888,9 +1910,9 @@
             this.groupBox6.Controls.Add(this.label32);
             this.groupBox6.Controls.Add(this.cmb_SensitivityAdapt_PreT);
             this.groupBox6.Controls.Add(this.label35);
-            this.groupBox6.Location = new System.Drawing.Point(31, 109);
+            this.groupBox6.Location = new System.Drawing.Point(31, 146);
             this.groupBox6.Name = "groupBox6";
-            this.groupBox6.Size = new System.Drawing.Size(506, 141);
+            this.groupBox6.Size = new System.Drawing.Size(506, 129);
             this.groupBox6.TabIndex = 84;
             this.groupBox6.TabStop = false;
             this.groupBox6.Text = "Sensor Options";
@@ -1900,7 +1922,7 @@
             this.label40.AutoSize = true;
             this.label40.Font = new System.Drawing.Font("Times New Roman", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label40.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.label40.Location = new System.Drawing.Point(439, 46);
+            this.label40.Location = new System.Drawing.Point(439, 56);
             this.label40.Name = "label40";
             this.label40.Size = new System.Drawing.Size(15, 14);
             this.label40.TabIndex = 90;
@@ -1922,19 +1944,20 @@
             this.txt_IP_PreT.BackColor = System.Drawing.Color.CadetBlue;
             this.txt_IP_PreT.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Pixel);
             this.txt_IP_PreT.ForeColor = System.Drawing.Color.White;
-            this.txt_IP_PreT.Location = new System.Drawing.Point(377, 43);
+            this.txt_IP_PreT.Location = new System.Drawing.Point(377, 53);
             this.txt_IP_PreT.Name = "txt_IP_PreT";
             this.txt_IP_PreT.Size = new System.Drawing.Size(56, 20);
             this.txt_IP_PreT.TabIndex = 88;
             this.txt_IP_PreT.Text = "20";
             this.txt_IP_PreT.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.txt_IP_PreT.TextChanged += new System.EventHandler(this.txt_IP_EngT_TextChanged);
             // 
             // label34
             // 
             this.label34.AutoSize = true;
             this.label34.Font = new System.Drawing.Font("Times New Roman", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label34.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.label34.Location = new System.Drawing.Point(358, 47);
+            this.label34.Location = new System.Drawing.Point(358, 56);
             this.label34.Name = "label34";
             this.label34.Size = new System.Drawing.Size(18, 14);
             this.label34.TabIndex = 87;
@@ -1945,7 +1968,7 @@
             this.label36.AutoSize = true;
             this.label36.Font = new System.Drawing.Font("Times New Roman", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label36.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.label36.Location = new System.Drawing.Point(436, 70);
+            this.label36.Location = new System.Drawing.Point(436, 92);
             this.label36.Name = "label36";
             this.label36.Size = new System.Drawing.Size(14, 14);
             this.label36.TabIndex = 86;
@@ -1953,10 +1976,10 @@
             // 
             // txt_PresetVoutIP_PreT
             // 
-            this.txt_PresetVoutIP_PreT.BackColor = System.Drawing.Color.CadetBlue;
+            this.txt_PresetVoutIP_PreT.BackColor = System.Drawing.SystemColors.ControlDarkDark;
             this.txt_PresetVoutIP_PreT.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Pixel);
             this.txt_PresetVoutIP_PreT.ForeColor = System.Drawing.Color.White;
-            this.txt_PresetVoutIP_PreT.Location = new System.Drawing.Point(377, 66);
+            this.txt_PresetVoutIP_PreT.Location = new System.Drawing.Point(377, 89);
             this.txt_PresetVoutIP_PreT.Name = "txt_PresetVoutIP_PreT";
             this.txt_PresetVoutIP_PreT.ReadOnly = true;
             this.txt_PresetVoutIP_PreT.Size = new System.Drawing.Size(56, 20);
@@ -1969,7 +1992,7 @@
             this.label37.AutoSize = true;
             this.label37.Font = new System.Drawing.Font("Times New Roman", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label37.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.label37.Location = new System.Drawing.Point(295, 70);
+            this.label37.Location = new System.Drawing.Point(295, 92);
             this.label37.Name = "label37";
             this.label37.Size = new System.Drawing.Size(78, 14);
             this.label37.TabIndex = 84;
@@ -1980,7 +2003,7 @@
             this.txt_TargetGain_PreT.BackColor = System.Drawing.Color.CadetBlue;
             this.txt_TargetGain_PreT.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Pixel);
             this.txt_TargetGain_PreT.ForeColor = System.Drawing.Color.White;
-            this.txt_TargetGain_PreT.Location = new System.Drawing.Point(377, 18);
+            this.txt_TargetGain_PreT.Location = new System.Drawing.Point(377, 19);
             this.txt_TargetGain_PreT.Name = "txt_TargetGain_PreT";
             this.txt_TargetGain_PreT.Size = new System.Drawing.Size(56, 20);
             this.txt_TargetGain_PreT.TabIndex = 83;
@@ -2011,6 +2034,7 @@
             this.cmb_IPRange_PreT.Name = "cmb_IPRange_PreT";
             this.cmb_IPRange_PreT.Size = new System.Drawing.Size(137, 21);
             this.cmb_IPRange_PreT.TabIndex = 9;
+            this.cmb_IPRange_PreT.SelectedIndexChanged += new System.EventHandler(this.cmb_IPRange_PreT_SelectedIndexChanged);
             // 
             // label33
             // 
@@ -2039,6 +2063,7 @@
             this.cmb_TempCmp_PreT.Name = "cmb_TempCmp_PreT";
             this.cmb_TempCmp_PreT.Size = new System.Drawing.Size(137, 21);
             this.cmb_TempCmp_PreT.TabIndex = 7;
+            this.cmb_TempCmp_PreT.SelectedIndexChanged += new System.EventHandler(this.cmb_TempCmp_PreT_SelectedIndexChanged);
             // 
             // label32
             // 
@@ -2063,6 +2088,7 @@
             this.cmb_SensitivityAdapt_PreT.Name = "cmb_SensitivityAdapt_PreT";
             this.cmb_SensitivityAdapt_PreT.Size = new System.Drawing.Size(137, 21);
             this.cmb_SensitivityAdapt_PreT.TabIndex = 1;
+            this.cmb_SensitivityAdapt_PreT.SelectedIndexChanged += new System.EventHandler(this.cmb_SensitivityAdapt_PreT_SelectedIndexChanged);
             // 
             // label35
             // 
@@ -2077,19 +2103,31 @@
             // 
             // groupBox4
             // 
+            this.groupBox4.Controls.Add(this.btn_PowerOn_PreT);
             this.groupBox4.Controls.Add(this.cmb_Module_PreT);
+            this.groupBox4.Controls.Add(this.btn_PowerOff_PreT);
             this.groupBox4.Controls.Add(this.label54);
             this.groupBox4.Controls.Add(this.btn_ModuleCurrent_PreT);
             this.groupBox4.Controls.Add(this.txt_ModuleCurrent_PreT);
             this.groupBox4.Controls.Add(this.label30);
             this.groupBox4.Controls.Add(this.txt_SerialNum_PreT);
             this.groupBox4.Controls.Add(this.label31);
-            this.groupBox4.Location = new System.Drawing.Point(31, 23);
+            this.groupBox4.Location = new System.Drawing.Point(31, 20);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(506, 53);
+            this.groupBox4.Size = new System.Drawing.Size(506, 109);
             this.groupBox4.TabIndex = 83;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Hardware Info";
+            // 
+            // btn_PowerOn_PreT
+            // 
+            this.btn_PowerOn_PreT.Location = new System.Drawing.Point(228, 64);
+            this.btn_PowerOn_PreT.Name = "btn_PowerOn_PreT";
+            this.btn_PowerOn_PreT.Size = new System.Drawing.Size(62, 23);
+            this.btn_PowerOn_PreT.TabIndex = 91;
+            this.btn_PowerOn_PreT.Text = "Power On";
+            this.btn_PowerOn_PreT.UseVisualStyleBackColor = true;
+            this.btn_PowerOn_PreT.Click += new System.EventHandler(this.btn_PowerOn_OWCI_ADC_Click);
             // 
             // cmb_Module_PreT
             // 
@@ -2098,17 +2136,27 @@
             this.cmb_Module_PreT.Items.AddRange(new object[] {
             "5V",
             "+-15V"});
-            this.cmb_Module_PreT.Location = new System.Drawing.Point(424, 17);
+            this.cmb_Module_PreT.Location = new System.Drawing.Point(89, 65);
             this.cmb_Module_PreT.Name = "cmb_Module_PreT";
             this.cmb_Module_PreT.Size = new System.Drawing.Size(61, 21);
             this.cmb_Module_PreT.TabIndex = 90;
             this.cmb_Module_PreT.SelectedIndexChanged += new System.EventHandler(this.cmb_Module_EngT_SelectedIndexChanged);
             // 
+            // btn_PowerOff_PreT
+            // 
+            this.btn_PowerOff_PreT.Location = new System.Drawing.Point(363, 64);
+            this.btn_PowerOff_PreT.Name = "btn_PowerOff_PreT";
+            this.btn_PowerOff_PreT.Size = new System.Drawing.Size(62, 23);
+            this.btn_PowerOff_PreT.TabIndex = 92;
+            this.btn_PowerOff_PreT.Text = "Power Off";
+            this.btn_PowerOff_PreT.UseVisualStyleBackColor = true;
+            this.btn_PowerOff_PreT.Click += new System.EventHandler(this.btn_PowerOff_OWCI_ADC_Click);
+            // 
             // label54
             // 
             this.label54.AutoSize = true;
             this.label54.Font = new System.Drawing.Font("Times New Roman", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label54.Location = new System.Drawing.Point(382, 20);
+            this.label54.Location = new System.Drawing.Point(34, 68);
             this.label54.Name = "label54";
             this.label54.Size = new System.Drawing.Size(41, 14);
             this.label54.TabIndex = 89;
@@ -2116,7 +2164,7 @@
             // 
             // btn_ModuleCurrent_PreT
             // 
-            this.btn_ModuleCurrent_PreT.Location = new System.Drawing.Point(196, 16);
+            this.btn_ModuleCurrent_PreT.Location = new System.Drawing.Point(276, 23);
             this.btn_ModuleCurrent_PreT.Name = "btn_ModuleCurrent_PreT";
             this.btn_ModuleCurrent_PreT.Size = new System.Drawing.Size(87, 23);
             this.btn_ModuleCurrent_PreT.TabIndex = 83;
@@ -2126,11 +2174,12 @@
             // 
             // txt_ModuleCurrent_PreT
             // 
-            this.txt_ModuleCurrent_PreT.BackColor = System.Drawing.Color.CadetBlue;
+            this.txt_ModuleCurrent_PreT.BackColor = System.Drawing.SystemColors.ControlDarkDark;
             this.txt_ModuleCurrent_PreT.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Pixel);
             this.txt_ModuleCurrent_PreT.ForeColor = System.Drawing.Color.White;
-            this.txt_ModuleCurrent_PreT.Location = new System.Drawing.Point(285, 17);
+            this.txt_ModuleCurrent_PreT.Location = new System.Drawing.Point(369, 24);
             this.txt_ModuleCurrent_PreT.Name = "txt_ModuleCurrent_PreT";
+            this.txt_ModuleCurrent_PreT.ReadOnly = true;
             this.txt_ModuleCurrent_PreT.Size = new System.Drawing.Size(56, 20);
             this.txt_ModuleCurrent_PreT.TabIndex = 85;
             this.txt_ModuleCurrent_PreT.Text = "0";
@@ -2141,7 +2190,7 @@
             this.label30.AutoSize = true;
             this.label30.Font = new System.Drawing.Font("Times New Roman", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label30.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.label30.Location = new System.Drawing.Point(341, 20);
+            this.label30.Location = new System.Drawing.Point(425, 27);
             this.label30.Name = "label30";
             this.label30.Size = new System.Drawing.Size(24, 14);
             this.label30.TabIndex = 84;
@@ -2152,7 +2201,7 @@
             this.txt_SerialNum_PreT.BackColor = System.Drawing.SystemColors.ControlDarkDark;
             this.txt_SerialNum_PreT.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Pixel);
             this.txt_SerialNum_PreT.ForeColor = System.Drawing.Color.White;
-            this.txt_SerialNum_PreT.Location = new System.Drawing.Point(75, 17);
+            this.txt_SerialNum_PreT.Location = new System.Drawing.Point(93, 24);
             this.txt_SerialNum_PreT.Name = "txt_SerialNum_PreT";
             this.txt_SerialNum_PreT.ReadOnly = true;
             this.txt_SerialNum_PreT.Size = new System.Drawing.Size(100, 20);
@@ -2165,7 +2214,7 @@
             this.label31.AutoSize = true;
             this.label31.Font = new System.Drawing.Font("Times New Roman", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label31.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.label31.Location = new System.Drawing.Point(12, 20);
+            this.label31.Location = new System.Drawing.Point(30, 27);
             this.label31.Name = "label31";
             this.label31.Size = new System.Drawing.Size(57, 14);
             this.label31.TabIndex = 82;
@@ -2174,6 +2223,7 @@
             // AutoTrimTab
             // 
             this.AutoTrimTab.Controls.Add(this.groupBox8);
+            this.AutoTrimTab.Controls.Add(this.btn_loadconfig_AutoT);
             this.AutoTrimTab.Controls.Add(this.label22);
             this.AutoTrimTab.Controls.Add(this.label21);
             this.AutoTrimTab.Controls.Add(this.numUD_TargetGain_Customer);
@@ -2186,15 +2236,17 @@
             this.AutoTrimTab.Location = new System.Drawing.Point(4, 22);
             this.AutoTrimTab.Name = "AutoTrimTab";
             this.AutoTrimTab.Padding = new System.Windows.Forms.Padding(3);
-            this.AutoTrimTab.Size = new System.Drawing.Size(668, 474);
+            this.AutoTrimTab.Size = new System.Drawing.Size(675, 474);
             this.AutoTrimTab.TabIndex = 1;
             this.AutoTrimTab.Text = "AutoTrim";
             this.AutoTrimTab.UseVisualStyleBackColor = true;
             // 
             // groupBox8
             // 
+            this.groupBox8.Controls.Add(this.label57);
+            this.groupBox8.Controls.Add(this.txt_ChosenGain_AutoT);
+            this.groupBox8.Controls.Add(this.label58);
             this.groupBox8.Controls.Add(this.txt_IP_AutoT);
-            this.groupBox8.Controls.Add(this.button1);
             this.groupBox8.Controls.Add(this.txt_TargetGain_AutoT);
             this.groupBox8.Controls.Add(this.txt_IPRange_AutoT);
             this.groupBox8.Controls.Add(this.txt_TempComp_AutoT);
@@ -2206,9 +2258,9 @@
             this.groupBox8.Controls.Add(this.label47);
             this.groupBox8.Controls.Add(this.label48);
             this.groupBox8.Controls.Add(this.label49);
-            this.groupBox8.Location = new System.Drawing.Point(8, 20);
+            this.groupBox8.Location = new System.Drawing.Point(26, 20);
             this.groupBox8.Name = "groupBox8";
-            this.groupBox8.Size = new System.Drawing.Size(553, 139);
+            this.groupBox8.Size = new System.Drawing.Size(610, 139);
             this.groupBox8.TabIndex = 109;
             this.groupBox8.TabStop = false;
             this.groupBox8.Text = "Preset";
@@ -2218,7 +2270,7 @@
             this.txt_IP_AutoT.BackColor = System.Drawing.SystemColors.ControlDarkDark;
             this.txt_IP_AutoT.Font = new System.Drawing.Font("Microsoft Sans Serif", 17F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Pixel);
             this.txt_IP_AutoT.ForeColor = System.Drawing.Color.White;
-            this.txt_IP_AutoT.Location = new System.Drawing.Point(383, 57);
+            this.txt_IP_AutoT.Location = new System.Drawing.Point(418, 57);
             this.txt_IP_AutoT.Name = "txt_IP_AutoT";
             this.txt_IP_AutoT.ReadOnly = true;
             this.txt_IP_AutoT.Size = new System.Drawing.Size(100, 27);
@@ -2226,22 +2278,23 @@
             this.txt_IP_AutoT.Text = "20";
             this.txt_IP_AutoT.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
-            // button1
+            // btn_loadconfig_AutoT
             // 
-            this.button1.Font = new System.Drawing.Font("Courier New", 12.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button1.Location = new System.Drawing.Point(375, 91);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(134, 32);
-            this.button1.TabIndex = 106;
-            this.button1.Text = "Load Config";
-            this.button1.UseVisualStyleBackColor = true;
+            this.btn_loadconfig_AutoT.Font = new System.Drawing.Font("Courier New", 12.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btn_loadconfig_AutoT.Location = new System.Drawing.Point(502, 165);
+            this.btn_loadconfig_AutoT.Name = "btn_loadconfig_AutoT";
+            this.btn_loadconfig_AutoT.Size = new System.Drawing.Size(134, 32);
+            this.btn_loadconfig_AutoT.TabIndex = 106;
+            this.btn_loadconfig_AutoT.Text = "Load Config";
+            this.btn_loadconfig_AutoT.UseVisualStyleBackColor = true;
+            this.btn_loadconfig_AutoT.Click += new System.EventHandler(this.btn_loadconfig_AutoT_Click);
             // 
             // txt_TargetGain_AutoT
             // 
             this.txt_TargetGain_AutoT.BackColor = System.Drawing.SystemColors.ControlDarkDark;
             this.txt_TargetGain_AutoT.Font = new System.Drawing.Font("Microsoft Sans Serif", 17F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Pixel);
             this.txt_TargetGain_AutoT.ForeColor = System.Drawing.Color.White;
-            this.txt_TargetGain_AutoT.Location = new System.Drawing.Point(383, 20);
+            this.txt_TargetGain_AutoT.Location = new System.Drawing.Point(418, 20);
             this.txt_TargetGain_AutoT.Name = "txt_TargetGain_AutoT";
             this.txt_TargetGain_AutoT.ReadOnly = true;
             this.txt_TargetGain_AutoT.Size = new System.Drawing.Size(100, 27);
@@ -2257,9 +2310,9 @@
             this.txt_IPRange_AutoT.Location = new System.Drawing.Point(180, 94);
             this.txt_IPRange_AutoT.Name = "txt_IPRange_AutoT";
             this.txt_IPRange_AutoT.ReadOnly = true;
-            this.txt_IPRange_AutoT.Size = new System.Drawing.Size(100, 27);
+            this.txt_IPRange_AutoT.Size = new System.Drawing.Size(118, 27);
             this.txt_IPRange_AutoT.TabIndex = 105;
-            this.txt_IPRange_AutoT.Text = "1024";
+            this.txt_IPRange_AutoT.Text = "Default";
             this.txt_IPRange_AutoT.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // txt_TempComp_AutoT
@@ -2270,9 +2323,9 @@
             this.txt_TempComp_AutoT.Location = new System.Drawing.Point(180, 57);
             this.txt_TempComp_AutoT.Name = "txt_TempComp_AutoT";
             this.txt_TempComp_AutoT.ReadOnly = true;
-            this.txt_TempComp_AutoT.Size = new System.Drawing.Size(100, 27);
+            this.txt_TempComp_AutoT.Size = new System.Drawing.Size(118, 27);
             this.txt_TempComp_AutoT.TabIndex = 104;
-            this.txt_TempComp_AutoT.Text = "1024";
+            this.txt_TempComp_AutoT.Text = "Default";
             this.txt_TempComp_AutoT.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // txt_SensitivityAdapt_AutoT
@@ -2283,9 +2336,9 @@
             this.txt_SensitivityAdapt_AutoT.Location = new System.Drawing.Point(180, 20);
             this.txt_SensitivityAdapt_AutoT.Name = "txt_SensitivityAdapt_AutoT";
             this.txt_SensitivityAdapt_AutoT.ReadOnly = true;
-            this.txt_SensitivityAdapt_AutoT.Size = new System.Drawing.Size(100, 27);
+            this.txt_SensitivityAdapt_AutoT.Size = new System.Drawing.Size(118, 27);
             this.txt_SensitivityAdapt_AutoT.TabIndex = 103;
-            this.txt_SensitivityAdapt_AutoT.Text = "1024";
+            this.txt_SensitivityAdapt_AutoT.Text = "Default";
             this.txt_SensitivityAdapt_AutoT.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // label50
@@ -2326,7 +2379,7 @@
             this.label46.AutoSize = true;
             this.label46.Font = new System.Drawing.Font("Times New Roman", 17F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.label46.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.label46.Location = new System.Drawing.Point(489, 61);
+            this.label46.Location = new System.Drawing.Point(524, 61);
             this.label46.Name = "label46";
             this.label46.Size = new System.Drawing.Size(20, 19);
             this.label46.TabIndex = 96;
@@ -2337,7 +2390,7 @@
             this.label47.AutoSize = true;
             this.label47.Font = new System.Drawing.Font("Times New Roman", 17F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.label47.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.label47.Location = new System.Drawing.Point(489, 24);
+            this.label47.Location = new System.Drawing.Point(524, 24);
             this.label47.Name = "label47";
             this.label47.Size = new System.Drawing.Size(49, 19);
             this.label47.TabIndex = 95;
@@ -2348,7 +2401,7 @@
             this.label48.AutoSize = true;
             this.label48.Font = new System.Drawing.Font("Times New Roman", 17F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.label48.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.label48.Location = new System.Drawing.Point(340, 61);
+            this.label48.Location = new System.Drawing.Point(375, 61);
             this.label48.Name = "label48";
             this.label48.Size = new System.Drawing.Size(24, 19);
             this.label48.TabIndex = 93;
@@ -2359,7 +2412,7 @@
             this.label49.AutoSize = true;
             this.label49.Font = new System.Drawing.Font("Times New Roman", 17F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.label49.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.label49.Location = new System.Drawing.Point(294, 24);
+            this.label49.Location = new System.Drawing.Point(329, 24);
             this.label49.Name = "label49";
             this.label49.Size = new System.Drawing.Size(87, 19);
             this.label49.TabIndex = 91;
@@ -2370,7 +2423,7 @@
             this.label22.AutoSize = true;
             this.label22.Font = new System.Drawing.Font("Microsoft Sans Serif", 17F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.label22.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.label22.Location = new System.Drawing.Point(605, 411);
+            this.label22.Location = new System.Drawing.Point(540, 358);
             this.label22.Name = "label22";
             this.label22.Size = new System.Drawing.Size(50, 20);
             this.label22.TabIndex = 86;
@@ -2382,7 +2435,7 @@
             this.label21.AutoSize = true;
             this.label21.Font = new System.Drawing.Font("Microsoft Sans Serif", 17F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.label21.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.label21.Location = new System.Drawing.Point(577, 331);
+            this.label21.Location = new System.Drawing.Point(512, 278);
             this.label21.Name = "label21";
             this.label21.Size = new System.Drawing.Size(20, 20);
             this.label21.TabIndex = 86;
@@ -2398,7 +2451,7 @@
             0,
             0,
             65536});
-            this.numUD_TargetGain_Customer.Location = new System.Drawing.Point(512, 404);
+            this.numUD_TargetGain_Customer.Location = new System.Drawing.Point(447, 351);
             this.numUD_TargetGain_Customer.Maximum = new decimal(new int[] {
             200,
             0,
@@ -2425,7 +2478,7 @@
             0,
             0,
             65536});
-            this.numUD_IPxForCalc_Customer.Location = new System.Drawing.Point(513, 324);
+            this.numUD_IPxForCalc_Customer.Location = new System.Drawing.Point(448, 271);
             this.numUD_IPxForCalc_Customer.Minimum = new decimal(new int[] {
             1,
             0,
@@ -2447,7 +2500,7 @@
             // 
             this.label19.AutoSize = true;
             this.label19.Font = new System.Drawing.Font("Microsoft Sans Serif", 17F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.label19.Location = new System.Drawing.Point(508, 289);
+            this.label19.Location = new System.Drawing.Point(443, 236);
             this.label19.Name = "label19";
             this.label19.Size = new System.Drawing.Size(101, 20);
             this.label19.TabIndex = 82;
@@ -2461,7 +2514,7 @@
             this.autoTrimResultIndicator.Location = new System.Drawing.Point(3, 447);
             this.autoTrimResultIndicator.Name = "autoTrimResultIndicator";
             this.autoTrimResultIndicator.ReadOnly = true;
-            this.autoTrimResultIndicator.Size = new System.Drawing.Size(662, 24);
+            this.autoTrimResultIndicator.Size = new System.Drawing.Size(669, 24);
             this.autoTrimResultIndicator.TabIndex = 80;
             this.autoTrimResultIndicator.Text = "";
             // 
@@ -2469,7 +2522,7 @@
             // 
             this.label20.AutoSize = true;
             this.label20.Font = new System.Drawing.Font("Microsoft Sans Serif", 21F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.label20.Location = new System.Drawing.Point(508, 367);
+            this.label20.Location = new System.Drawing.Point(443, 314);
             this.label20.Name = "label20";
             this.label20.Size = new System.Drawing.Size(125, 25);
             this.label20.TabIndex = 76;
@@ -2480,7 +2533,7 @@
             // 
             this.lbl_passOrFailed.Font = new System.Drawing.Font("Microsoft Sans Serif", 48F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Pixel);
             this.lbl_passOrFailed.ForeColor = System.Drawing.Color.DarkGreen;
-            this.lbl_passOrFailed.Location = new System.Drawing.Point(106, 322);
+            this.lbl_passOrFailed.Location = new System.Drawing.Point(127, 322);
             this.lbl_passOrFailed.Name = "lbl_passOrFailed";
             this.lbl_passOrFailed.Size = new System.Drawing.Size(290, 81);
             this.lbl_passOrFailed.TabIndex = 58;
@@ -2490,7 +2543,7 @@
             // btn_AutomaticaTrim
             // 
             this.btn_AutomaticaTrim.Font = new System.Drawing.Font("Microsoft Sans Serif", 21F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Pixel);
-            this.btn_AutomaticaTrim.Location = new System.Drawing.Point(136, 221);
+            this.btn_AutomaticaTrim.Location = new System.Drawing.Point(159, 236);
             this.btn_AutomaticaTrim.Name = "btn_AutomaticaTrim";
             this.btn_AutomaticaTrim.Size = new System.Drawing.Size(219, 77);
             this.btn_AutomaticaTrim.TabIndex = 57;
@@ -2561,8 +2614,8 @@
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.txt_OutputLogInfo);
-            this.splitContainer1.Size = new System.Drawing.Size(1234, 500);
-            this.splitContainer1.SplitterDistance = 676;
+            this.splitContainer1.Size = new System.Drawing.Size(978, 500);
+            this.splitContainer1.SplitterDistance = 683;
             this.splitContainer1.TabIndex = 88;
             // 
             // txt_OutputLogInfo
@@ -2574,21 +2627,56 @@
             this.txt_OutputLogInfo.ForeColor = System.Drawing.Color.White;
             this.txt_OutputLogInfo.Location = new System.Drawing.Point(0, 0);
             this.txt_OutputLogInfo.Name = "txt_OutputLogInfo";
-            this.txt_OutputLogInfo.Size = new System.Drawing.Size(554, 500);
+            this.txt_OutputLogInfo.Size = new System.Drawing.Size(291, 500);
             this.txt_OutputLogInfo.TabIndex = 88;
             this.txt_OutputLogInfo.Text = "";
+            // 
+            // txt_ChosenGain_AutoT
+            // 
+            this.txt_ChosenGain_AutoT.BackColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.txt_ChosenGain_AutoT.Font = new System.Drawing.Font("Microsoft Sans Serif", 17F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Pixel);
+            this.txt_ChosenGain_AutoT.ForeColor = System.Drawing.Color.White;
+            this.txt_ChosenGain_AutoT.Location = new System.Drawing.Point(418, 94);
+            this.txt_ChosenGain_AutoT.Name = "txt_ChosenGain_AutoT";
+            this.txt_ChosenGain_AutoT.ReadOnly = true;
+            this.txt_ChosenGain_AutoT.Size = new System.Drawing.Size(100, 27);
+            this.txt_ChosenGain_AutoT.TabIndex = 111;
+            this.txt_ChosenGain_AutoT.Text = "12.36";
+            this.txt_ChosenGain_AutoT.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // label58
+            // 
+            this.label58.AutoSize = true;
+            this.label58.Font = new System.Drawing.Font("Times New Roman", 17F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.label58.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.label58.Location = new System.Drawing.Point(320, 98);
+            this.label58.Name = "label58";
+            this.label58.Size = new System.Drawing.Size(96, 19);
+            this.label58.TabIndex = 109;
+            this.label58.Text = "Chosen Gain";
+            // 
+            // label57
+            // 
+            this.label57.AutoSize = true;
+            this.label57.Font = new System.Drawing.Font("Times New Roman", 17F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.label57.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.label57.Location = new System.Drawing.Point(524, 98);
+            this.label57.Name = "label57";
+            this.label57.Size = new System.Drawing.Size(23, 19);
+            this.label57.TabIndex = 112;
+            this.label57.Text = "%";
             // 
             // CurrentSensorConsole
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1234, 547);
+            this.ClientSize = new System.Drawing.Size(978, 547);
             this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.toolStrip);
             this.Controls.Add(this.statusStrip);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.Name = "CurrentSensorConsole";
-            this.Text = "Current Sensor Console v3.0.0.RC - CopyRight of SenkoMicro, Inc";
+            this.Text = "Current Sensor Console v3.0.2.RC - CopyRight of SenkoMicro, Inc";
             this.statusStrip.ResumeLayout(false);
             this.statusStrip.PerformLayout();
             this.toolStrip.ResumeLayout(false);
@@ -2780,8 +2868,8 @@
         private System.Windows.Forms.RadioButton rbt_signalPathSeting_510Out_EngT;
         private System.Windows.Forms.RadioButton rbt_signalPathSeting_VCS_EngT;
         private System.Windows.Forms.Panel panel8;
-        private System.Windows.Forms.RadioButton rbtn_CSResistorFilterDefault_EngT;
-        private System.Windows.Forms.RadioButton rbtn_CSResistorFilterOff_EngT;
+        private System.Windows.Forms.RadioButton rbtn_CSResistorSet_EngT;
+        private System.Windows.Forms.RadioButton rbtn_CSResistorByPass_EngT;
         private System.Windows.Forms.Label label29;
         private System.Windows.Forms.GroupBox groupBox4;
         private System.Windows.Forms.Button btn_ModuleCurrent_PreT;
@@ -2810,14 +2898,14 @@
         private System.Windows.Forms.Label label42;
         private System.Windows.Forms.Label label43;
         private System.Windows.Forms.Label label44;
-        private System.Windows.Forms.TextBox txt_Reg4_PreT;
-        private System.Windows.Forms.TextBox txt_Reg3_PreT;
-        private System.Windows.Forms.TextBox txt_Reg2_PreT;
-        private System.Windows.Forms.TextBox txt_Reg1_PreT;
+        private System.Windows.Forms.TextBox txt_Reg83_PreT;
+        private System.Windows.Forms.TextBox txt_Reg82_PreT;
+        private System.Windows.Forms.TextBox txt_Reg81_PreT;
+        private System.Windows.Forms.TextBox txt_Reg80_PreT;
         private System.Windows.Forms.Button btn_SaveConfig_PreT;
         private System.Windows.Forms.Button btn_GainCtrlMinus_PreT;
         private System.Windows.Forms.Button btn_GainCtrlPlus_PreT;
-        private System.Windows.Forms.Button btn_DefaultGain_PreT;
+        private System.Windows.Forms.Button btn_Vout_PreT;
         private System.Windows.Forms.ComboBox cmb_PolaritySelect_EngT;
         private System.Windows.Forms.Label label45;
         private System.Windows.Forms.SplitContainer splitContainer1;
@@ -2829,7 +2917,7 @@
         private System.Windows.Forms.Label label50;
         private System.Windows.Forms.Label label51;
         private System.Windows.Forms.Label label52;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button btn_loadconfig_AutoT;
         private System.Windows.Forms.TextBox txt_IPRange_AutoT;
         private System.Windows.Forms.TextBox txt_TempComp_AutoT;
         private System.Windows.Forms.TextBox txt_SensitivityAdapt_AutoT;
@@ -2844,5 +2932,10 @@
         private System.Windows.Forms.Label label56;
         private System.Windows.Forms.NumericUpDown numUD_SlopeK;
         private System.Windows.Forms.Label label55;
+        private System.Windows.Forms.Button btn_PowerOn_PreT;
+        private System.Windows.Forms.Button btn_PowerOff_PreT;
+        private System.Windows.Forms.TextBox txt_ChosenGain_AutoT;
+        private System.Windows.Forms.Label label58;
+        private System.Windows.Forms.Label label57;
     }
 }

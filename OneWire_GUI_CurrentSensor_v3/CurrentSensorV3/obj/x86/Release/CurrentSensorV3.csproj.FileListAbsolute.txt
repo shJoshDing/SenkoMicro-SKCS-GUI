@@ -9,13 +9,5 @@ C:\My Disk D\Project_Mo\SVN_SDC\MPH\OneWireMPH\OneWire_GUI_CurrentSensor_v3\Curr
 C:\My Disk D\Project_Mo\SVN_SDC\MPH\OneWireMPH\OneWire_GUI_CurrentSensor_v3\CurrentSensorV3\obj\x86\Release\ResGen.write.1.tlog
 C:\My Disk D\Project_Mo\SVN_SDC\MPH\OneWireMPH\OneWire_GUI_CurrentSensor_v3\CurrentSensorV3\obj\x86\Release\SKCS v3.x.x.rc.exe
 C:\My Disk D\Project_Mo\SVN_SDC\MPH\OneWireMPH\OneWire_GUI_CurrentSensor_v3\CurrentSensorV3\obj\x86\Release\SKCS v3.x.x.rc.pdb
-D:\PORJECT\SKCS\GUI\RevB\OneWire_GUI_CurrentSensor_v3\CurrentSensorV3\obj\x86\Release\SKCS v3.x.x.rc.exe
-D:\PORJECT\SKCS\GUI\RevB\OneWire_GUI_CurrentSensor_v3\CurrentSensorV3\obj\x86\Release\SKCS v3.x.x.rc.pdb
-D:\PORJECT\SKCS\GUI\RevB\OneWire_GUI_CurrentSensor_v3\CurrentSensorV3\obj\x86\Release\CurrentSensorV3.csprojResolveAssemblyReference.cache
-D:\PORJECT\SKCS\GUI\RevB\OneWire_GUI_CurrentSensor_v3\CurrentSensorV3\obj\x86\Release\CurrentSensorV3.CurrentSensorConsole.resources
-D:\PORJECT\SKCS\GUI\RevB\OneWire_GUI_CurrentSensor_v3\CurrentSensorV3\obj\x86\Release\CurrentSensorV3.Properties.Resources.resources
-D:\PORJECT\SKCS\GUI\RevB\OneWire_GUI_CurrentSensor_v3\CurrentSensorV3\obj\x86\Release\CurrentSensorV3.csproj.GenerateResource.Cache
-D:\PORJECT\SKCS\GUI\RevB\OneWire_GUI_CurrentSensor_v3\CurrentSensorV3\bin\Release\SKCS v3.x.x.rc.exe
-D:\PORJECT\SKCS\GUI\RevB\OneWire_GUI_CurrentSensor_v3\CurrentSensorV3\bin\Release\SKCS v3.x.x.rc.pdb
-D:\PORJECT\SKCS\GUI\RevB\OneWire_GUI_CurrentSensor_v3\CurrentSensorV3\bin\Release\DMY2.dll
-D:\PORJECT\SKCS\GUI\RevB\OneWire_GUI_CurrentSensor_v3\CurrentSensorV3\bin\Release\DMY2.pdb
+D:\PORJECT\SKCS\GUI\RevB\OneWire_GUI_CurrentSensor_v3.0.2\OneWire_GUI_CurrentSensor_v3\CurrentSensorV3\obj\x86\Release\SKCS v3.x.x.rc.exe
+D:\PORJECT\SKCS\GUI\RevB\OneWire_GUI_CurrentSensor_v3.0.2\OneWire_GUI_CurrentSensor_v3\CurrentSensorV3\obj\x86\Release\SKCS v3.x.x.rc.pdb

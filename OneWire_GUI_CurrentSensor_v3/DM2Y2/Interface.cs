@@ -3525,7 +3525,12 @@ namespace ADI.DMY2
             ADC_MODULE_AMPOUT = 0x6E,
             ADC_VIN_TO_VCS = 0x6F,
             ADC_SET_CURRENT_SENCE = 0X70,
-            ADC_BYPASS_CURRENT_SENCE = 0X71
+            ADC_BYPASS_CURRENT_SENCE = 0X71,
+            ADC_VIN_TO_510OUT = 0x72,
+            ADC_VIN_TO_MOUT = 0x73,
+            ADC_CONFIG_TO_510OUT = 0x74,
+            ADC_CONFIG_TO_MOUT = 0x75,
+            ADC_CONFIG_TO_VCS = 0x76
         }
         #endregion 读写设备
 

@@ -12,9 +12,3 @@ C:\My Disk D\Project_Mo\SVN_SDC\MPH\OneWireMPH\OneWire_GUI_CurrentSensor_v3\DM2Y
 C:\My Disk D\Project_Mo\SVN_SDC\MPH\OneWireMPH\OneWire_GUI_CurrentSensor_v3\DM2Y2\obj\x86\Release\ResGen.write.1.tlog
 C:\My Disk D\Project_Mo\SVN_SDC\MPH\OneWireMPH\OneWire_GUI_CurrentSensor_v3\DM2Y2\obj\x86\Release\DMY2.dll
 C:\My Disk D\Project_Mo\SVN_SDC\MPH\OneWireMPH\OneWire_GUI_CurrentSensor_v3\DM2Y2\obj\x86\Release\DMY2.pdb
-D:\PORJECT\SKCS\GUI\RevB\OneWire_GUI_CurrentSensor_v3\DM2Y2\bin\Release\DMY2.dll
-D:\PORJECT\SKCS\GUI\RevB\OneWire_GUI_CurrentSensor_v3\DM2Y2\bin\Release\DMY2.pdb
-D:\PORJECT\SKCS\GUI\RevB\OneWire_GUI_CurrentSensor_v3\DM2Y2\obj\x86\Release\ADI.DMY2.Properties.Resources.resources
-D:\PORJECT\SKCS\GUI\RevB\OneWire_GUI_CurrentSensor_v3\DM2Y2\obj\x86\Release\DMY2.csproj.GenerateResource.Cache
-D:\PORJECT\SKCS\GUI\RevB\OneWire_GUI_CurrentSensor_v3\DM2Y2\obj\x86\Release\DMY2.dll
-D:\PORJECT\SKCS\GUI\RevB\OneWire_GUI_CurrentSensor_v3\DM2Y2\obj\x86\Release\DMY2.pdb

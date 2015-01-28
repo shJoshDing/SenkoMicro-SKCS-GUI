@@ -8,6 +8,7 @@ using System.Text;
 using ADI.DMY2;
 using System.Windows.Forms;
 using System.Threading;
+using System.IO;
 
 namespace CurrentSensorV3
 {
@@ -21,8 +22,8 @@ namespace CurrentSensorV3
 
         #region Param Definition
 
-        //bool bAutoTrimTest = true;          //Debug mode, display engineer tab
-        bool bAutoTrimTest = false;          //Release mode, bon't display engineer tab
+        bool bAutoTrimTest = true;          //Debug mode, display engineer tab
+        //bool bAutoTrimTest = false;          //Release mode, bon't display engineer tab
 
         //double IP15 = 0;
         //double IP10 = 0;
@@ -50,23 +51,84 @@ namespace CurrentSensorV3
         {
             set
             {
-                this.ip = value;
+                this.ip = Math.Round(value,3);
                 //Set three ip combobox on the GUI
-                //this.txt_ip
+                this.txt_IP_EngT.Text = this.ip.ToString("F3");
+                this.txt_IP_PreT.Text = this.ip.ToString("F3");
+                this.txt_IP_AutoT.Text = this.ip.ToString("F3");
             }
             get { return this.ip; }
         }
 
-
-
         string StrIPx_Auto = "15A";
         double selectedCurrent_Auto = 15;   //A
         double targetGain_customer = 25;    //mV/A
+        double TargetGain_customer
+        {
+            get { return this.targetGain_customer; }
+            set
+            {
+                this.targetGain_customer = value;
 
-        uint Reg80Value = 0;
-        uint Reg81Value = 0;
-        uint Reg82Value = 0;
-        uint Reg83Value = 0;
+                //Update GUI
+                this.txt_TargetGain_EngT.Text = this.targetGain_customer.ToString();
+                this.txt_TargetGain_PreT.Text = this.targetGain_customer.ToString();
+                this.txt_TargetGain_AutoT.Text = this.targetGain_customer.ToString();
+            }
+        }
+
+        uint reg80Value = 0;
+        uint Reg80Value
+        {
+            get { return this.reg80Value; }
+            set
+            {
+                this.reg80Value = value;
+                //Update GUI
+                this.txt_reg80_EngT.Text = "0x" + this.reg80Value.ToString("X2");
+                this.txt_Reg80_PreT.Text = "0x" + this.reg80Value.ToString("X2");
+            }
+        }
+
+        uint reg81Value = 0;
+        uint Reg81Value
+        {
+            get { return this.reg81Value; }
+            set
+            {
+                this.reg81Value = value;
+                //Update GUI
+                this.txt_reg81_EngT.Text = "0x" + this.reg81Value.ToString("X2");
+                this.txt_Reg81_PreT.Text = "0x" + this.reg81Value.ToString("X2");
+            }
+        }
+
+        uint reg82Value = 0;
+        uint Reg82Value
+        {
+            get { return this.reg82Value; }
+            set
+            {
+                this.reg82Value = value;
+                //Update GUI
+                this.txt_reg82_EngT.Text = "0x" + this.reg82Value.ToString("X2");
+                this.txt_Reg82_PreT.Text = "0x" + this.reg82Value.ToString("X2");
+            }
+        }
+
+        uint reg83Value = 0;
+        uint Reg83Value
+        {
+            get { return this.reg83Value; }
+            set
+            {
+                this.reg83Value = value;
+                //Update GUI
+                this.txt_reg83_EngT.Text = "0x" + this.reg83Value.ToString("X2");
+                this.txt_Reg83_PreT.Text = "0x" + this.reg83Value.ToString("X2");
+            }
+        }
+
         //uint Reg84Value = 0;
 
         int moduleTypeindex = 0;
@@ -94,6 +156,19 @@ namespace CurrentSensorV3
         double[][] PreciseTable_Customer = new double[2][];      //2x32: 0x80,Precise
         double[][] OffsetTableA_Customer = new double[3][];      //3x16: 0x81,0x82,OffsetA
         double[][] OffsetTableB_Customer = new double[2][];      //2x16: 0x83,OffsetB
+
+        #region Bit Operation Mask
+        readonly uint bit0_Mask = 2u ^ 0u;
+        readonly uint bit1_Mask = 2u ^ 1u;
+        readonly uint bit2_Mask = 2u ^ 2u;
+        readonly uint bit3_Mask = 2u ^ 3u;
+        readonly uint bit4_Mask = 2u ^ 4u;
+        readonly uint bit5_Mask = 2u ^ 5u;
+        readonly uint bit6_Mask = 2u ^ 6u;
+        readonly uint bit7_Mask = 2u ^ 7u;
+
+        uint bit_op_mask;
+        #endregion Bit Mask
 
         #endregion
 
@@ -276,7 +351,7 @@ namespace CurrentSensorV3
         {
             double result = oneWrie_device.AverageADCSamples(oneWrie_device.ADCSampleTransfer(SampleRate, SampleRateNum));
 
-            result = (ADCOffset + (result * 5d / 4096d))/200d;
+            result = (ADCOffset + 1000d * (result * 5d / 4096d))/100d;
             return result;
         }
 
@@ -1659,7 +1734,10 @@ namespace CurrentSensorV3
             //Enter test mode
             uint _reg_addr = 0x55;
             uint _reg_data = 0xAA;
-            oneWrie_device.I2CWrite_Single(this.DeviceAddress, _reg_addr, _reg_data);
+            if(oneWrie_device.I2CWrite_Single(this.DeviceAddress, _reg_addr, _reg_data))
+                DisplayOperateMes("Enter test mode succeeded!");
+            else
+                DisplayOperateMes("Enter test mode failed!");
         }
 
         private bool RegisterWrite(int wrNum, uint[] data)
@@ -1676,7 +1754,16 @@ namespace CurrentSensorV3
             return rt;
         }
 
-        private bool GainClacConditionFor15V()
+        private bool GainCodeCalcWithLoop()
+        {
+            bool rt = false;
+
+
+
+            return rt;
+        }
+
+        private bool OffsetCalcWithLoop()
         {
             bool rt = false;
 
@@ -1706,6 +1793,7 @@ namespace CurrentSensorV3
         private void Delay(int time)
         {
             Thread.Sleep(time);
+            DisplayOperateMes(String.Format("Delay {0}ms",time));
         }
         #endregion Methods
 
@@ -1735,29 +1823,26 @@ namespace CurrentSensorV3
 
         private void txt_TargetGain_TextChanged(object sender, EventArgs e)
         {
-            double temp = 0;
             try
             {
                 //temp = (4500d - 2000d) / double.Parse(this.txt_TargetGain.Text);
-                temp = 2000d / double.Parse(this.txt_TargetGain_EngT.Text);
+                TargetGain_customer = double.Parse((sender as TextBox).Text);
             }
             catch
             {
-                temp = 0;
+                string tempStr = string.Format("Target gain set failed, will use default value {0}", this.TargetGain_customer);
+                DisplayOperateMes(tempStr, Color.Red);
+            }
+            finally
+            {
+                TargetGain_customer = TargetGain_customer;      //Force to update text to default.
             }
 
-            if (temp == 0)
-            {
-                this.txt_IP_EngT.Text = "Error";
-                this.txt_IP_PreT.Text = "Error";
-                this.txt_IP_AutoT.Text = "Error";
-            }
-            else
-            {
-                this.txt_IP_EngT.Text = temp.ToString();
-                this.txt_IP_PreT.Text = temp.ToString();
-                this.txt_IP_AutoT.Text = temp.ToString();
-            }
+            double temp = 2000d / TargetGain_customer;
+            this.IP = temp;  
+            //this.txt_IP_EngT.Text = temp.ToString();
+            //this.txt_IP_PreT.Text = temp.ToString();
+            //this.txt_IP_AutoT.Text = temp.ToString();
         }
 
         private void btn_PowerOn_OWCI_ADC_Click(object sender, EventArgs e)
@@ -1933,56 +2018,12 @@ namespace CurrentSensorV3
 
         private void txt_reg80_TextChanged(object sender, EventArgs e)
         {
-            try
-            {
-                string temp = this.txt_reg80_EngT.Text.TrimStart("0x".ToCharArray()).TrimEnd("H".ToCharArray());
-                if (temp.Length > 2)
-                    temp = temp.Substring(0, 2);
-                uint regValue = UInt32.Parse((temp == "" ? "0" : temp), System.Globalization.NumberStyles.HexNumber);
 
-                if (this.Reg80Value == regValue)
-                    return;
-                else
-                {
-                    this.Reg80Value = regValue;
-                    DisplayOperateMes("Enter Reg1 value succeeded!");
-                }
-            }
-            catch
-            {
-                DisplayOperateMes("Enter Reg1 value failed!", Color.Red);
-            }
-            finally
-            {
-                this.txt_reg80_EngT.Text = "0x" + this.Reg80Value.ToString("X2");
-            }
         }
 
         private void txt_reg81_TextChanged(object sender, EventArgs e)
         {
-            try
-            {
-                string temp = this.txt_reg81_EngT.Text.TrimStart("0x".ToCharArray()).TrimEnd("H".ToCharArray());
-                if (temp.Length > 2)
-                    temp = temp.Substring(0, 2);
-                uint regValue = UInt32.Parse((temp == "" ? "0" : temp), System.Globalization.NumberStyles.HexNumber);
 
-                if (Reg81Value == regValue)
-                    return;
-                else
-                {
-                    this.Reg81Value = regValue;
-                    DisplayOperateMes("Enter Reg2 value succeeded!");
-                }
-            }
-            catch
-            {
-                DisplayOperateMes("Enter Reg2 value failed!", Color.Red);
-            }
-            finally
-            {
-                this.txt_reg81_EngT.Text = "0x" + this.Reg81Value.ToString("X2");
-            }
         }
 
         private void txt_reg82_TextChanged(object sender, EventArgs e)
@@ -2116,13 +2157,13 @@ namespace CurrentSensorV3
 
         private void RegTextChangedDisplay(TextBox txtReg)
         {
-            if (txtReg == this.txt_reg80_EngT)
+            if ((txtReg == this.txt_reg80_EngT) | (txtReg == this.txt_Reg80_PreT))
                 this.txt_reg80_TextChanged(null, null);
-            else if (txtReg == this.txt_reg81_EngT)
+            else if ((txtReg == this.txt_reg81_EngT) | (txtReg == this.txt_Reg81_PreT))
                 this.txt_reg81_TextChanged(null, null);
-            else if (txtReg == this.txt_reg82_EngT)
+            else if ((txtReg == this.txt_reg82_EngT) | (txtReg == this.txt_Reg82_PreT))
                 this.txt_reg82_TextChanged(null, null);
-            else if (txtReg == this.txt_reg83_EngT)
+            else if ((txtReg == this.txt_reg83_EngT) | (txtReg == this.txt_Reg83_PreT))
                 this.txt_reg83_TextChanged(null, null);
         }
 
@@ -2207,6 +2248,7 @@ namespace CurrentSensorV3
         {
             bool setResult;
             string message;
+            //L-Vout
             if (rbt_signalPathSeting_Vout_EngT.Checked && rbt_signalPathSeting_AIn_EngT.Checked)
             {
                 setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VIN_TO_VOUT);
@@ -2217,6 +2259,7 @@ namespace CurrentSensorV3
                 setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_CONFIG_TO_VOUT);
                 message = "Vout to CONFIG set";
             }
+            //L-Vref
             else if (rbt_signalPathSeting_Vref_EngT.Checked && rbt_signalPathSeting_AIn_EngT.Checked)
             {
                 setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VIN_TO_VREF);
@@ -2227,10 +2270,70 @@ namespace CurrentSensorV3
                 setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_CONFIG_TO_VREF);
                 message = "Vref to CONFIG set";
             }
+            //L-VCS
+            else if (rbt_signalPathSeting_VCS_EngT.Checked && rbt_signalPathSeting_AIn_EngT.Checked)
+            {
+                setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VIN_TO_VCS);
+                message = "VCS to VIn set";
+            }
+            else if (rbt_signalPathSeting_VCS_EngT.Checked && rbt_signalPathSeting_Config_EngT.Checked)
+            {
+                setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_CONFIG_TO_VCS);
+                message = "VSC to CONFIG set";
+            }
+            //L-510out
+            else if (rbt_signalPathSeting_510Out_EngT.Checked && rbt_signalPathSeting_AIn_EngT.Checked)
+            {
+                setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VIN_TO_510OUT);
+                message = "510out to VIn set";
+            }
+            else if (rbt_signalPathSeting_510Out_EngT.Checked && rbt_signalPathSeting_Config_EngT.Checked)
+            {
+                setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_CONFIG_TO_510OUT);
+                message = "510out to CONFIG set";
+            }
+            //L-Mout
+            else if (rbt_signalPathSeting_Mout_EngT.Checked && rbt_signalPathSeting_AIn_EngT.Checked)
+            {
+                setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VIN_TO_MOUT);
+                message = "Mout to VIn set";
+            }
+            else if (rbt_signalPathSeting_Mout_EngT.Checked && rbt_signalPathSeting_Config_EngT.Checked)
+            {
+                setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_CONFIG_TO_MOUT);
+                message = "Mout to CONFIG set";
+            }
             else
             {
                 message = "Signal path routing failed!\r\n";
                 return;
+            }
+
+            if (setResult)
+            {
+                message += " succeeded!\r\n";
+                DisplayOperateMes(message);
+            }
+            else
+            {
+                message += " Failed!\r\n";
+                DisplayOperateMes(message, Color.Red);
+            }
+        }
+
+        private void rbtn_CSResistorByPass_EngT_CheckedChanged(object sender, EventArgs e)
+        {
+            bool setResult;
+            string message;
+            if (rbtn_CSResistorByPass_EngT.Checked)
+            {
+                setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_BYPASS_CURRENT_SENCE);
+                message = "Vout to VIn set";
+            }
+            else
+            {
+                setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_SET_CURRENT_SENCE);
+                message = "Vout to CONFIG set";
             }
 
             if (setResult)
@@ -2277,24 +2380,33 @@ namespace CurrentSensorV3
 
         private void btn_MarginalRead_Click(object sender, EventArgs e)
         {
-            oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_CONFIG_TO_VOUT);
+            //oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_CONFIG_TO_VOUT);
+            rbt_signalPathSeting_Vout_EngT.Checked = true;
             rbt_signalPathSeting_Config_EngT.Checked = true;
 
             try
             {
-                uint _reg_addr = 0x55;
-                uint _reg_data = 0xAA;
-                oneWrie_device.I2CWrite_Single(this.DeviceAddress, _reg_addr, _reg_data);
+                EnterTestMode();
+
+                uint _reg_addr = 0x43;
+                uint _reg_data = 0x06;
+                bool writeResult = oneWrie_device.I2CWrite_Single(this.DeviceAddress, _reg_addr, _reg_data);
+                if (!writeResult)
+                {
+                    DisplayOperateMes("I2C write failed, Marginal Read Failed!\r\n", Color.Red);
+                    return;
+                }
 
                 _reg_addr = 0x43;
                 _reg_data = 0x0E;
-
-                bool writeResult = oneWrie_device.I2CWrite_Single(this.DeviceAddress, _reg_addr, _reg_data);
-                //Console.WriteLine("I2C write result->{0}", oneWrie_device.I2CWrite_Single(_dev_addr, _reg_addr, _reg_data));
+                writeResult = oneWrie_device.I2CWrite_Single(this.DeviceAddress, _reg_addr, _reg_data);
                 if (writeResult)
                     DisplayOperateMes("Marginal Read succeeded!\r\n");
                 else
+                {
                     DisplayOperateMes("I2C write failed, Marginal Read Failed!\r\n", Color.Red);
+                    return;
+                }
 
                 //Delay 100ms
                 Thread.Sleep(100);
@@ -2302,9 +2414,7 @@ namespace CurrentSensorV3
 
                 _reg_addr = 0x43;
                 _reg_data = 0x0;
-
                 writeResult = oneWrie_device.I2CWrite_Single(this.DeviceAddress, _reg_addr, _reg_data);
-                //Console.WriteLine("I2C write result->{0}", oneWrie_device.I2CWrite_Single(_dev_addr, _reg_addr, _reg_data));
                 if (writeResult)
                     DisplayOperateMes("Reset Reg0x43 succeeded!\r\n");
                 else
@@ -2313,6 +2423,72 @@ namespace CurrentSensorV3
             catch
             {
                 DisplayOperateMes("Marginal Read Failed!\r\n", Color.Red);
+            }
+        }
+
+        private void btn_SafetyRead_EngT_Click(object sender, EventArgs e)
+        {
+            //oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_CONFIG_TO_VOUT);
+            rbt_signalPathSeting_Vout_EngT.Checked = true;
+            rbt_signalPathSeting_Config_EngT.Checked = true;
+
+            try
+            {
+                EnterTestMode();
+
+                uint _reg_addr = 0x84;
+                uint _reg_data = 0xC0;
+                bool writeResult = oneWrie_device.I2CWrite_Single(this.DeviceAddress, _reg_addr, _reg_data);
+                if (!writeResult)
+                {
+                    DisplayOperateMes("1st I2C write failed, Safety Read Failed!\r\n", Color.Red);
+                    return;
+                }
+                
+                _reg_addr = 0x43;
+                _reg_data = 0x06;
+                writeResult = oneWrie_device.I2CWrite_Single(this.DeviceAddress, _reg_addr, _reg_data);
+                if (!writeResult)
+                {
+                    DisplayOperateMes("2nd I2C write failed, Safety Read Failed!\r\n", Color.Red);
+                    return;
+                }
+
+                _reg_addr = 0x43;
+                _reg_data = 0x0E;
+                writeResult = oneWrie_device.I2CWrite_Single(this.DeviceAddress, _reg_addr, _reg_data);
+                if (!writeResult)
+                {
+                    DisplayOperateMes("3rd I2C write failed, Safety Read Failed!\r\n", Color.Red);
+                    return;
+                }
+
+                Delay(Delay_Operation); //delay 300ms
+
+                _reg_addr = 0x43;
+                _reg_data = 0x0;
+                writeResult = oneWrie_device.I2CWrite_Single(this.DeviceAddress, _reg_addr, _reg_data);
+                if (writeResult)
+                    DisplayOperateMes("Reset Reg0x43 succeeded!\r\n");
+                else
+                {
+                    DisplayOperateMes("Reset Reg0x43 failed!\r\n", Color.Red);
+                    return;
+                }
+
+                Delay(Delay_Operation);    //delay 300ms
+               
+                _reg_addr = 0x84;
+                _reg_data = 0x0;
+                writeResult = oneWrie_device.I2CWrite_Single(this.DeviceAddress, _reg_addr, _reg_data);
+                if (writeResult)
+                    DisplayOperateMes("Reset Reg0x84 succeeded!\r\n");
+                else
+                    DisplayOperateMes("Reset Reg0x84 failed!\r\n", Color.Red);
+            }
+            catch
+            {
+                DisplayOperateMes("Safety Read Failed!\r\n", Color.Red);
             }
         }
 
@@ -2375,15 +2551,13 @@ namespace CurrentSensorV3
             bool bMarginal = false;
             bool bSafety = false;
 
-            ///AutoTrim code
-            ///power on
-            ///
+            /* AutoTrim code */
+            /*  power on  ??? power on or re-power*/
             RePower();
+            
+            Delay(Delay_Operation); 
 
-            Delay(Delay_Operation);
-
-            ///Get module curent
-            ///
+            /* Get module current */            
             if (oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VIN_TO_VCS))
                 DisplayOperateMes("Set ADC VIN to VCS");
             else
@@ -2399,16 +2573,16 @@ namespace CurrentSensorV3
             this.txt_ModuleCurrent_EngT.Text = GetModuleCurrent().ToString("F1");
             this.txt_ModuleCurrent_PreT.Text = this.txt_ModuleCurrent_EngT.Text;
 
-            ///Judge IDD
-            ///
+            /* Judge IDD */
             if (GetModuleCurrent() > 100)
             {
+                // ??? if need ok cancel btn?
                 dr = MessageBox.Show(String.Format("Module power is abnormal!"), "Warning", MessageBoxButtons.OKCancel);
                 DisplayOperateMes("Module power is abnormal!", Color.Red);
                 return;
             }
 
-            ///Change Current to IP 
+            /* Change Current to IP  */
             dr = MessageBox.Show(String.Format("Please Change Current To {0}A", IP), "Change Current", MessageBoxButtons.OKCancel);
             if (dr == DialogResult.Cancel)
             {
@@ -2416,14 +2590,16 @@ namespace CurrentSensorV3
                 return;
             }
 
-            ///Get vout @ IP
-            ///
+            /* Get vout @ IP */            
             oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_CONFIG_TO_VOUT);
             oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VOUT_WITHOUT_CAP);
             EnterTestMode();
+
             ///
             ///Todo: load config data. write to registers
+            ///???  use the loaded Ix_ForGainCtrl to cal register value?
             ///
+            
             EnterNomalMode();
             oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VOUT_WITH_CAP);
             Delay(Delay_Operation);
@@ -2436,7 +2612,7 @@ namespace CurrentSensorV3
                 return;
             }
 
-            ///Change Current to 0A
+            /* Change Current to 0A */
             dr = MessageBox.Show(String.Format("Please Change Current To 0A"), "Change Current", MessageBoxButtons.OKCancel);
             if (dr == DialogResult.Cancel)
             {
@@ -2449,19 +2625,19 @@ namespace CurrentSensorV3
             ///
             ///Todo: new function of calculate GainCode
             ///
-            btn_CalcGainCode_EngT_Click();
+            btn_CalcGainCode_EngT_Click(null, null);
+            GainCodeCalcWithLoop();
 
-            ///Repower on
-            ///
+            /* Repower on */
             RePower();
 
-            ///
             oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_CONFIG_TO_VOUT);
             oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VOUT_WITHOUT_CAP);
             EnterTestMode();
 
             ///
             ///Todo: write trim code to regsiters
+            ///??? just write 0x80-0x83?
             ///
 
             EnterNomalMode();
@@ -2472,11 +2648,10 @@ namespace CurrentSensorV3
             ///
             ///Todo: new function of btn_offset_click
             ///
-            btn_offset_Click();
+            btn_offset_Click(null, null);
+            OffsetCalcWithLoop();
 
-
-            ///Repower on 6V
-            ///
+            /* Repower on 6V */            
             oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VDD_FROM_EXT);
             RePower();
 
@@ -2490,7 +2665,7 @@ namespace CurrentSensorV3
 
             ///fuse
             ///Todo:
-            FuseClockOn(DeviceAddress, fusePulseWidth, fuseDurationTime, 400, 41);
+            FuseClockOn(DeviceAddress, (double)num_UD_pulsewidth_ow_EngT.Value, (double)numUD_pulsedurationtime_ow_EngT.Value, 41);
 
             ///Repower on 5V
             ///
@@ -2518,8 +2693,7 @@ namespace CurrentSensorV3
             ///
 
 
-            ///Repower on 6V
-            ///
+            /* Repower on 6V */            
             oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VDD_FROM_EXT);
             RePower();
 
@@ -2536,12 +2710,11 @@ namespace CurrentSensorV3
 
             ///
             ///Todo:
-            FuseClockOn(DeviceAddress, fusePulseWidth, fuseDurationTime, 400, 41);
+            FuseClockOn(DeviceAddress, (double)num_UD_pulsewidth_ow_EngT.Value, (double)numUD_pulsedurationtime_ow_EngT.Value, 41);
 
 
 
-            ///Repower on 5V
-            ///
+            /* Repower on 5V */            
             oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VDD_FROM_5V);
             RePower();
 
@@ -2550,7 +2723,7 @@ namespace CurrentSensorV3
 
             Vout_0A = AverageVout();
 
-            ///Change Current to IP 
+            /* Change Current to IP  */
             dr = MessageBox.Show(String.Format("Please Change Current To {0}A", IP), "Change Current", MessageBoxButtons.OKCancel);
             if (dr == DialogResult.Cancel)
             {
@@ -2560,10 +2733,10 @@ namespace CurrentSensorV3
 
             Vout_IP = AverageVout();
 
-            ///bin1,2,3
-            if ( !(bSafety || bMarginal) )
-            { 
-                if( 2.5*(1-0.01) <= Vout_0A && Vout_0A <= 2.5*(1+0.01) && Vout_IP <= 4.5*(1+0.01) && Vout_IP >= 4.5*(1-0.01)  )
+            /* bin1,2,3 */
+            if (!(bSafety || bMarginal))
+            {
+                if (2.5 * (1 - 0.01) <= Vout_0A && Vout_0A <= 2.5 * (1 + 0.01) && Vout_IP <= 4.5 * (1 + 0.01) && Vout_IP >= 4.5 * (1 - 0.01))
                 {
                     DisplayOperateMes("Pass! Bin1");
                 }
@@ -2580,8 +2753,8 @@ namespace CurrentSensorV3
                     DisplayOperateMes("Fail!");
                 }
             }
-            ///bin4,5,6
-            else if ( bMarginal == false )
+            /* bin4,5,6 */
+            else if (bMarginal == false)
             {
                 if (2.5 * (1 - 0.01) <= Vout_0A && Vout_0A <= 2.5 * (1 + 0.01) && Vout_IP <= 4.5 * (1 + 0.01) && Vout_IP >= 4.5 * (1 - 0.01))
                 {
@@ -2600,7 +2773,7 @@ namespace CurrentSensorV3
                     DisplayOperateMes("Fail!");
                 }
             }
-            ///bin7,8,9
+            /* bin7,8,9 */
             else
             {
                 if (2.5 * (1 - 0.01) <= Vout_0A && Vout_0A <= 2.5 * (1 + 0.01) && Vout_IP <= 4.5 * (1 + 0.01) && Vout_IP >= 4.5 * (1 - 0.01))
@@ -2641,6 +2814,7 @@ namespace CurrentSensorV3
             ///Todo: below code could be delete!
             ///
             
+
 
 
             #region 1. Define variables
@@ -2759,7 +2933,7 @@ namespace CurrentSensorV3
             DisplayAutoTrimOperateMes(message, setResult, 32);
 
             //Change Current to IPx A
-             dr = MessageBox.Show(String.Format("Please Change Current To {0}A",selectedCurrent_Auto), "Change Current", MessageBoxButtons.OKCancel);
+            dr = MessageBox.Show(String.Format("Please Change Current To {0}A",selectedCurrent_Auto), "Change Current", MessageBoxButtons.OKCancel);
             if (dr == DialogResult.Cancel)
             {
                 //DisplayAutoTrimResult(false)
@@ -4239,10 +4413,11 @@ namespace CurrentSensorV3
             {
                 temp = string.Format("Device address set failed, will use default adrress {0}", this.DeviceAddress);
                 DisplayOperateMes(temp, Color.Red);
+                this.txt_dev_addr_onewire_EngT.Text = "0x" + this.DeviceAddress.ToString("X2");
             }
             finally 
             {
-                this.txt_dev_addr_onewire_EngT.Text = "0x" + this.DeviceAddress.ToString("X2");
+                //this.txt_dev_addr_onewire_EngT.Text = "0x" + this.DeviceAddress.ToString("X2");
             }
         }
 
@@ -4326,7 +4501,7 @@ namespace CurrentSensorV3
             DisplayOperateMes("Vout @ 0A = " + Vout_0A.ToString("F3"));
         }
 
-        private void btn_DefaultGain_PreT_Click(object sender, EventArgs e)
+        private void btn_Vout_PreT_Click(object sender, EventArgs e)
         {
             EnterNomalMode();
 
@@ -4334,25 +4509,41 @@ namespace CurrentSensorV3
         }
 
         uint ix_forGainCtrl = 0;
+        uint Ix_ForGainCtrl
+        {
+            get { return this.ix_forGainCtrl; }
+            set 
+            {
+                this.ix_forGainCtrl = value;
+                this.txt_ChosenGain_AutoT.Text = RoughTable_Customer[0][ix_forGainCtrl].ToString("F2");
+            }
+        }
         private void btn_GainCtrlPlus_PreT_Click(object sender, EventArgs e)
         {
             RePower();
 
             EnterTestMode();
 
-            int wrNum = 4;
-            uint[] data = new uint[wrNum];
+            if (Ix_ForGainCtrl > 0)
+                Ix_ForGainCtrl--;
+
+            int wrNum = 2;
+            uint[] data = new uint[2 * wrNum];
             data[0] = 0x80;
-            data[1] = Convert.ToUInt32(RoughTable_Customer[1][ix_forGainCtrl]);     //Reg0x80
+            data[1] = Convert.ToUInt32(RoughTable_Customer[1][Ix_ForGainCtrl]);     //Reg0x80
             data[2] = 0x81;
-            data[3] = Convert.ToUInt32(RoughTable_Customer[2][ix_forGainCtrl]);   //Reg0x81
+            data[3] = Convert.ToUInt32(RoughTable_Customer[2][Ix_ForGainCtrl]);   //Reg0x81
 
             //back up to register 
-            Reg80Value = data[1];
-            Reg81Value = data[3];
+            /* bit5 & bit6 & bit7 of 0x80 */
+            bit_op_mask = bit5_Mask | bit6_Mask | bit7_Mask;
+            Reg80Value &= ~bit_op_mask;
+            Reg80Value |= data[1];
 
-            if (ix_forGainCtrl > 0)
-                ix_forGainCtrl--;
+            /* bit0 of 0x81 */
+            bit_op_mask = bit0_Mask;
+            Reg81Value &= ~bit_op_mask;
+            Reg81Value |= data[3];
 
             if (!RegisterWrite(wrNum, data))
                 DisplayOperateMes("Register write failed!", Color.Red);
@@ -4367,19 +4558,26 @@ namespace CurrentSensorV3
 
             EnterTestMode();
 
-            int wrNum = 4;
-            uint[] data = new uint[wrNum];
+            if (Ix_ForGainCtrl < 15)
+                Ix_ForGainCtrl++;
+
+            int wrNum = 2;
+            uint[] data = new uint[2 * wrNum];
             data[0] = 0x80;
-            data[1] = Convert.ToUInt32(RoughTable_Customer[1][ix_forGainCtrl]);     //Reg0x80
+            data[1] = Convert.ToUInt32(RoughTable_Customer[1][Ix_ForGainCtrl]);     //Reg0x80
             data[2] = 0x81;
-            data[3] = Convert.ToUInt32(RoughTable_Customer[2][ix_forGainCtrl]);   //Reg0x81
+            data[3] = Convert.ToUInt32(RoughTable_Customer[2][Ix_ForGainCtrl]);     //Reg0x81
 
             //back up to register 
-            Reg80Value = data[1];
-            Reg81Value = data[3];
+            /* bit5 & bit6 & bit7 of 0x80 */
+            bit_op_mask = bit5_Mask | bit6_Mask | bit7_Mask;
+            Reg80Value &= ~bit_op_mask;
+            Reg80Value |= data[1];
 
-            if (ix_forGainCtrl < 15)
-                ix_forGainCtrl++;
+            /* bit0 of 0x81 */
+            bit_op_mask = bit0_Mask;
+            Reg81Value &= ~bit_op_mask;
+            Reg81Value |= data[3];
 
             if (!RegisterWrite(wrNum, data))
                 DisplayOperateMes("Register write failed!", Color.Red);
@@ -4402,6 +4600,284 @@ namespace CurrentSensorV3
         {
             this.b_offset = (double)this.numUD_OffsetB.Value;
         }
+
+        private void txt_IP_EngT_TextChanged(object sender, EventArgs e)
+        {
+            string temp;
+            try
+            {
+                temp = (sender as TextBox).Text;
+                this.IP = double.Parse(temp); 
+            }
+            catch
+            {
+                temp = string.Format("IP set failed, will use default value {0}", this.IP);
+                DisplayOperateMes(temp, Color.Red);
+            }
+            finally
+            {
+                this.IP = this.IP;  //force update GUI
+            }
+        }
+
+        private void cmb_SensitivityAdapt_PreT_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            /* bit0 & bit1 of 0x83 */
+            bit_op_mask = bit0_Mask | bit1_Mask;
+            uint[] valueTable = new uint[3]
+            {
+                0x0,
+                0x03,
+                0x02
+            };
+
+            int ix_TableStart = this.cmb_SensitivityAdapt_PreT.SelectedIndex;
+            //back up to register and update GUI
+            Reg83Value &= ~bit_op_mask;
+            Reg83Value |= valueTable[ix_TableStart];
+            this.txt_SensitivityAdapt_AutoT.Text = this.cmb_SensitivityAdapt_PreT.SelectedItem.ToString();
+        }
+
+        private void cmb_TempCmp_PreT_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            /* bit4 & bit5 & bit6 of 0x81 */
+            bit_op_mask = bit4_Mask | bit5_Mask | bit6_Mask;
+            uint[] valueTable = new uint[7]
+            {
+                0x0,
+                0x10,
+                0x20,
+                0x30,
+                0x40,
+                0x50,
+                0x60
+            };
+
+            int ix_TableStart = this.cmb_TempCmp_PreT.SelectedIndex;
+            //back up to register and update GUI
+            Reg81Value &= ~bit_op_mask;
+            Reg81Value |= valueTable[ix_TableStart];            
+            this.txt_TempComp_AutoT.Text = this.cmb_TempCmp_PreT.SelectedItem.ToString();
+        }
+
+        private void cmb_IPRange_PreT_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            /* bit of 0x82 and 0x83 */
+            bit_op_mask = bit7_Mask;
+            uint[] valueTable = new uint[6]
+            {
+                0x0,0x80,
+                0x0,0x0,
+                0x80,0x0                
+            };
+
+            int ix_TableStart = this.cmb_TempCmp_PreT.SelectedIndex * 2;
+            //back up to register and update GUI
+            Reg82Value &= ~bit_op_mask;
+            Reg82Value |= valueTable[ix_TableStart];
+            Reg83Value &= ~bit_op_mask;
+            Reg83Value |= valueTable[ix_TableStart + 1];
+            this.txt_IPRange_AutoT.Text = this.cmb_IPRange_PreT.SelectedItem.ToString();
+        }
+
+        private void cmb_SensingDirection_EngT_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            /* bit5 & bit6 of 0x82 */
+            bit_op_mask = bit5_Mask | bit6_Mask;
+            uint[] valueTable = new uint[4]
+            {
+                0x0,
+                0x20,
+                0x40,
+                0x60
+            };
+
+            int ix_TableStart = this.cmb_SensingDirection_EngT.SelectedIndex;
+            //back up to register and update GUI
+            Reg82Value &= ~bit_op_mask;
+            Reg82Value |= valueTable[ix_TableStart];
+        }
+
+        private void cmb_OffsetOption_EngT_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            /* bit3 & bit4 of 0x82 */
+            bit_op_mask = bit3_Mask | bit4_Mask;
+            uint[] valueTable = new uint[4]
+            {
+                0x0,
+                0x08,
+                0x10,
+                0x18
+            };
+
+            int ix_TableStart = this.cmb_OffsetOption_EngT.SelectedIndex;
+            //back up to register and update GUI
+            Reg82Value &= ~bit_op_mask;
+            Reg82Value |= valueTable[ix_TableStart];        //Reg0x82
+        }
+
+        private void cmb_PolaritySelect_EngT_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            /* bit1 & bit2 of 0x81 */
+            bit_op_mask = bit1_Mask | bit2_Mask;
+            uint[] valueTable = new uint[3]
+            {
+                0x0,
+                0x04,
+                0x06
+            };
+
+            int ix_TableStart = this.cmb_PolaritySelect_EngT.SelectedIndex;
+            //back up to register and update GUI
+            Reg81Value &= ~bit_op_mask;
+            Reg81Value |= valueTable[ix_TableStart];        //Reg0x81
+        }
+
+        private void rbtn_VoutOptionHigh_EngT_CheckedChanged(object sender, EventArgs e)
+        {
+            /* bit6 of 0x83 */
+            bit_op_mask = bit6_Mask;
+            Reg83Value &= ~bit_op_mask;
+            if (this.rbtn_VoutOptionHigh_EngT.Checked)
+            {
+                Reg83Value |= 0x40;
+            }
+            else
+            {
+                Reg83Value |= 0x0;
+            }
+        }
+
+        private void rbtn_InsideFilterOff_EngT_CheckedChanged(object sender, EventArgs e)
+        {
+            /* bit3 of 0x81 */
+            bit_op_mask = bit3_Mask;
+            Reg81Value &= ~bit_op_mask;
+            if(rbtn_InsideFilterOff_EngT.Checked)
+            {
+                Reg81Value |= 0x08;
+            }
+            else
+            {
+                Reg81Value |= 0x0;
+            }
+        }
+        
+        private void btn_SaveConfig_PreT_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                SaveFileDialog savefiledlg = new SaveFileDialog();
+                savefiledlg.Title = "Export config file...";
+                savefiledlg.Filter = "Config file(*.cfg)|*.cfg";
+                savefiledlg.RestoreDirectory = true;
+                string filename = "";
+                if (savefiledlg.ShowDialog() == DialogResult.OK)
+                {
+                    filename = savefiledlg.FileName;
+                }
+                else
+                    return;
+
+                StreamWriter sw = File.CreateText(filename);
+                sw.WriteLine("/* Current Sensor Console configs, CopyRight of SenkoMicro, Inc */");
+                /* ******************************************************
+                 * module type, Current Range, Sensitivity adapt, Temprature Cmp, and preset gain 
+                 * combobox type: name|combobox index|selected item text
+                 * preset gain: name|index in table|percentage
+                 *******************************************************/
+                string msg;
+                // module type: 
+                msg = string.Format("module type|{0}|{1}",
+                    this.cmb_Module_PreT.SelectedIndex.ToString(), this.cmb_Module_PreT.SelectedItem.ToString());
+                sw.WriteLine(msg);
+
+                // Current Range
+                msg = string.Format("IP Range|{0}|{1}",
+                    this.cmb_IPRange_PreT.SelectedIndex.ToString(), this.cmb_IPRange_PreT.SelectedItem.ToString());
+                sw.WriteLine(msg);
+
+                // Sensitivity Adapt
+                msg = string.Format("Sensitivity Adapt|{0}|{1}",
+                    this.cmb_SensitivityAdapt_PreT.SelectedIndex.ToString(), this.cmb_SensitivityAdapt_PreT.SelectedItem.ToString());
+                sw.WriteLine(msg);
+
+                // Temprature Compensation
+                msg = string.Format("Temprature Compensation|{0}|{1}",
+                    this.cmb_TempCmp_PreT.SelectedIndex.ToString(), this.cmb_TempCmp_PreT.SelectedItem.ToString());
+                sw.WriteLine(msg);
+
+                // Preset Gain
+                msg = string.Format("Preset Gain|{0}|{1}",
+                    this.Ix_ForGainCtrl.ToString(), RoughTable_Customer[0][Ix_ForGainCtrl].ToString("F2"));
+                sw.WriteLine(msg);
+
+                sw.Close();
+            }
+            catch
+            {
+                MessageBox.Show("Save config file failed!");
+            }
+        }
+
+        private void btn_loadconfig_AutoT_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                OpenFileDialog openfiledlg = new OpenFileDialog();
+                openfiledlg.Title = "Please choose the config file to be imported...";
+                openfiledlg.Filter = "Config file(*.cfg)|*.cfg";
+                openfiledlg.RestoreDirectory = true;
+                string filename = "";
+                if (openfiledlg.ShowDialog() == DialogResult.OK)
+                {
+                    filename = openfiledlg.FileName;
+                }
+                else
+                    return;
+
+                StreamReader sr = new StreamReader(filename);
+                string comment = sr.ReadLine();
+                string[] msg;
+                int ix;
+                /* ******************************************************
+                 * module type, Current Range, Sensitivity adapt, Temprature Cmp, and preset gain 
+                 * combobox type: name|combobox index|selected item text
+                 * preset gain: name|index in table|percentage
+                 *******************************************************/
+                // module type
+                msg = sr.ReadLine().Split("|".ToCharArray());
+                ix = int.Parse(msg[1]);
+                this.cmb_Module_PreT.SelectedIndex = ix;
+
+                // IP Range
+                msg = sr.ReadLine().Split("|".ToCharArray());
+                ix = int.Parse(msg[1]);
+                this.cmb_IPRange_PreT.SelectedIndex = ix;
+
+                // Sensitivity adapt
+                msg = sr.ReadLine().Split("|".ToCharArray());
+                ix = int.Parse(msg[1]);
+                this.cmb_SensitivityAdapt_PreT.SelectedIndex = ix;
+
+                // Temprature Compensation
+                msg = sr.ReadLine().Split("|".ToCharArray());
+                ix = int.Parse(msg[1]);
+                this.cmb_TempCmp_PreT.SelectedIndex = ix;
+
+                // Preset Gain
+                msg = sr.ReadLine().Split("|".ToCharArray());
+                Ix_ForGainCtrl = uint.Parse(msg[1]);
+
+                sr.Close();
+            }
+            catch
+            {
+                MessageBox.Show("Load config file failed, please choose correct file!");
+            }
+        }
+
+
 
         
 
