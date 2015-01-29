@@ -131,6 +131,9 @@ namespace CurrentSensorV3
 
         //uint Reg84Value = 0;
 
+        //Just used for auto trim, will be updated when auto tirm tabe entering and loading config file
+        uint[] Reg80ToReg83Backup = new uint[4];    
+
         int moduleTypeindex = 0;
         int ModuleTypeIndex
         {
@@ -142,6 +145,38 @@ namespace CurrentSensorV3
                 this.cmb_Module_PreT.SelectedIndex = this.moduleTypeindex;
             }
             get { return this.moduleTypeindex; }
+        }
+
+        uint ix_forRoughGainCtrl = 0;
+        uint Ix_ForRoughGainCtrl
+        {
+            get { return this.ix_forRoughGainCtrl; }
+            set
+            {
+                this.ix_forRoughGainCtrl = value;
+                this.txt_ChosenGain_AutoT.Text = RoughTable_Customer[0][ix_forRoughGainCtrl].ToString("F2");
+            }
+        }
+
+        int ix_forPrecisonGainCtrl = 0;
+        int Ix_ForPrecisonGainCtrl
+        {
+            get { return this.ix_forPrecisonGainCtrl; }
+            set { this.ix_forPrecisonGainCtrl = value; }
+        }
+
+        int ix_forOffsetATable = 0;
+        int Ix_ForOffsetATable
+        {
+            get { return this.ix_forOffsetATable; }
+            set { this.ix_forOffsetATable = value; }
+        }
+
+        int ix_forOffsetBTable = 0;
+        int Ix_ForOffsetBTable
+        {
+            get { return this.ix_forOffsetBTable; }
+            set { this.ix_forOffsetBTable = value; }
         }
 
         double k_slope = 0.5;
@@ -158,14 +193,14 @@ namespace CurrentSensorV3
         double[][] OffsetTableB_Customer = new double[2][];      //2x16: 0x83,OffsetB
 
         #region Bit Operation Mask
-        readonly uint bit0_Mask = 2u ^ 0u;
-        readonly uint bit1_Mask = 2u ^ 1u;
-        readonly uint bit2_Mask = 2u ^ 2u;
-        readonly uint bit3_Mask = 2u ^ 3u;
-        readonly uint bit4_Mask = 2u ^ 4u;
-        readonly uint bit5_Mask = 2u ^ 5u;
-        readonly uint bit6_Mask = 2u ^ 6u;
-        readonly uint bit7_Mask = 2u ^ 7u;
+        readonly uint bit0_Mask = Convert.ToUInt32(Math.Pow(2, 0));
+        readonly uint bit1_Mask = Convert.ToUInt32(Math.Pow(2, 1));
+        readonly uint bit2_Mask = Convert.ToUInt32(Math.Pow(2, 2));
+        readonly uint bit3_Mask = Convert.ToUInt32(Math.Pow(2, 3));
+        readonly uint bit4_Mask = Convert.ToUInt32(Math.Pow(2, 4));
+        readonly uint bit5_Mask = Convert.ToUInt32(Math.Pow(2, 5));
+        readonly uint bit6_Mask = Convert.ToUInt32(Math.Pow(2, 6));
+        readonly uint bit7_Mask = Convert.ToUInt32(Math.Pow(2, 7));
 
         uint bit_op_mask;
         #endregion Bit Mask
@@ -358,7 +393,7 @@ namespace CurrentSensorV3
         /// <summary>
         /// 根据采集的Vout@0A，Vout@IP计算出Gain
         /// </summary>
-        /// <returns>计算出的Gain供查表用</returns>
+        /// <returns>计算出的Gain供查表用,单位mV/A</returns>
         private double GainCalculate()
         {
             double result = 0;
@@ -366,6 +401,15 @@ namespace CurrentSensorV3
             result = 1000d * ((Vout_IP - Vout_0A) / IP);
 
             return result;
+        }
+
+        /// <summary>
+        /// 根据采集的Vout@0A，Vout@IP计算出Gain
+        /// </summary>
+        /// <returns>计算出的Gain供查表用,单位mV/A</returns>
+        private double GainCalculate(double v_0A, double v_ip)
+        {
+            return 1000d * ((v_ip - v_0A) / IP);
         }
 
         /// <summary>
@@ -820,7 +864,7 @@ namespace CurrentSensorV3
 
         private void FilledOffsetTableA_Customer()
         {
-            for (int i = 0; i < OffsetTableA.Length; i++)
+            for (int i = 0; i < OffsetTableA_Customer.Length; i++)
             {
                 switch (i)
                 {
@@ -892,7 +936,7 @@ namespace CurrentSensorV3
 
         private void FilledOffsetTableB_Customer()
         {
-            for (int i = 0; i < OffsetTableB.Length; i++)
+            for (int i = 0; i < OffsetTableB_Customer.Length; i++)
             {
                 switch (i)
                 {
@@ -1092,6 +1136,24 @@ namespace CurrentSensorV3
 
                 //DisplayOperateMes("Step " + step + ":");
                 strMes = "Step" + step.ToString() + ":" + strMes;
+                if (ifSucceeded)
+                {
+                    strMes += " succeeded!";
+                    DisplayOperateMes(strMes);
+                }
+                else
+                {
+                    strMes += " Failed!";
+                    DisplayOperateMes(strMes, Color.Red);
+                }
+            }
+        }
+
+        private void DisplayAutoTrimOperateMes(string strMes, bool ifSucceeded)
+        {
+            if (bAutoTrimTest)
+            {
+                //DisplayOperateMes("Step " + step + ":");
                 if (ifSucceeded)
                 {
                     strMes += " succeeded!";
@@ -1463,47 +1525,41 @@ namespace CurrentSensorV3
             }
         }
 
-        private bool FuseClockOn(uint _dev_addr, double fusePulseWidth, double fuseDurationTime, int step)
+        private bool FuseClockOn(uint _dev_addr, double fusePulseWidth, double fuseDurationTime)
         {
             //0x03->0x43
             uint _reg_Addr = 0x43;
             uint _reg_Value = 0x03;
             if (oneWrie_device.I2CWrite_Single(_dev_addr, _reg_Addr, _reg_Value))
-                DisplayAutoTrimOperateMes("I2C Write 1 before Fuse Clock", true, step);
+                DisplayAutoTrimOperateMes("I2C Write 1 before Fuse Clock", true);
             else
             {
                 return false;
             }
 
-            //Delay 50ms
-            Thread.Sleep(50);
-            DisplayAutoTrimOperateMes("Delay 50ms", step);
+            Delay(Delay_Operation);
 
             //0xAA->0x44
             _reg_Addr = 0x44;
             _reg_Value = 0xAA;
             if (oneWrie_device.I2CWrite_Single(_dev_addr, _reg_Addr, _reg_Value))
-                DisplayAutoTrimOperateMes("I2C Write 2 before Fuse Clock", true, step);
+                DisplayAutoTrimOperateMes("I2C Write 2 before Fuse Clock", true);
             else
             {
                 return false; ;
             }
 
-            //Delay 50ms
-            Thread.Sleep(200);
-            DisplayAutoTrimOperateMes("Delay 200ms", step);
+            Delay(Delay_Operation);
 
             //Fuse 
             if (oneWrie_device.FuseClockSwitch(fusePulseWidth, fuseDurationTime))
-                DisplayAutoTrimOperateMes("Fuse Clock On", true, step);
+                DisplayAutoTrimOperateMes("Fuse Clock On", true);
             else
             {
                 return false;
             }
 
-            //Delay 700ms -> changed to 100ms @ 2014-09-04
-            Thread.Sleep(100);
-            DisplayAutoTrimOperateMes("Delay 100ms", step);
+            Delay(Delay_Operation);
             return true;
         }
 
@@ -1754,40 +1810,286 @@ namespace CurrentSensorV3
             return rt;
         }
 
+        private double CalcTargetXFromDetectiveY(double y)
+        {
+            /* y = k*x + b -> x = (y - b) / k */
+            return (y - b_offset) / k_slope;
+        }
+
+        /// <summary>
+        /// Use Y = kX +b to calculate the real vout X, and modify the index of precison table to
+        /// find the best gain code. 
+        /// ** Enter Current is 0A.
+        /// ** Exit Current is also 0A.
+        /// </summary>
+        /// <returns></returns>
         private bool GainCodeCalcWithLoop()
         {
-            bool rt = false;
+            double vout_0A_Convert;
+            double vout_IP_Convert;
+            double target_Gain1 = 0; //new
+            double target_Gain2 = 0; //older
+            bit_op_mask = bit0_Mask | bit1_Mask | bit2_Mask | bit3_Mask | bit4_Mask;
+            /* 1. Write Reg0x80 and enter normal mode */
+            EnterTestMode();
+            RegisterWrite(1, new uint[2] { 0x80, Reg80Value });
+            EnterNomalMode();
 
+            /* 2.Get Vout@0A and Vout@IP */
+            Vout_0A = AverageVout();
+            DialogResult dr = MessageBox.Show(String.Format("Please Change Current To {0}A", IP), "Change Current", MessageBoxButtons.OKCancel);
+            if (dr == DialogResult.Cancel)
+            {
+                DisplayOperateMes("AutoTrim Canceled!", Color.Red);
+                return false;
+            }
+            Vout_IP = AverageVout();
 
+            vout_0A_Convert = CalcTargetXFromDetectiveY(Vout_0A);
+            vout_IP_Convert = CalcTargetXFromDetectiveY(Vout_IP);
+            target_Gain1 = GainCalculate(vout_0A_Convert, vout_IP_Convert);
+            target_Gain2 = target_Gain1;
 
-            return rt;
+            if (target_Gain1 == TargetGain_customer)
+            {
+                /* make sure exit current is 0A */
+                dr = MessageBox.Show(String.Format("Please Change Current To {0}A", 0), "Change Current", MessageBoxButtons.OKCancel);
+                if (dr == DialogResult.Cancel)
+                {
+                    DisplayOperateMes("AutoTrim Canceled!", Color.Red);
+                    return false;
+                }
+                return true;
+            }
+
+            // if (testGain > targetGain) then index++
+            bool IncreaseOrDecrease = (target_Gain1 > TargetGain_customer) ? true : false;
+
+            while (true)
+            {
+                /* get the right value, will record the Ix_ForPrecisonGainCtrl and break loop */
+                if ((target_Gain1 - TargetGain_customer) * (target_Gain2 - TargetGain_customer) <= 0)
+                {
+                    /* Judge which target gain is the best */
+                    if (Math.Abs(target_Gain1 - TargetGain_customer) <= Math.Abs(target_Gain2 - TargetGain_customer)) //The new value is needed
+                    {
+                        break;
+                    }
+                    else // Back to older gain
+                    {
+                        /* Increase/decrease the Ix_ForPrecisonGainCtrl; update reg80; Get Vaout*/
+                        if (!IncreaseOrDecrease)
+                        {
+                            if (Ix_ForPrecisonGainCtrl < 15)
+                                Ix_ForPrecisonGainCtrl++;
+                            else
+                                break;
+                        }
+                        else
+                        {
+                            if (Ix_ForPrecisonGainCtrl > 0)
+                                Ix_ForPrecisonGainCtrl--;
+                            else
+                                break;
+                        }
+
+                        /* 1. Write Reg0x80 and enter normal mode */
+                        Reg80Value &= ~bit_op_mask;
+                        Reg80Value |= Convert.ToUInt32(PreciseTable[1][Ix_ForPrecisonGainCtrl]);
+                        EnterTestMode();
+                        RegisterWrite(1, new uint[2] { 0x80, Reg80Value });
+                        EnterNomalMode();
+                        /* 2.Get Vout@IP and Vout@0A */
+                        Vout_IP = AverageVout();
+                        dr = MessageBox.Show(String.Format("Please Change Current To {0}A", 0), "Change Current", MessageBoxButtons.OKCancel);
+                        if (dr == DialogResult.Cancel)
+                        {
+                            DisplayOperateMes("AutoTrim Canceled!", Color.Red);
+                            return false;
+                        }
+                        Vout_0A = AverageVout();
+                        return true;
+                    }
+                }
+                else
+                {
+                    /* Increase/decrease the Ix_ForPrecisonGainCtrl; update reg80; Get Vaout*/
+                    if (IncreaseOrDecrease)
+                    {
+                        if (Ix_ForPrecisonGainCtrl < 15)
+                            Ix_ForPrecisonGainCtrl++;
+                        else
+                            break;
+                    }
+                    else
+                    {
+                        if (Ix_ForPrecisonGainCtrl > 0)
+                            Ix_ForPrecisonGainCtrl--;
+                        else
+                            break;
+                    }
+
+                    /* 1. Write Reg0x80 and enter normal mode */
+                    Reg80Value &= ~bit_op_mask;
+                    Reg80Value |= Convert.ToUInt32(PreciseTable[1][Ix_ForPrecisonGainCtrl]);
+                    EnterTestMode();
+                    RegisterWrite(1, new uint[2] { 0x80, Reg80Value });
+                    EnterNomalMode();
+                    /* 2.Get Vout@IP and Vout@0A */
+                    Vout_IP = AverageVout();
+                    dr = MessageBox.Show(String.Format("Please Change Current To {0}A", 0), "Change Current", MessageBoxButtons.OKCancel);
+                    if (dr == DialogResult.Cancel)
+                    {
+                        DisplayOperateMes("AutoTrim Canceled!", Color.Red);
+                        return false;
+                    }
+                    Vout_0A = AverageVout();
+
+                    vout_0A_Convert = CalcTargetXFromDetectiveY(Vout_0A);
+                    vout_IP_Convert = CalcTargetXFromDetectiveY(Vout_IP);
+                    target_Gain2 = target_Gain1;    //backup history gain
+                    target_Gain1 = GainCalculate(vout_0A_Convert, vout_IP_Convert);
+                    dr = MessageBox.Show(String.Format("Please Change Current To {0}A", IP), "Change Current", MessageBoxButtons.OKCancel);
+                    if (dr == DialogResult.Cancel)
+                    {
+                        DisplayOperateMes("AutoTrim Canceled!", Color.Red);
+                        return false;
+                    }
+                }
+            }
+
+            /* make sure exit current is 0A */
+            dr = MessageBox.Show(String.Format("Please Change Current To {0}A", 0), "Change Current", MessageBoxButtons.OKCancel);
+            if (dr == DialogResult.Cancel)
+            {
+                DisplayOperateMes("AutoTrim Canceled!", Color.Red);
+                return false;
+            }
+            return true;
         }
 
         private bool OffsetCalcWithLoop()
         {
-            bool rt = false;
+            /* 如果小与2.5那么就从最后一行往上索引到102.40%(ix: 15 -> 8),如果大于2.5那么就从第一行向下索引到97.97%(ix:0 -> 7) */
+            double delta_offset1 = 0; //new
+            double delta_offset2 = 0; //older
+            bit_op_mask = bit2_Mask | bit3_Mask | bit4_Mask | bit5_Mask;
+            /* 1. Write Reg0x81, 0x82, 0x83 and enter normal mode */
+            EnterTestMode();
+            RegisterWrite(3, new uint[6] { 0x81, Reg81Value, 0x82, Reg82Value, 0x83, Reg83Value});
+            EnterNomalMode();
 
+            /* 2.Get Vout@0A */
+            Vout_0A = AverageVout();
 
+            if (Vout_0A == b_offset)
+            {
+                return true;
+            }
 
-            return rt;
+            delta_offset1 = Vout_0A - b_offset;
+            delta_offset2 = delta_offset1;
+            // if (Vout_0A > b_offset) then index++ ,else index--
+            bool IncreaseOrDecrease = (delta_offset1 > 0) ? true : false;
+            Ix_ForOffsetBTable = IncreaseOrDecrease ? 0 : 15;
+            
+            while(true)
+            {
+                /* get the right offset code */
+                if (delta_offset1 * delta_offset2 <= 0)
+                {
+                    /* the latest one is the right code, do nothing then */
+                    if (Math.Abs(delta_offset1) <= Math.Abs(delta_offset2))
+                    {
+                        break;
+                    }
+                    /* Back to older one */
+                    else
+                    {
+                        if (!IncreaseOrDecrease)
+                        {
+                            if (Ix_ForOffsetBTable > 0)
+                                Ix_ForOffsetBTable--;
+                            else
+                                break;
+                        }
+                        else
+                        {
+                            if (Ix_ForOffsetBTable < 15)
+                                Ix_ForOffsetBTable++;
+                            else
+                                break;
+                        }
+
+                        Reg83Value &= ~bit_op_mask;
+                        Reg83Value |= Convert.ToUInt32(OffsetTableB_Customer[1][Ix_ForOffsetBTable]);
+                        /* 1. Write Reg0x83 and enter normal mode */
+                        EnterTestMode();
+                        RegisterWrite(1, new uint[2] { 0x83, Reg83Value });
+                        EnterNomalMode();
+                        /* 2.Get Vout@0A */
+                        Vout_0A = AverageVout();
+                        break;
+                    }
+                }
+                /* Increase/decrease the Ix_ForPrecisonGainCtrl; update reg80; Get Vaout*/
+                else
+                {
+                    if (IncreaseOrDecrease)
+                    {
+                        if (Ix_ForOffsetBTable < 7)
+                            Ix_ForOffsetBTable++;
+                        else
+                            break;
+                    }
+                    else
+                    {
+                        if (Ix_ForOffsetBTable > 8)
+                            Ix_ForOffsetBTable--;
+                        else
+                            break;
+                    }
+                    Reg83Value &= ~bit_op_mask;
+                    Reg83Value |= Convert.ToUInt32(OffsetTableB_Customer[1][Ix_ForOffsetBTable]);
+                    /* 1. Write Reg0x83 and enter normal mode */
+                    EnterTestMode();
+                    RegisterWrite(1, new uint[2] { 0x83, Reg83Value });
+                    EnterNomalMode();
+                    /* 2.Get Vout@0A */
+                    Vout_0A = AverageVout();
+                    delta_offset2 = delta_offset1;
+                    delta_offset1 = Vout_0A - b_offset;
+                }
+            }
+
+            return true;
         }
 
         private void RePower()
         {
             //1. Power Off
-            if (oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VDD_POWER_OFF))
-                DisplayOperateMes("Power off succeeded!\r\n");
-            else
-                DisplayOperateMes("Power off failed!\r\n");
+            PowerOff();
 
             Delay(Delay_Power);
 
             //2. Power On
+            PowerOn();
+        }
+
+        private void PowerOff()
+        {
+            if (oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VDD_POWER_OFF))
+                DisplayOperateMes("Power off succeeded!\r\n");
+            else
+                DisplayOperateMes("Power off failed!\r\n");
+        }
+
+        private void PowerOn()
+        {
             if (oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VDD_POWER_ON))
                 DisplayOperateMes("Power on succeeded!\r\n");
             else
                 DisplayOperateMes("Power on failed!\r\n");
-
         }
 
         private void Delay(int time)
@@ -1795,6 +2097,136 @@ namespace CurrentSensorV3
             Thread.Sleep(time);
             DisplayOperateMes(String.Format("Delay {0}ms",time));
         }
+
+        private void StoreReg80ToReg83Value()
+        {
+            Reg80ToReg83Backup[0] = Reg80Value;
+            Reg80ToReg83Backup[1] = Reg81Value;
+            Reg80ToReg83Backup[2] = Reg82Value;
+            Reg80ToReg83Backup[3] = reg83Value;
+        }
+
+        private void RestoreReg80ToReg83Value()
+        {
+            Reg80Value = Reg80ToReg83Backup[0];
+            Reg81Value = Reg80ToReg83Backup[1];
+            Reg82Value = Reg80ToReg83Backup[2];
+            Reg83Value = Reg80ToReg83Backup[3];
+        }
+
+        private void MarginalReadPreset()
+        {
+            EnterTestMode();
+
+            uint _reg_addr = 0x43;
+            uint _reg_data = 0x06;
+            bool writeResult = oneWrie_device.I2CWrite_Single(this.DeviceAddress, _reg_addr, _reg_data);
+            if (!writeResult)
+            {
+                DisplayOperateMes("I2C write failed, Marginal Read Failed!\r\n", Color.Red);
+                return;
+            }
+
+            _reg_addr = 0x43;
+            _reg_data = 0x0E;
+            writeResult = oneWrie_device.I2CWrite_Single(this.DeviceAddress, _reg_addr, _reg_data);
+            if (writeResult)
+                DisplayOperateMes("Marginal Read succeeded!\r\n");
+            else
+            {
+                DisplayOperateMes("I2C write failed, Marginal Read Failed!\r\n", Color.Red);
+                return;
+            }
+
+            Delay(Delay_Operation);
+
+            _reg_addr = 0x43;
+            _reg_data = 0x0;
+            writeResult = oneWrie_device.I2CWrite_Single(this.DeviceAddress, _reg_addr, _reg_data);
+            if (writeResult)
+                DisplayOperateMes("Reset Reg0x43 succeeded!\r\n");
+            else
+                DisplayOperateMes("Reset Reg0x43 failed!\r\n", Color.Red);
+        }
+
+        private void SafetyReadPreset()
+        {
+            EnterTestMode();
+
+            uint _reg_addr = 0x84;
+            uint _reg_data = 0xC0;
+            bool writeResult = oneWrie_device.I2CWrite_Single(this.DeviceAddress, _reg_addr, _reg_data);
+            if (!writeResult)
+            {
+                DisplayOperateMes("1st I2C write failed, Safety Read Failed!\r\n", Color.Red);
+                return;
+            }
+
+            _reg_addr = 0x43;
+            _reg_data = 0x06;
+            writeResult = oneWrie_device.I2CWrite_Single(this.DeviceAddress, _reg_addr, _reg_data);
+            if (!writeResult)
+            {
+                DisplayOperateMes("2nd I2C write failed, Safety Read Failed!\r\n", Color.Red);
+                return;
+            }
+
+            _reg_addr = 0x43;
+            _reg_data = 0x0E;
+            writeResult = oneWrie_device.I2CWrite_Single(this.DeviceAddress, _reg_addr, _reg_data);
+            if (!writeResult)
+            {
+                DisplayOperateMes("3rd I2C write failed, Safety Read Failed!\r\n", Color.Red);
+                return;
+            }
+
+            Delay(Delay_Operation); //delay 300ms
+
+            _reg_addr = 0x43;
+            _reg_data = 0x0;
+            writeResult = oneWrie_device.I2CWrite_Single(this.DeviceAddress, _reg_addr, _reg_data);
+            if (writeResult)
+                DisplayOperateMes("Reset Reg0x43 succeeded!\r\n");
+            else
+            {
+                DisplayOperateMes("Reset Reg0x43 failed!\r\n", Color.Red);
+                return;
+            }
+
+            Delay(Delay_Operation);    //delay 300ms
+
+            _reg_addr = 0x84;
+            _reg_data = 0x0;
+            writeResult = oneWrie_device.I2CWrite_Single(this.DeviceAddress, _reg_addr, _reg_data);
+            if (writeResult)
+                DisplayOperateMes("Reset Reg0x84 succeeded!\r\n");
+            else
+                DisplayOperateMes("Reset Reg0x84 failed!\r\n", Color.Red);
+        }
+
+        private bool BurstRead(uint _reg_addr_start, int num, uint[] _readBack_data)
+        {
+            if (oneWrie_device.I2CRead_Burst(this.DeviceAddress, _reg_addr_start, 5, _readBack_data) == 0)
+            {
+                for (int ix = 0; ix < num; ix++)
+                {
+                    DisplayOperateMes(string.Format("Reg{0} = 0x{1}", ix, _readBack_data[ix].ToString("X2")));
+                    //DisplayOperateMes("Reg1 = 0x" + _readBack_data[0].ToString("X") +
+                    //    "\r\nReg2 = 0x" + _readBack_data[1].ToString("X") +
+                    //    "\r\nReg3 = 0x" + _readBack_data[2].ToString("X") +
+                    //    "\r\nReg4 = 0x" + _readBack_data[3].ToString("X") +
+                    //    "\r\nReg5 = 0x" + _readBack_data[4].ToString("X"));
+                }
+                DisplayOperateMes("");
+                return true;
+            }
+            else
+            {
+                DisplayOperateMes("Read Back Failed!");
+                return false;
+            }
+        }
+
         #endregion Methods
 
         #region Events
@@ -1882,26 +2314,19 @@ namespace CurrentSensorV3
 
             double testGain = GainCalculate();
             DisplayOperateMes("Test Gain = " + testGain.ToString());
-            double targetGain = 0;
-            try
-            {
-                targetGain = double.Parse(this.txt_TargetGain_EngT.Text);
-            }
-            catch
-            {
-                return;
-            }
 
-            double gainTuning = 100 * GainTuningCalc_Customer(testGain, targetGain);   //计算修正值，供查表用
+            double gainTuning = 100 * GainTuningCalc_Customer(testGain, TargetGain_customer);   //计算修正值，供查表用
             DisplayOperateMes("Choose Gain = " + gainTuning.ToString("F4") + "%");
 
-            int ix = LookupPreciseGain(gainTuning, PreciseTable);
-            DisplayOperateMes("Precise Gain Index = " + ix.ToString() + ";Choosed Gain = " + PreciseTable[0][ix].ToString() + "%");
+            Ix_ForPrecisonGainCtrl = LookupPreciseGain(gainTuning, PreciseTable_Customer);
+            DisplayOperateMes("Precise Gain Index = " + Ix_ForPrecisonGainCtrl.ToString() +
+                ";Choosed Gain = " + PreciseTable_Customer[0][Ix_ForPrecisonGainCtrl].ToString() + "%");
 
-            Reg80Value += Convert.ToUInt32(PreciseTable[1][ix]);
-            DisplayOperateMes("Reg1 Value = " + Reg80Value.ToString() + "(+ 0x" + Convert.ToInt32(PreciseTable[1][ix]).ToString("X") + ")\r\n");
-
-            this.txt_reg80_EngT.Text = "0x" + Reg80Value.ToString("X");            
+            bit_op_mask = bit0_Mask | bit1_Mask | bit2_Mask | bit3_Mask | bit4_Mask;
+            Reg80Value &= ~bit_op_mask;
+            Reg80Value |= Convert.ToUInt32(PreciseTable_Customer[1][Ix_ForPrecisonGainCtrl]);
+            DisplayOperateMes("Reg1 Value = " + Reg80Value.ToString() +
+                "(+ 0x" + Convert.ToInt32(PreciseTable_Customer[1][Ix_ForPrecisonGainCtrl]).ToString("X") + ")\r\n");
         }
 
         private void btn_offset_Click(object sender, EventArgs e)
@@ -1911,24 +2336,23 @@ namespace CurrentSensorV3
             double offsetTuning = 100 * OffsetTuningCalc_Customer();
             DisplayOperateMes("Lookup offset = " + offsetTuning.ToString("F4") + "%");
 
-            int ixA = LookupOffset(ref offsetTuning, OffsetTableA);
-            int ixB = LookupOffset(ref offsetTuning, OffsetTableB);
+            Ix_ForOffsetATable = LookupOffset(ref offsetTuning, OffsetTableA_Customer);
+            Ix_ForOffsetBTable = LookupOffset(ref offsetTuning, OffsetTableB_Customer);
 
-            DisplayOperateMes("Offset TableA chose Index = " + ixA.ToString() + ";Choosed OffsetA = " + OffsetTableA[0][ixA].ToString("F4"));
-            DisplayOperateMes("Offset TableB chose Index = " + ixB.ToString() + ";Choosed OffsetB = " + OffsetTableB[0][ixB].ToString("F4"));
+            DisplayOperateMes("Offset TableA chose Index = " + Ix_ForOffsetATable.ToString() +
+                ";Choosed OffsetA = " + OffsetTableA_Customer[0][Ix_ForOffsetATable].ToString("F4"));
+            DisplayOperateMes("Offset TableB chose Index = " + Ix_ForOffsetBTable.ToString() +
+                ";Choosed OffsetB = " + OffsetTableB_Customer[0][Ix_ForOffsetBTable].ToString("F4"));
 
-            Reg81Value += Convert.ToUInt32(OffsetTableA[1][ixA]);
-            Reg82Value += Convert.ToUInt32(OffsetTableA[2][ixA]);
-            DisplayOperateMes("Reg2 Value = " + Reg81Value.ToString() + "(+ 0x" + Convert.ToInt32(OffsetTableA[1][ixA]).ToString("X") + ")\r\n");
-            DisplayOperateMes("Reg3 Value = " + Reg82Value.ToString() + "(+ 0x" + Convert.ToInt32(OffsetTableA[2][ixA]).ToString("X") + ")\r\n");
+            Reg81Value += Convert.ToUInt32(OffsetTableA_Customer[1][Ix_ForOffsetATable]);
+            Reg82Value += Convert.ToUInt32(OffsetTableA_Customer[2][Ix_ForOffsetATable]);
+            DisplayOperateMes("Reg2 Value = " + Reg81Value.ToString() + "(+ 0x" + Convert.ToInt32(OffsetTableA_Customer[1][Ix_ForOffsetATable]).ToString("X") + ")\r\n");
+            DisplayOperateMes("Reg3 Value = " + Reg82Value.ToString() + "(+ 0x" + Convert.ToInt32(OffsetTableA_Customer[2][Ix_ForOffsetATable]).ToString("X") + ")\r\n");
 
-            this.txt_reg81_EngT.Text = "0x" + Reg81Value.ToString("X");
-            this.txt_reg82_EngT.Text = "0x" + Reg82Value.ToString("X");
-
-            Reg83Value += Convert.ToUInt32(OffsetTableB[1][ixB]);
-            DisplayOperateMes("Reg4 Value = " + Reg83Value.ToString() + "(+ 0x" + Convert.ToInt32(OffsetTableB[1][ixB]).ToString("X") + ")\r\n");
-
-            this.txt_reg83_EngT.Text = "0x" + Reg83Value.ToString("X");
+            bit_op_mask = bit2_Mask | bit3_Mask | bit4_Mask | bit5_Mask;
+            Reg83Value &= bit_op_mask;
+            Reg83Value |= Convert.ToUInt32(OffsetTableB_Customer[1][Ix_ForOffsetBTable]);
+            DisplayOperateMes("Reg4 Value = " + Reg83Value.ToString() + "(+ 0x" + Convert.ToInt32(OffsetTableB_Customer[1][Ix_ForOffsetBTable]).ToString("X") + ")\r\n");
         }
 
         private void btn_writeFuseCode_Click(object sender, EventArgs e)
@@ -2356,26 +2780,13 @@ namespace CurrentSensorV3
             oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_CONFIG_TO_VOUT);
             rbt_signalPathSeting_Config_EngT.Checked = true;
 
-            uint _reg_addr = 0x55;
-            uint _reg_data = 0xAA;
-            oneWrie_device.I2CWrite_Single(this.DeviceAddress, _reg_addr, _reg_data);
+            EnterTestMode();
 
             //Read Back 0x80~0x85
             uint _reg_addr_start = 0x80;
             uint[] _readBack_data = new uint[5];
 
-            if (oneWrie_device.I2CRead_Burst(this.DeviceAddress, _reg_addr_start, 5, _readBack_data) == 0)
-            {
-                DisplayOperateMes("Reg1 = 0x" + _readBack_data[0].ToString("X") +
-                    "\r\nReg2 = 0x" + _readBack_data[1].ToString("X") +
-                    "\r\nReg3 = 0x" + _readBack_data[2].ToString("X") +
-                    "\r\nReg4 = 0x" + _readBack_data[3].ToString("X") +
-                    "\r\nReg5 = 0x" + _readBack_data[4].ToString("X"));
-            }
-            else
-            {
-                DisplayOperateMes("Read Back Failed!");
-            }
+            BurstRead(_reg_addr_start, 5, _readBack_data);
         }
 
         private void btn_MarginalRead_Click(object sender, EventArgs e)
@@ -2384,46 +2795,7 @@ namespace CurrentSensorV3
             rbt_signalPathSeting_Vout_EngT.Checked = true;
             rbt_signalPathSeting_Config_EngT.Checked = true;
 
-            try
-            {
-                EnterTestMode();
-
-                uint _reg_addr = 0x43;
-                uint _reg_data = 0x06;
-                bool writeResult = oneWrie_device.I2CWrite_Single(this.DeviceAddress, _reg_addr, _reg_data);
-                if (!writeResult)
-                {
-                    DisplayOperateMes("I2C write failed, Marginal Read Failed!\r\n", Color.Red);
-                    return;
-                }
-
-                _reg_addr = 0x43;
-                _reg_data = 0x0E;
-                writeResult = oneWrie_device.I2CWrite_Single(this.DeviceAddress, _reg_addr, _reg_data);
-                if (writeResult)
-                    DisplayOperateMes("Marginal Read succeeded!\r\n");
-                else
-                {
-                    DisplayOperateMes("I2C write failed, Marginal Read Failed!\r\n", Color.Red);
-                    return;
-                }
-
-                //Delay 100ms
-                Thread.Sleep(100);
-                DisplayOperateMes("Delay 100ms");
-
-                _reg_addr = 0x43;
-                _reg_data = 0x0;
-                writeResult = oneWrie_device.I2CWrite_Single(this.DeviceAddress, _reg_addr, _reg_data);
-                if (writeResult)
-                    DisplayOperateMes("Reset Reg0x43 succeeded!\r\n");
-                else
-                    DisplayOperateMes("Reset Reg0x43 failed!\r\n", Color.Red);
-            }
-            catch
-            {
-                DisplayOperateMes("Marginal Read Failed!\r\n", Color.Red);
-            }
+            MarginalReadPreset();
         }
 
         private void btn_SafetyRead_EngT_Click(object sender, EventArgs e)
@@ -2432,64 +2804,7 @@ namespace CurrentSensorV3
             rbt_signalPathSeting_Vout_EngT.Checked = true;
             rbt_signalPathSeting_Config_EngT.Checked = true;
 
-            try
-            {
-                EnterTestMode();
-
-                uint _reg_addr = 0x84;
-                uint _reg_data = 0xC0;
-                bool writeResult = oneWrie_device.I2CWrite_Single(this.DeviceAddress, _reg_addr, _reg_data);
-                if (!writeResult)
-                {
-                    DisplayOperateMes("1st I2C write failed, Safety Read Failed!\r\n", Color.Red);
-                    return;
-                }
-                
-                _reg_addr = 0x43;
-                _reg_data = 0x06;
-                writeResult = oneWrie_device.I2CWrite_Single(this.DeviceAddress, _reg_addr, _reg_data);
-                if (!writeResult)
-                {
-                    DisplayOperateMes("2nd I2C write failed, Safety Read Failed!\r\n", Color.Red);
-                    return;
-                }
-
-                _reg_addr = 0x43;
-                _reg_data = 0x0E;
-                writeResult = oneWrie_device.I2CWrite_Single(this.DeviceAddress, _reg_addr, _reg_data);
-                if (!writeResult)
-                {
-                    DisplayOperateMes("3rd I2C write failed, Safety Read Failed!\r\n", Color.Red);
-                    return;
-                }
-
-                Delay(Delay_Operation); //delay 300ms
-
-                _reg_addr = 0x43;
-                _reg_data = 0x0;
-                writeResult = oneWrie_device.I2CWrite_Single(this.DeviceAddress, _reg_addr, _reg_data);
-                if (writeResult)
-                    DisplayOperateMes("Reset Reg0x43 succeeded!\r\n");
-                else
-                {
-                    DisplayOperateMes("Reset Reg0x43 failed!\r\n", Color.Red);
-                    return;
-                }
-
-                Delay(Delay_Operation);    //delay 300ms
-               
-                _reg_addr = 0x84;
-                _reg_data = 0x0;
-                writeResult = oneWrie_device.I2CWrite_Single(this.DeviceAddress, _reg_addr, _reg_data);
-                if (writeResult)
-                    DisplayOperateMes("Reset Reg0x84 succeeded!\r\n");
-                else
-                    DisplayOperateMes("Reset Reg0x84 failed!\r\n", Color.Red);
-            }
-            catch
-            {
-                DisplayOperateMes("Safety Read Failed!\r\n", Color.Red);
-            }
+            SafetyReadPreset();
         }
 
         private void btn_Reload_Click(object sender, EventArgs e)
@@ -2544,6 +2859,12 @@ namespace CurrentSensorV3
             selectedCurrent_Auto = (double)(sender as NumericUpDown).Value;
         }
 
+        private void AutoTrimTab_Enter(object sender, EventArgs e)
+        {
+            //Backup value for autotrim
+            StoreReg80ToReg83Value();
+        }
+
         //bool bAutoTrimTest = false;
         private void btn_AutomaticaTrim_Click(object sender, EventArgs e)
         {
@@ -2552,7 +2873,7 @@ namespace CurrentSensorV3
             bool bSafety = false;
 
             /* AutoTrim code */
-            /*  power on  ??? power on or re-power*/
+            /*  power on */
             RePower();
             
             Delay(Delay_Operation); 
@@ -2576,9 +2897,11 @@ namespace CurrentSensorV3
             /* Judge IDD */
             if (GetModuleCurrent() > 100)
             {
-                // ??? if need ok cancel btn?
-                dr = MessageBox.Show(String.Format("Module power is abnormal!"), "Warning", MessageBoxButtons.OKCancel);
+                dr = MessageBox.Show(String.Format("Module power is abnormal!"), "Warning", MessageBoxButtons.OK);
                 DisplayOperateMes("Module power is abnormal!", Color.Red);
+
+                PowerOff();
+
                 return;
             }
 
@@ -2593,12 +2916,7 @@ namespace CurrentSensorV3
             /* Get vout @ IP */            
             oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_CONFIG_TO_VOUT);
             oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VOUT_WITHOUT_CAP);
-            EnterTestMode();
-
-            ///
-            ///Todo: load config data. write to registers
-            ///???  use the loaded Ix_ForGainCtrl to cal register value?
-            ///
+            EnterTestMode();  // ??? 多余的
             
             EnterNomalMode();
             oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VOUT_WITH_CAP);
@@ -2622,11 +2940,12 @@ namespace CurrentSensorV3
             Delay(Delay_Operation);
             Vout_0A = AverageVout();
 
-            ///
-            ///Todo: new function of calculate GainCode
-            ///
-            btn_CalcGainCode_EngT_Click(null, null);
-            GainCodeCalcWithLoop();
+            /* Gain Calculate */
+            btn_CalcGainCode_EngT_Click(null, null);        // Calculate the base code(Ix_ForPrecisonGainCtrl)
+            if (this.cmb_Module_PreT.SelectedItem.ToString() == "+-15V")
+            {
+                GainCodeCalcWithLoop();     // new gain code calculate algorithm   
+            }
 
             /* Repower on */
             RePower();
@@ -2635,21 +2954,23 @@ namespace CurrentSensorV3
             oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VOUT_WITHOUT_CAP);
             EnterTestMode();
 
-            ///
-            ///Todo: write trim code to regsiters
-            ///??? just write 0x80-0x83?
-            ///
+            /* Todo: write trim code to regsiters */
+            RegisterWrite(4, new uint[8]{0x80, Reg80Value, 0x81, Reg81Value, 0x82, Reg82Value, 0x83, Reg83Value});
 
             EnterNomalMode();
             oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VOUT_WITH_CAP);
             Delay(Delay_Operation);
             Vout_0A = AverageVout();
 
-            ///
-            ///Todo: new function of btn_offset_click
-            ///
-            btn_offset_Click(null, null);
-            OffsetCalcWithLoop();
+            /* Offset trim code calculate */
+            if (this.cmb_Module_PreT.SelectedItem.ToString() == "5V")
+            {
+                btn_offset_Click(null, null); 
+            }
+            else
+            {
+                OffsetCalcWithLoop();       // new offset code calculate algorithm   
+            }
 
             /* Repower on 6V */            
             oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VDD_FROM_EXT);
@@ -2659,39 +2980,46 @@ namespace CurrentSensorV3
             oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VOUT_WITHOUT_CAP);
             EnterTestMode();
 
-            ///
-            ///Todo: write trim cod to registers
-            ///
+            /* Todo: write trim code to regsiters */
+            RegisterWrite(4, new uint[8] { 0x80, Reg80Value, 0x81, Reg81Value, 0x82, Reg82Value, 0x83, Reg83Value });
 
-            ///fuse
-            ///Todo:
-            FuseClockOn(DeviceAddress, (double)num_UD_pulsewidth_ow_EngT.Value, (double)numUD_pulsedurationtime_ow_EngT.Value, 41);
+            /* fuse */
+            FuseClockOn(DeviceAddress, (double)num_UD_pulsewidth_ow_EngT.Value, (double)numUD_pulsedurationtime_ow_EngT.Value);
 
-            ///Repower on 5V
-            ///
+            /* Repower on 5V */            
             oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VDD_FROM_5V);
             RePower();
 
             oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_CONFIG_TO_VOUT);
             oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VOUT_WITHOUT_CAP);
-            EnterTestMode();
+            //EnterTestMode();  // MarginalReadPreset contain this
 
             Delay(Delay_Operation);
 
-            ///
-            ///Todo: Margianl read, compare with writed code
-            ///if ( = ), go on
-            ///else
-            ///bMarginal = true; 
-            ///
+            /* Margianl read, compare with writed code; 
+             * if ( = ), go on
+             * else bMarginal = true; */
+            MarginalReadPreset();
+            uint[] tempReadback = new uint[4];
+            BurstRead(0x80, 4, tempReadback);
+            bMarginal = false;
+            if ((tempReadback[0] != Reg80Value) | tempReadback[1] != Reg81Value | 
+                tempReadback[2] != Reg82Value |tempReadback[3] != Reg83Value)
+                bMarginal = true;
 
-            ///
-            ///Todo: Safety Read, compare with writed code
-            ///if ( = ), go on
-            ///else
-            ///bSafety = true;
-            ///
+            oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_CONFIG_TO_VOUT);
+            rbt_signalPathSeting_Config_EngT.Checked = true;
 
+            /* Safety Read, compare with writed code;
+             * if ( = ), go on 
+             * else bSafety = true; */
+            SafetyReadPreset();
+            tempReadback = new uint[4];
+            BurstRead(0x80, 4, tempReadback);
+            bSafety = false;
+            if ((tempReadback[0] != Reg80Value) | tempReadback[1] != Reg81Value |
+                tempReadback[2] != Reg82Value | tempReadback[3] != Reg83Value)
+                bSafety = true;
 
             /* Repower on 6V */            
             oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VDD_FROM_EXT);
@@ -2703,16 +3031,11 @@ namespace CurrentSensorV3
 
             Delay(Delay_Operation);
 
-            ///fuse maser bits
-            ///
-            ///Todo: write 0x07 to Reg0x84
-            ///
+            /* fuse maser bits, write 0x07 to Reg0x84 */
+            RegisterWrite(1, new uint[] { 0x84, 0x07 });
 
-            ///
-            ///Todo:
-            FuseClockOn(DeviceAddress, (double)num_UD_pulsewidth_ow_EngT.Value, (double)numUD_pulsedurationtime_ow_EngT.Value, 41);
-
-
+            /* Fuse */
+            FuseClockOn(DeviceAddress, (double)num_UD_pulsewidth_ow_EngT.Value, (double)numUD_pulsedurationtime_ow_EngT.Value);
 
             /* Repower on 5V */            
             oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VDD_FROM_5V);
@@ -2799,1479 +3122,8 @@ namespace CurrentSensorV3
             Vout_IP = 0;
             oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VDD_POWER_OFF);
 
-
-            ///
-            ///Todo: reset REGs to config data
-            ///
-
-
-
-
-
-
-
-            ///
-            ///Todo: below code could be delete!
-            ///
-            
-
-
-
-            #region 1. Define variables
-            bool setResult;
-            string message;
-            int judgeRegValueLoopCount = 3;
-            double tempV = 0;
-            double fusePulseWidth = 200;    //ns
-            double fuseDurationTime = 10;   //ms
-            uint sampleNum = 1024;
-
-            uint _dev_addr = 0x73;  //Device Address
-            uint _reg_Addr;
-            uint _reg_Value;
-
-            DisplayAutoTrimOperateMes("", true, 0);  //Start
-            #endregion
-
-            #region 2. Start! Reset variable value, warning target gain.
-            this.lbl_passOrFailed.ForeColor = Color.Black;
-            this.lbl_passOrFailed.Text = "START!";
-
-            //Clear All Parameters
-            Vout_0A = 0;
-            Vout_IP = 0;
-            Reg80Value = 0;
-            Reg81Value = 0;
-            Reg82Value = 0;
-            Reg83Value = 0;
-            DisplayAutoTrimOperateMes("Start Operation!");
-
-            DisplayAutoTrimOperateMes(string.Format("TargetGain = {0} mV/A", targetGain_customer));
-
-            #endregion
-
-            #region 3. Power on and Capture Vout @ 15A and 0A for calc
-            #region 3.1 Power 0n @ 5V
-
-            setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VDD_FROM_5V);
-            if ( setResult )
-            {
-                message = "Set VDD from 5V";
-                DisplayAutoTrimOperateMes(message, setResult, 31);
-            }
-            else
-            {
-                message = "No Hardware!";
-                DisplayAutoTrimOperateMes(message, setResult, 31);
-                DisplayAutoTrimResult(false, 0x0005, "Hardware Connection Error!");
-                return;
-            }
-            
-
-            setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VDD_POWER_ON);
-            message = "Set VDD Power On";
-            DisplayAutoTrimOperateMes(message, setResult, 31);
-
-            setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VOUT_WITH_CAP);
-            message = "Set Vout with Cap";
-            DisplayAutoTrimOperateMes(message, setResult, 31);
-
-            setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VREF_WITH_CAP);
-            message = "Set Vref with Cap";
-            DisplayAutoTrimOperateMes(message, setResult, 31);
-
-            //setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VIN_TO_VREF);
-            //message = "Set Vref to VIN";
-            //DisplayAutoTrimOperateMes(message, setResult,1);
-
-            Thread.Sleep(100);  //Delay 100ms
-            DisplayAutoTrimOperateMes("Delay 10ms", 31);
-            #endregion
-
-            #region 3.2 Capture Vout @ 15A
-            //Set Config to Vout
-            setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_CONFIG_TO_VOUT);
-            message = "Set Config to Vout";
-            DisplayAutoTrimOperateMes(message, setResult, 32);
-
-            //Delay 50ms
-            Thread.Sleep(50);
-            DisplayAutoTrimOperateMes("Delay 50ms", 32);
-
-            //Enter normal mode
-            _reg_Addr = 0x55;
-            _reg_Value = 0xAA;
-            if (oneWrie_device.I2CWrite_Single(_dev_addr, _reg_Addr, _reg_Value))
-                DisplayAutoTrimOperateMes("Enter Test Mode Before Enter Normal Mode", true, 32);
-            else
-            {
-                //DisplayAutoTrimResult(false);
-                DisplayAutoTrimResult(false, 0x0006, "I2C Conmunication Error!");
-                return;
-            }
-
-            if (oneWrie_device.I2CRead_Single(_dev_addr, _reg_Addr) == 0x00)
-            {
-                DisplayAutoTrimResult(false, 0x0006, "I2C Conmunication Error!");
-                return;
-            }
-
-            _reg_Addr = 0x42;
-            _reg_Value = 0x04;
-            if (oneWrie_device.I2CWrite_Single(_dev_addr, _reg_Addr, _reg_Value))
-                DisplayAutoTrimOperateMes("Enter Normal Mode", true, 32);
-            else
-            {
-                //DisplayAutoTrimResult(false);
-                DisplayAutoTrimResult(false, 0x0006, "I2C Conmunication Error!");
-                return;
-            }
-
-            //Vout to Vin
-            setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VIN_TO_VOUT);
-            message = "Set Vin to Vout";
-            DisplayAutoTrimOperateMes(message, setResult, 32);
-
-            //Change Current to IPx A
-            dr = MessageBox.Show(String.Format("Please Change Current To {0}A",selectedCurrent_Auto), "Change Current", MessageBoxButtons.OKCancel);
-            if (dr == DialogResult.Cancel)
-            {
-                //DisplayAutoTrimResult(false)
-                //this.lbl_passOrFailed.ForeColor = Color.Green;
-                //this.lbl_passOrFailed.Text = "C.N.D!"; ;
-                DisplayAutoTrimResult(false, 0x0007, "Auto Trim Canceled!");
-                return;
-            }
-
-            //Delay 200ms
-            Thread.Sleep(200);
-            DisplayAutoTrimOperateMes("Delay 200ms", 32);
-
-            //Capture Vout@IPx
-            Vout_IP = AverageVout_Customer(sampleNum);
-            DisplayAutoTrimOperateMes(string.Format("Vout@{0} = " + Vout_IP.ToString("F3"), StrIPx_Auto), 32);
-
-            //Modified @ 2014-09-02 by doc v1.3.9.7
-            //double temp = 2.5+ targetGain * 15d/1000d;
-            if (!(Vout_IP <= 5 && Vout_IP >= 2))
-            {
-                DisplayAutoTrimOperateMes(String.Format("Vout = {0}, Vout is abnormal!", Vout_IP), 32);
-                //DisplayAutoTrimResult(false);
-                //this.lbl_passOrFailed.ForeColor = Color.Red;
-                //this.lbl_passOrFailed.Text = "O.P.E!";
-                DisplayAutoTrimResult(false, 0x0003, string.Format("Vout Error!\tVout@{0} = " + Vout_IP.ToString("F3"),StrIPx_Auto));
-                return;
-            }
-            //else if( IP15_Auto < temp)
-            //{
-            //    MessageBox.Show("Sensitivity NOT Enough！");
-            //    DisplayAutoTrimOperateMes(String.Format("Vout({0}) < {1}, Sensitivity NOT Enough！", IP15_Auto, temp), 2);
-            //    DisplayAutoTrimResult(false);
-            //    return;
-            //}
-            #endregion
-
-            #region 3.3 Capture Vout @ 0A
-            dr = MessageBox.Show("Please Change Current To 0A", "Change Current", MessageBoxButtons.OKCancel);
-            if (dr == DialogResult.Cancel)
-            {
-                //DisplayAutoTrimResult(false);
-                //this.lbl_passOrFailed.ForeColor = Color.Red;
-                //this.lbl_passOrFailed.Text = "C.N.E!";
-                DisplayAutoTrimResult(false, 0x0007, "Operation Canceled!");
-                return;
-            }
-
-            //Delay 200ms
-            Thread.Sleep(200);
-            DisplayAutoTrimOperateMes("Delay 200ms", 33);
-
-            Vout_0A = AverageVout_Customer(sampleNum);
-            DisplayAutoTrimOperateMes("Vout@0A = " + Vout_0A.ToString("F3"), 33);
-            #endregion
-            #endregion
-
-            #region 4.Get Rough ,Precision trim value;Auto re-power and captrue Vout@0A; offset trim value
-            //Real gain calculate by Vout@15A and Vout@0A
-
-            #region 4.1 Calc gain trim code
-            double testGain = GainCalculate();
-
-            if (testGain < (targetGain_customer - 1.5))
-            {
-                //MessageBox.Show("Sensitivity NOT Enough！");
-                DisplayAutoTrimOperateMes(String.Format("TestGain({0}) < (targetGain - 1.5)({1}), Sensitivity NOT Enough！", testGain.ToString("F1"), targetGain_customer - 1.5), 41);
-                DisplayAutoTrimResult(false, 0x0001, "Test Gain = "+testGain.ToString("F1") + " < " +targetGain_customer.ToString("F1") + " - 1.5");
-                //this.lbl_passOrFailed.ForeColor = Color.Red;
-                //this.lbl_passOrFailed.Text = "S.N.E!";
-
-                #region 4.1.1 Re-power on at 6V
-                //VDD to EXT
-                setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VDD_FROM_EXT);
-                message = "Set VDD to EXT";
-                DisplayAutoTrimOperateMes(message, setResult, 41);
-
-                //Power Off
-                setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VDD_POWER_OFF);
-                message = "Set VDD Power Off";
-                DisplayAutoTrimOperateMes(message, setResult, 41);
-
-                //Delay 500ms
-                Thread.Sleep(500);
-                DisplayAutoTrimOperateMes("Delay 500ms", 41);
-
-                //Power On
-                setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VDD_POWER_ON);
-                message = "Set VDD Power On";
-                DisplayAutoTrimOperateMes(message, setResult, 41);
-
-                //Delay 50ms
-                Thread.Sleep(50);
-                DisplayAutoTrimOperateMes("Delay 50ms", 41);
-
-                #endregion
-
-                #region 4.1.2 Setup signal path for Reg operation and Fuse
-                //Vout without cap
-                setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VOUT_WITHOUT_CAP);
-                message = "Set Vout without Cap";
-                DisplayAutoTrimOperateMes(message, setResult, 41);
-
-                //Vref without cap
-                setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VREF_WITHOUT_CAP);
-                message = "Set Vref without Cap";
-                DisplayAutoTrimOperateMes(message, setResult, 41);
-
-                //Vout to Config
-                setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_CONFIG_TO_VOUT);
-                message = "Set Vout to CONFIG";
-                DisplayAutoTrimOperateMes(message, setResult, 41);
-
-                //Delay 50ms
-                Thread.Sleep(100);
-                DisplayAutoTrimOperateMes("Delay 100ms", 41);
-                #endregion
-
-                #region 4.1.3 Enter test mode and write NC_1X bit
-                //Changed @ 2014-09-02 by doc v1.3.9.7
-                _reg_Addr = 0x55;
-                _reg_Value = 0xAA;
-                if (oneWrie_device.I2CWrite_Single(_dev_addr, _reg_Addr, _reg_Value))
-                    DisplayAutoTrimOperateMes("Enter Test Mode Before Fuse Code", true, 41);
-                else
-                {
-                    //DisplayAutoTrimResult(false);
-                    DisplayAutoTrimResult(false, 0x0006, "I2C Conmunication Error!");
-                    return;
-                }
-
-
-                //Delay 50ms
-                Thread.Sleep(50);
-                DisplayAutoTrimOperateMes("Delay 50ms", 41);
-
-                _reg_Addr = 0x83;
-                _reg_Value = 0x01;
-                if (oneWrie_device.I2CWrite_Single(_dev_addr, _reg_Addr, _reg_Value))
-                    DisplayAutoTrimOperateMes("Write NC_1X bit", true, 41);
-                else
-                {
-                    //DisplayAutoTrimResult(false);
-                    DisplayAutoTrimResult(false, 0x0006, "I2C Conmunication Error!");
-                    return;
-                }
-
-                //return;
-
-
-
-                #endregion
-
-                #region 4.1.4 Fuse clock on
-                if (!FuseClockOn(_dev_addr, fusePulseWidth, fuseDurationTime, 400, 41))
-                {
-                    //DisplayAutoTrimResult(false);
-                    DisplayAutoTrimResult(false, 0x0006, "I2C Conmunication Error!");
-                    return;
-                }
-                #endregion
-
-                MessageBox.Show("Try again！");
-
-                return;
-            }
-
-            DisplayAutoTrimOperateMes("Test Gain = " + testGain.ToString("F3"), 41);
-            //double targetGain = 0;
-            //try
-            //{
-            //    targetGain = double.Parse(this.txt_TargetGain_CustomerTab.Text);
-            //}
-            //catch
-            //{
-            //    DisplayAutoTrimResult(false);
-            //    return;
-            //}
-
-            //Calculate gainTuing for Lookup Table
-            double gainTuning = 100 * GainTuningCalc_Customer(testGain, targetGain_customer);   //计算修正值，供查表用
-            DisplayAutoTrimOperateMes("Choose Gain = " + gainTuning.ToString("F4") + "%", 41);
-
-            //Rough Lookup Table
-            int ix = LookupRoughGain_Customer(gainTuning, RoughTable_Customer);
-            DisplayAutoTrimOperateMes("Rough Gain Index = " + ix.ToString() + ";Choosed Gain = " + RoughTable_Customer[0][ix].ToString() + "%", 41);
-
-            Reg80Value = Convert.ToUInt32(RoughTable_Customer[1][ix]);
-            Reg81Value = Convert.ToUInt32(RoughTable_Customer[2][ix]);
-            DisplayAutoTrimOperateMes("@Rough: Reg1 Value = 0x" + Reg80Value.ToString("X"), 41);
-            DisplayAutoTrimOperateMes("@Rough: Reg2 Value = 0x" + Reg81Value.ToString("X"), 41);
-
-            //this.txt_reg80.Text = "0x" + Reg80Value.ToString("X");
-            //this.txt_reg81.Text = "0x" + Reg81Value.ToString("X");
-
-            //Precise Lookup Table
-            gainTuning = 100 * GainTuningCalc_Customer(RoughTable_Customer[0][ix], gainTuning);   //x/y: x 为供rough查表用的值，y为rough查表得到的值，计算修正值，供查表用
-            ix = LookupPreciseGain_Customer(gainTuning, PreciseTable_Customer);
-            DisplayAutoTrimOperateMes("Precise Gain Index = " + ix.ToString() + ";Choosed Gain = " + PreciseTable_Customer[0][ix].ToString() + "%", 41);
-
-            Reg80Value += Convert.ToUInt32(PreciseTable_Customer[1][ix]);
-            DisplayAutoTrimOperateMes("@Precise: Reg1 Value = " + Reg80Value.ToString("X") + "(+ 0x" + Convert.ToInt32(PreciseTable_Customer[1][ix]).ToString("X") + ")", 41);
-
-            //this.txt_reg80.Text = "0x" + Reg80Value.ToString("X");
-
-            //Auto Re-Power(Power off;delay 200ms;power on;delay 200ms;Vout to CONFIG;Change gain's fuse code without master bit) 
-            //Delay 50ms; enter normal mode;Vout to AIN;capture Vout@0A for offset calculation
-
-            #endregion
-
-            #region 4.2 Auto-Repower at 5V
-            //Power Off
-            setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VDD_POWER_OFF);
-            message = "Set VDD Power Off";
-            DisplayAutoTrimOperateMes(message, setResult, 42);
-
-            //Delay 50ms
-            Thread.Sleep(50);
-            DisplayAutoTrimOperateMes("Delay 50ms", 42);
-
-            //Vout to CONFIG
-            setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_CONFIG_TO_VOUT);
-            message = "Set Vout to CONFIG";
-            DisplayAutoTrimOperateMes(message, setResult, 42);
-
-            //Delay 50ms
-            Thread.Sleep(50);
-            DisplayAutoTrimOperateMes("Delay 50ms", 42);
-
-            //Power On
-            setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VDD_POWER_ON);
-            message = "Set VDD Power On";
-            DisplayAutoTrimOperateMes(message, setResult, 42);
-
-            //Delay 50ms
-            Thread.Sleep(50);
-            DisplayAutoTrimOperateMes("Delay 50ms", 42);
-            #endregion Auto-Repower
-
-            #region 4.3 Enter test mode, write Gain trim Code to calc offset trim code
-            _reg_Addr = 0x55;
-            _reg_Value = 0xAA;
-            if (oneWrie_device.I2CWrite_Single(_dev_addr, _reg_Addr, _reg_Value))
-                DisplayAutoTrimOperateMes("Enter Test Mode Before Change Gain's Fuse Code", true, 43);
-            else
-            {
-                //DisplayAutoTrimResult(false);
-                DisplayAutoTrimResult(false, 0x0006, "I2C Conmunication Error!");
-                return;
-            }
-
-            //Reg80
-            _reg_Addr = 0x80;
-            _reg_Value = Reg80Value;
-
-            if (oneWrie_device.I2CWrite_Single(_dev_addr, _reg_Addr, _reg_Value))
-                DisplayAutoTrimOperateMes("Write Reg1(0x" + _reg_Value.ToString("X") + ")", true, 43);
-            else
-            {
-                //DisplayAutoTrimResult(false);
-                DisplayAutoTrimResult(false, 0x0006, "I2C Conmunication Error!");
-                return;
-            }
-
-            //Reg81
-            _reg_Addr = 0x81;
-            _reg_Value = Reg81Value;
-
-            if (oneWrie_device.I2CWrite_Single(_dev_addr, _reg_Addr, _reg_Value))
-                DisplayAutoTrimOperateMes("Write Reg2(0x" + _reg_Value.ToString("X") + ")", true, 43);
-            else
-            {
-                //DisplayAutoTrimResult(false);
-                DisplayAutoTrimResult(false, 0x0006, "I2C Conmunication Error!");
-                return;
-            }
-            //#endregion 
-            //Delay 50ms
-            //Thread.Sleep(50);
-            //DisplayAutoTrimOperateMes("Delay 50ms", 43);
-
-            //Enter normal mode,already in test mode, so can omit this operations
-            //_reg_Addr = 0x55;
-            //_reg_Value = 0xAA;
-            //if (oneWrie_device.I2CWrite_Single(_dev_addr, _reg_Addr, _reg_Value))
-            //    DisplayAutoTrimOperateMes("Enter Test Mode Before Enter Normal Mode", true, 4);
-            //else
-            //{
-            //    DisplayAutoTrimResult(false);
-            //    return;
-            //}
-
-            _reg_Addr = 0x42;
-            _reg_Value = 0x04;
-            if (oneWrie_device.I2CWrite_Single(_dev_addr, _reg_Addr, _reg_Value))
-                DisplayAutoTrimOperateMes("Enter Normal Mode", true, 43);
-            else
-            {
-                //DisplayAutoTrimResult(false);
-                DisplayAutoTrimResult(false, 0x0006, "I2C Conmunication Error!");
-                return;
-            }
-
-            //Vout to VIN
-            setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VIN_TO_VOUT);
-            message = "Set Vout to VIN";
-            DisplayAutoTrimOperateMes(message, setResult, 43);
-
-            //Delay 50ms
-            Thread.Sleep(200);
-            DisplayAutoTrimOperateMes("Delay 200ms", 43);
-
-            //Capture Vout@0A
-            Vout_0A = AverageVout_Customer(sampleNum);
-            DisplayAutoTrimOperateMes("Vout@0A = " + Vout_0A.ToString("F3"), 43);
-
-            //Offset Lookup Table
-            double offsetTuning = 100 * OffsetTuningCalc_Customer();
-            DisplayAutoTrimOperateMes("Lookup offset = " + offsetTuning.ToString("F4") + "%", 43);
-
-            int ixA = LookupOffset_Customer(ref offsetTuning, OffsetTableA_Customer);
-            int ixB = LookupOffset_Customer(ref offsetTuning, OffsetTableB_Customer);
-
-            DisplayAutoTrimOperateMes("Offset TableA chose Index = " + ixA.ToString() + ";Choosed OffsetA = " + OffsetTableA_Customer[0][ixA].ToString("F4"), 43);
-            DisplayAutoTrimOperateMes("Offset TableB chose Index = " + ixB.ToString() + ";Choosed OffsetB = " + OffsetTableB_Customer[0][ixB].ToString("F4"), 43);
-
-            Reg81Value += Convert.ToUInt32(OffsetTableA_Customer[1][ixA]);
-            Reg82Value += Convert.ToUInt32(OffsetTableA_Customer[2][ixA]);
-            DisplayAutoTrimOperateMes("@Offset: Reg2 Value = " + Reg81Value.ToString("X") + "(+ 0x" + Convert.ToInt32(OffsetTableA_Customer[1][ixA]).ToString("X") + ")", 43);
-            DisplayAutoTrimOperateMes("@Offset: Reg3 Value = " + Reg82Value.ToString("X") + "(+ 0x" + Convert.ToInt32(OffsetTableA_Customer[2][ixA]).ToString("X") + ")", 43);
-
-            //this.txt_reg81.Text = "0x" + Reg81Value.ToString("X");
-            //this.txt_reg82.Text = "0x" + Reg82Value.ToString("X");
-
-            Reg83Value += Convert.ToUInt32(OffsetTableB_Customer[1][ixB]);
-            DisplayAutoTrimOperateMes("@Offset: Reg4 Value = " + Reg83Value.ToString("X") + "(+ 0x" + Convert.ToInt32(OffsetTableB_Customer[1][ixB]).ToString("X") + ")", 43);
-
-            //this.txt_reg83.Text = "0x" + Reg83Value.ToString("X");
-            //return;
-            //dr = MessageBox.Show("Return", "Return", MessageBoxButtons.OKCancel);
-            //if (dr == DialogResult.Cancel)
-            //{
-            //    //DisplayAutoTrimResult(false);
-            //    this.lbl_passOrFailed.ForeColor = Color.Red;
-            //    this.lbl_passOrFailed.Text = "RETURN";
-            //    return;
-            //}
-            //else
-            //{
-            //    DisplayAutoTrimResult(false, 0x0007, "Operation Canceled!");
-            //    return;
-
-            //}
-            #endregion
-
-            #endregion
-
-            #region 5. Re-Power at 6V, Do Fuse operation one bit by one bit
-
-            #region 5.1 Re-power on at 6V
-            //VDD to EXT
-            setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VDD_FROM_EXT);
-            message = "Set VDD to EXT";
-            DisplayAutoTrimOperateMes(message, setResult, 51);
-
-            //Power Off
-            setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VDD_POWER_OFF);
-            message = "Set VDD Power Off";
-            DisplayAutoTrimOperateMes(message, setResult, 51);
-
-            //Delay 500ms
-            Thread.Sleep(500);
-            DisplayAutoTrimOperateMes("Delay 500ms", 51);
-
-            //Power On
-            setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VDD_POWER_ON);
-            message = "Set VDD Power On";
-            DisplayAutoTrimOperateMes(message, setResult, 51);
-
-            //Delay 50ms
-            Thread.Sleep(50);
-            DisplayAutoTrimOperateMes("Delay 50ms", 51);
-
-            #endregion
-
-            #region 5.2 Setup signal path for Reg operation and Fuse
-            //Vout without cap
-            setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VOUT_WITHOUT_CAP);
-            message = "Set Vout without Cap";
-            DisplayAutoTrimOperateMes(message, setResult, 52);
-
-            //Vref without cap
-            setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VREF_WITHOUT_CAP);
-            message = "Set Vref without Cap";
-            DisplayAutoTrimOperateMes(message, setResult, 52);
-
-            //Vout to Config
-            setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_CONFIG_TO_VOUT);
-            message = "Set Vout to CONFIG";
-            DisplayAutoTrimOperateMes(message, setResult, 52);
-
-            //Delay 50ms
-            Thread.Sleep(50);
-            DisplayAutoTrimOperateMes("Delay 50ms", 52);
-            #endregion
-
-            #region 5.3 Enter test mode
-            //Changed @ 2014-09-02 by doc v1.3.9.7
-            _reg_Addr = 0x55;
-            _reg_Value = 0xAA;
-            if (oneWrie_device.I2CWrite_Single(_dev_addr, _reg_Addr, _reg_Value))
-                DisplayAutoTrimOperateMes("Enter Test Mode Before Fuse Code", true, 53);
-            else
-            {
-                //DisplayAutoTrimResult(false);
-                DisplayAutoTrimResult(false, 0x0006, "I2C Conmunication Error!");
-                return;
-            }
-            #endregion
-
-            #region 5.4 Write Fuse Code bit by bit
-              
-                int loopCount = 8;
-                uint maskBit = 0x01;
-                //Reg80
-                _reg_Addr = 0x80;
-                _reg_Value = Reg80Value;
-
-                for (int i = 0; i < loopCount; i++)
-                {
-                    if ((_reg_Value & maskBit) != 0)
-                    {
-                        if (oneWrie_device.I2CWrite_Single(_dev_addr, _reg_Addr, _reg_Value & maskBit))
-                        {
-                            DisplayAutoTrimOperateMes(string.Format("Write Reg1 bit{0}", i), true, 54);
-                            //Write 0 to 3 other regs
-                            if (!WriteBlankFuseCode(_dev_addr, 0x81, 0x82, 0x83, 54))
-                            {
-                                //DisplayAutoTrimResult(false);
-                                DisplayAutoTrimResult(false, 0x0006, "I2C Conmunication Error!");
-                                return;
-                            }
-
-                            if (!FuseClockOn(_dev_addr, fusePulseWidth, fuseDurationTime, 54))
-                            {
-                                //DisplayAutoTrimResult(false);
-                                DisplayAutoTrimResult(false, 0x0006, "I2C Conmunication Error!");
-                                return;
-                            }
-                            ResetReg43And44(_dev_addr, 54);  //Rest Reg0x43 and Reg0x44
-                        }
-                        else
-                        {
-                            //DisplayAutoTrimResult(false);
-                            DisplayAutoTrimResult(false, 0x0006, "I2C Conmunication Error!");
-                            return;
-                        }
-                    }
-
-                    maskBit = maskBit << 1;
-                }
-
-                //Reg81
-                _reg_Addr = 0x81;
-                _reg_Value = Reg81Value;
-
-                maskBit = 0x01;
-                for (int i = 0; i < loopCount; i++)
-                {
-                    if ((_reg_Value & maskBit) != 0)
-                    {
-                        if (oneWrie_device.I2CWrite_Single(_dev_addr, _reg_Addr, _reg_Value & maskBit))
-                        {
-                            DisplayAutoTrimOperateMes(string.Format("Write Reg2 bit{0}", i), true, 54);
-                            //Write 0 to 3 other regs
-                            if (!WriteBlankFuseCode(_dev_addr, 0x80, 0x82, 0x83, 54))
-                            {
-                                //DisplayAutoTrimResult(false);
-                                DisplayAutoTrimResult(false, 0x0006, "I2C Conmunication Error!");
-                                return;
-                            }
-
-                            if (!FuseClockOn(_dev_addr, fusePulseWidth, fuseDurationTime, 54))
-                            {
-                                //DisplayAutoTrimResult(false);
-                                DisplayAutoTrimResult(false, 0x0006, "I2C Conmunication Error!");
-                                return;
-                            }
-                            ResetReg43And44(_dev_addr, 54);  //Rest Reg0x43 and Reg0x44
-                        }
-                        else
-                        {
-                            //DisplayAutoTrimResult(false);
-                            DisplayAutoTrimResult(false, 0x0006, "I2C Conmunication Error!");
-                            return;
-                        }
-                    }
-
-                    maskBit = maskBit << 1;
-                }
-
-                //Reg82
-                _reg_Addr = 0x82;
-                _reg_Value = Reg82Value;
-
-                maskBit = 0x01;
-                for (int i = 0; i < loopCount; i++)
-                {
-                    if ((_reg_Value & maskBit) != 0)
-                    {
-                        if (oneWrie_device.I2CWrite_Single(_dev_addr, _reg_Addr, _reg_Value & maskBit))
-                        {
-                            DisplayAutoTrimOperateMes(string.Format("Write Reg3 bit{0}", i), true, 54);
-                            //Write 0 to 3 other regs
-                            if (!WriteBlankFuseCode(_dev_addr, 0x81, 0x80, 0x83, 54))
-                            {
-                                //DisplayAutoTrimResult(false);
-                                DisplayAutoTrimResult(false, 0x0006, "I2C Conmunication Error!");
-                                return;
-                            }
-
-                            if (!FuseClockOn(_dev_addr, fusePulseWidth, fuseDurationTime, 54))
-                            {
-                                //DisplayAutoTrimResult(false);
-                                DisplayAutoTrimResult(false, 0x0006, "I2C Conmunication Error!");
-                                return;
-                            }
-                            ResetReg43And44(_dev_addr, 54);  //Rest Reg0x43 and Reg0x44
-                        }
-                        else
-                        {
-                            //DisplayAutoTrimResult(false);
-                            DisplayAutoTrimResult(false, 0x0006, "I2C Conmunication Error!");
-                            return;
-                        }
-                    }
-
-                    maskBit = maskBit << 1;
-                }
-
-                //Reg83
-                _reg_Addr = 0x83;
-                _reg_Value = Reg83Value;
-
-                maskBit = 0x01;
-                for (int i = 0; i < loopCount; i++)
-                {
-                    if ((_reg_Value & maskBit) != 0)
-                    {
-                        if (oneWrie_device.I2CWrite_Single(_dev_addr, _reg_Addr, _reg_Value & maskBit))
-                        {
-                            DisplayAutoTrimOperateMes(string.Format("Write Reg4 bit{0}", i), true, 54);
-                            //Write 0 to 3 other regs
-                            if (!WriteBlankFuseCode(_dev_addr, 0x81, 0x82, 0x80, 54))
-                            {
-                                //DisplayAutoTrimResult(false);
-                                DisplayAutoTrimResult(false, 0x0006, "I2C Conmunication Error!");
-                                return;
-                            }
-
-                            if (!FuseClockOn(_dev_addr, fusePulseWidth, fuseDurationTime, 54))
-                            {
-                                //DisplayAutoTrimResult(false);
-                                DisplayAutoTrimResult(false, 0x0006, "I2C Conmunication Error!");
-                                return;
-                            }
-                            ResetReg43And44(_dev_addr, 54);  //Rest Reg0x43 and Reg0x44
-                        }
-                        else
-                        {
-                            //DisplayAutoTrimResult(false);
-                            DisplayAutoTrimResult(false, 0x0006, "I2C Conmunication Error!");
-                            return;
-                        }
-                    }
-
-                    maskBit = maskBit << 1;
-                }
-
-            #region Don't fuse master bit
-                //Reg84, Fuse with master bit
-                //_reg_Addr = 0x84;
-                //_reg_Value = 0x07;
-
-                //maskBit = 0x01;
-                //for (int i = 0; i < loopCount; i++)
-                //{
-                //    if ((_reg_Value & maskBit) != 0)
-                //    {
-                //        if (oneWrie_device.I2CWrite_Single(_dev_addr, _reg_Addr, _reg_Value & maskBit))
-                //        {
-                //            DisplayAutoTrimOperateMes(string.Format("Write Reg5 bit{0}", i), true, 4);
-                //            if (!FuseClockOn(_dev_addr, fusePulseWidth, fuseDurationTime, 4))
-                //            {
-                //                DisplayAutoTrimResult(false);
-                //                return;
-                //            }
-                //            ResetReg43And44(_dev_addr, 4);  //Rest Reg0x43 and Reg0x44
-                //        }
-                //        else
-                //        {
-                //            DisplayAutoTrimResult(false);
-                //            return;
-                //        }
-                //    }
-
-                //    maskBit = maskBit << 1;
-                //}
-                #endregion Don't fuse master bit           
-            #endregion
-
-            #endregion
-
-            #region 6. Re-power at 6V, read back trim code and compare, marginal read back compare
-
-                #region 6.1 Re-Power at 6V
-                //Power Off
-                setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VDD_POWER_OFF);
-                message = "Set VDD Power Off";
-                DisplayAutoTrimOperateMes(message, setResult, 61);
-
-                ////VDD to 5V
-                setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VDD_FROM_EXT);
-                message = "Set VDD to 5V";
-                DisplayAutoTrimOperateMes(message, setResult, 61);
-
-                //Delay 500ms
-                Thread.Sleep(500);
-                DisplayAutoTrimOperateMes("Delay 500ms", 61);
-
-                //Power On
-                setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VDD_POWER_ON);
-                message = "Set VDD Power On";
-                DisplayAutoTrimOperateMes(message, setResult, 61);
-
-                Thread.Sleep(50);
-                DisplayAutoTrimOperateMes("Delay 50ms", 61);
-
-                #endregion
-
-                #region 6.2 Enter test mode
-                _reg_Addr = 0x55;
-                _reg_Value = 0xAA;
-                if (oneWrie_device.I2CWrite_Single(_dev_addr, _reg_Addr, _reg_Value))
-                    DisplayAutoTrimOperateMes("Enter Test Mode Before Another Judgment", true, 62);
-                else
-                {
-                    //DisplayAutoTrimResult(false);
-                    DisplayAutoTrimResult(false, 0x0006, "I2C Conmunication Error!");
-                    return;
-                }
-
-                //Delay 50ms
-                Thread.Sleep(50);
-                DisplayAutoTrimOperateMes("Delay 50ms", 62);
-                #endregion
-
-                #region 6.3 Read back trim code and compare
-                for (int j = 0; j < judgeRegValueLoopCount; j++)
-                {
-                    //Flag Enter loop judgment
-                    DisplayAutoTrimOperateMes(string.Format("Enter Loop Judgment, LoopCount:{0}", judgeRegValueLoopCount + 1), 63);
-
-                    #region Reset Reg0x43 and Reg0x44
-                    ResetReg43And44(_dev_addr, 63);  //Rest Reg0x43 and Reg0x44
-                    //Delay 50ms
-                    Thread.Sleep(50);
-                    DisplayAutoTrimOperateMes("Delay 50ms", 63);
-                    #endregion
-
-                    #region Normal Read Reg1,2,3,4
-                    uint[] tempRBValue = ReadBackReg1ToReg4(_dev_addr);
-                    if (tempRBValue == null)
-                    {
-                        DisplayAutoTrimOperateMes("ReadBack Data Error", 63);
-                        //DisplayAutoTrimResult(false);
-                        DisplayAutoTrimResult(false, 0x0006, "I2C Conmunication Error!");
-                        return;
-                    }
-                    #endregion                    
-
-                    #region Reg1,2,3,4 trim == Read back value, break
-                    if (CheckReg1ToReg4(tempRBValue, Reg80Value, Reg81Value, Reg82Value, Reg83Value))
-                    {
-                        break;
-                    }
-                    #endregion
-
-                    #region Reg1,2,3,4 trim != Read back value, loop until loopcount = 0
-                    else
-                    {
-                        #region Write Reg1 to Reg4 again
-                        //Reg80
-                        _reg_Addr = 0x80;
-                        _reg_Value = Reg80Value ^ tempRBValue[0];
-
-                        if (oneWrie_device.I2CWrite_Single(_dev_addr, _reg_Addr, _reg_Value))
-                            DisplayAutoTrimOperateMes("Write Reg1(0x" + _reg_Value.ToString("X") + ")", true, 63);
-                        else
-                        {
-                            DisplayAutoTrimResult(false);
-                            return;
-                        }
-
-                        //Reg81
-                        _reg_Addr = 0x81;
-                        _reg_Value = Reg81Value ^ tempRBValue[1];
-
-                        if (oneWrie_device.I2CWrite_Single(_dev_addr, _reg_Addr, _reg_Value))
-                            DisplayAutoTrimOperateMes("Write Reg2(0x" + _reg_Value.ToString("X") + ")", true, 63);
-                        else
-                        {
-                            DisplayAutoTrimResult(false);
-                            return;
-                        }
-
-                        //Reg82
-                        _reg_Addr = 0x82;
-                        _reg_Value = Reg82Value ^ tempRBValue[2];
-
-                        if (oneWrie_device.I2CWrite_Single(_dev_addr, _reg_Addr, _reg_Value))
-                            DisplayAutoTrimOperateMes("Write Reg3(0x" + _reg_Value.ToString("X") + ")", true, 63);
-                        else
-                        {
-                            DisplayAutoTrimResult(false);
-                            return;
-                        }
-
-                        //Reg83
-                        _reg_Addr = 0x83;
-                        _reg_Value = Reg83Value ^ tempRBValue[3];
-
-                        if (oneWrie_device.I2CWrite_Single(_dev_addr, _reg_Addr, _reg_Value))
-                            DisplayAutoTrimOperateMes("Write Reg4(0x" + _reg_Value.ToString("X") + ")", true, 63);
-                        else
-                        {
-                            DisplayAutoTrimResult(false);
-                            return;
-                        }
-                        #endregion Write Reg1 to Reg4 again
-
-                        ////Fuse Master Bit at the last Loop
-                        //if (judgeRegValueLoopCount == 0)
-                        //{
-                        //    if (!WriteMasterBit(_dev_addr, 4))
-                        //    {
-                        //        DisplayAutoTrimOperateMes("Fuse Master bit", false, 4);
-                        //        DisplayAutoTrimResult(false);
-                        //        return;
-                        //    }
-                        //}
-
-                        ReadBackReg1ToReg4(_dev_addr);
-
-                        //Delay 50ms
-                        Thread.Sleep(50);
-                        DisplayAutoTrimOperateMes("Delay 50ms", 63);
-
-                        //New fuse clock method
-                        if (!FuseClockOn(_dev_addr, fusePulseWidth, fuseDurationTime, 63))
-                        {
-                            //DisplayAutoTrimResult(false);
-                            DisplayAutoTrimResult(false, 0x0006, "I2C Conmunication Error!");
-                            return;
-                        }
-                    }
-                    #endregion
-                }
-                #endregion
-
-                #region 6.4 Normal read back vs Marginal read back
-
-                #region Re-power on at 5V
-                //Power Off
-                setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VDD_POWER_OFF);
-                message = "Set VDD Power Off";
-                DisplayAutoTrimOperateMes(message, setResult, 64);
-
-                ////VDD to 5V
-                setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VDD_FROM_5V);
-                message = "Set VDD to 5V";
-                DisplayAutoTrimOperateMes(message, setResult, 64);
-
-                //Delay 500ms
-                Thread.Sleep(500);
-                DisplayAutoTrimOperateMes("Delay 500ms", 64);
-
-                //Power On
-                setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VDD_POWER_ON);
-                message = "Set VDD Power On";
-                DisplayAutoTrimOperateMes(message, setResult, 64);
-
-                Thread.Sleep(50);
-                DisplayAutoTrimOperateMes("Delay 50ms", 64);
-
-                #endregion
-
-                #region Normal Read Reg1,2,3,4
-                uint[] tempNormalRBValue = ReadBackReg1ToReg4(_dev_addr);
-                if (tempNormalRBValue == null)
-                {
-                    DisplayAutoTrimOperateMes("ReadBack Data Error", 64);
-                    //DisplayAutoTrimResult(false);
-                    DisplayAutoTrimResult(false, 0x0006, "I2C Conmunication Error!");
-                    return;
-                }
-                else if(tempNormalRBValue[0] + tempNormalRBValue[1] + tempNormalRBValue[2] + tempNormalRBValue[3] == 0x00)
-                {
-                    if (Reg80Value + Reg81Value + Reg82Value + Reg83Value != 0x00)
-                    {
-                        DisplayAutoTrimOperateMes("ReadBack Data Error", 64);
-                        //DisplayAutoTrimResult(false);
-                        DisplayAutoTrimResult(false, 0x0006, "I2C Conmunication Error!");
-                        return;
-                    }
-                }
-
-                Thread.Sleep(5);
-                DisplayAutoTrimOperateMes("Delay 5ms", 64);
-                #endregion                    
-
-                #region Marginal Read Reg1,2,3,4 don't pass
-
-                #region Setup Marginal Read
-
-                _reg_Addr = 0x43;
-                _reg_Value = 0x0E;
-
-                bool writeResult = oneWrie_device.I2CWrite_Single(_dev_addr, _reg_Addr, _reg_Value);
-                if (writeResult)
-                    DisplayOperateMes("Marginal Read succeeded!\r\n");
-                else
-                    DisplayOperateMes("I2C write failed, Marginal Read Failed!\r\n", Color.Red);
-
-                //Delay 50ms
-                Thread.Sleep(50);
-                DisplayOperateMes("Delay 50ms");
-
-                _reg_Addr = 0x43;
-                _reg_Value = 0x0;
-
-                writeResult = oneWrie_device.I2CWrite_Single(_dev_addr, _reg_Addr, _reg_Value);
-                //Console.WriteLine("I2C write result->{0}", oneWrie_device.I2CWrite_Single(_dev_addr, _reg_addr, _reg_data));
-                if (writeResult)
-                    DisplayOperateMes("Reset Reg0x43 succeeded!\r\n");
-                else
-                    DisplayOperateMes("Reset Reg0x43 failed!\r\n", Color.Red);
-                #endregion Setup Marginal Read
-
-                uint[] _MarginalreadBack_data = new uint[4];
-                _MarginalreadBack_data = ReadBackReg1ToReg4(_dev_addr);
-
-                #region Enter normal mode
-                _reg_Addr = 0x42;
-                _reg_Value = 0x04;
-                if (oneWrie_device.I2CWrite_Single(_dev_addr, _reg_Addr, _reg_Value))
-                    DisplayAutoTrimOperateMes("Enter Normal Mode", true, 64);
-                else
-                {
-                    //DisplayAutoTrimResult(false);
-                    DisplayAutoTrimResult(false, 0x0006, "I2C Conmunication Error!");
-                    return;
-                }
-
-                //Vout with cap
-                setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VOUT_WITH_CAP);
-                message = "Set Vout with Cap";
-                DisplayAutoTrimOperateMes(message, setResult, 64);
-
-                //Vref with cap
-                setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VREF_WITH_CAP);
-                message = "Set Vref with Cap";
-                DisplayAutoTrimOperateMes(message, setResult, 64);
-
-                //Vout to Vin
-                setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VIN_TO_VOUT);
-                message = "Set Vin to Vout";
-                DisplayAutoTrimOperateMes(message, setResult, 64);
-                #endregion
-
-                #region Capture Vout @ 0A and 15A
-                //Capture Vout@0A
-                Vout_0A = AverageVout_Customer(sampleNum);
-                DisplayAutoTrimOperateMes("Vout@0A = " + Vout_0A.ToString("F3"), 64);
-            
-                //Change Current to IPx A
-                dr = MessageBox.Show(String.Format("Please Change Current To {0}A", selectedCurrent_Auto), "Change Current", MessageBoxButtons.OKCancel);
-                if (dr == DialogResult.Cancel)
-                {
-                    //DisplayAutoTrimResult(false)
-                    //this.lbl_passOrFailed.ForeColor = Color.Green;
-                    //this.lbl_passOrFailed.Text = "C.N.D!"; ;
-                    DisplayAutoTrimResult(false, 0x0007, "Operation Canceled!");
-                    return;
-                }
-
-                //Delay 200ms
-                Thread.Sleep(200);
-                DisplayAutoTrimOperateMes("Delay 200ms", 64);
-
-                //Capture Vout@IPx
-                Vout_IP = AverageVout_Customer(sampleNum);
-                DisplayAutoTrimOperateMes(string.Format("Vout@{0} = " + Vout_IP.ToString("F3"), StrIPx_Auto), 64);
-                #endregion
-
-                //Judge Vout@0A
-                bool ifPass_IP0 = false;
-                bool ifMginalRead_IP0 = false;
-                bool ifPass_IP15 = false;
-                bool ifMginalRead_IP15 = false;
-                bool ifPass_IP15_Last = false;
-                bool ifMginalRead_IP15_Last = false;
-
-                DisplayAutoTrimOperateMes("Vout@0A = " + Vout_0A.ToString("F3"), 64);
-                if (Vout_0A <= 2.530 && Vout_0A >= 2.470)
-                {
-                    ifPass_IP0 = true;
-                    //DisplayAutoTrimOperateMes("Vout@0A = " + IP0_Auto.ToString("F3"), 64);
-                }
-                else if (Vout_0A <= 2.550 && Vout_0A >= 2.450)
-                {
-                    ifMginalRead_IP0 = true;
-                    //DisplayAutoTrimOperateMes("Vout@0A = " + IP0_Auto.ToString("F3"), 64);
-                }
-                else
-                {
-                    //DisplayAutoTrimResult(false);
-                    DisplayAutoTrimResult(false, 0x0002, "M.R.E\tVout@0A = " + Vout_0A.ToString("F3"));
-                    return;
-                }
-
-                //Judge Vout@IPx
-                //bool ifPass_IP15 = false;
-                DisplayAutoTrimOperateMes(string.Format("Vout@{0} = " + Vout_IP.ToString("F3"), StrIPx_Auto), 64);
-                if (Vout_IP <= (2.530 + targetGain_customer * selectedCurrent_Auto / 1000d) && Vout_IP >= (2.470 + targetGain_customer * selectedCurrent_Auto / 1000d))
-                {
-                    ifPass_IP15 = true;
-                }
-                else if (Vout_IP <= (2.750 + targetGain_customer * selectedCurrent_Auto / 1000d) && Vout_IP >= (2.250 + targetGain_customer * selectedCurrent_Auto / 1000d))
-                {
-                    ifMginalRead_IP15 = true;
-                }
-
-                else
-                {
-                    DisplayAutoTrimResult(false, 0x0002, string.Format("M.R.E\tVout@{0} = " + Vout_IP.ToString("F3"),StrIPx_Auto));
-                    return;
-                }
-
-
-                //if (!MarginalCheckReg1ToReg4(tempNormalRBValue, _dev_addr, testGain))
-                //{
-                    //DisplayAutoTrimOperateMes("Marginal read back data checking didn't pass!", 64);
-                    //DisplayAutoTrimResult(false, 0x0002, "Marginal Read Error!");
-                    //return;
-                //}
-                #endregion
-
-                #endregion
-            #endregion
-
-            #region 7. Re-power at 6V, trim master bit
-
-            #region 7.1 Re-Power at 6V
-            ////VDD to 6V
-            setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VDD_FROM_EXT);
-            message = "Set VDD to 6V";
-            DisplayAutoTrimOperateMes(message, setResult, 71);
-
-            //Power Off
-            setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VDD_POWER_OFF);
-            message = "Set VDD Power Off";
-            DisplayAutoTrimOperateMes(message, setResult, 71);
-
-            //Vout without cap
-            setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VOUT_WITHOUT_CAP);
-            message = "Set Vout without Cap";
-            DisplayAutoTrimOperateMes(message, setResult, 71);
-
-            //Vref without cap
-            setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VREF_WITHOUT_CAP);
-            message = "Set Vref without Cap";
-            DisplayAutoTrimOperateMes(message, setResult, 71);
-
-            //Vout to Config
-            setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_CONFIG_TO_VOUT);
-            message = "Set VIN to Vout";
-            DisplayAutoTrimOperateMes(message, setResult, 71);
-
-            //Delay 500ms
-            Thread.Sleep(500);
-            DisplayAutoTrimOperateMes("Delay 500ms", 71);
-
-            //Power On
-            setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VDD_POWER_ON);
-            message = "Set VDD Power On";
-            DisplayAutoTrimOperateMes(message, setResult, 71);
-
-            Thread.Sleep(50);
-            DisplayAutoTrimOperateMes("Delay 50ms", 71);
-
-            #endregion
-
-            #region 7.2 Enter test mode
-            _reg_Addr = 0x55;
-            _reg_Value = 0xAA;
-            if (oneWrie_device.I2CWrite_Single(_dev_addr, _reg_Addr, _reg_Value))
-                DisplayAutoTrimOperateMes("Enter Test Mode Before trim master bit", true, 72);
-            else
-            {
-                //DisplayAutoTrimResult(false);
-                DisplayAutoTrimResult(false, 0x0006, "I2C Conmunication Error!");
-                return;
-            }
-
-            ResetReg43And44(_dev_addr, 72);  //Rest Reg0x43 and Reg0x44
-
-            //Delay 50ms
-            Thread.Sleep(50);
-            DisplayAutoTrimOperateMes("Delay 50ms", 72);
-            #endregion
-
-            #region 7.3 Trim master bit
-            if (!WriteMasterBit0(_dev_addr, 73))
-            {
-                DisplayAutoTrimOperateMes("Fuse Master bit", false, 73);
-                //DisplayAutoTrimResult(false);
-                DisplayAutoTrimResult(false, 0x0006, "I2C Conmunication Error!");
-                return;
-            }
-
-            Thread.Sleep(50);
-            DisplayAutoTrimOperateMes("Delay 50ms", 73);
-
-            ReadBackReg1ToReg5(_dev_addr);
-
-            Thread.Sleep(20);
-            DisplayAutoTrimOperateMes("Delay 20ms", 73);
-
-            //New fuse clock method
-            if (!FuseClockOn(_dev_addr, fusePulseWidth, fuseDurationTime, 500, 73))
-            {
-                //DisplayAutoTrimResult(false);
-                DisplayAutoTrimResult(false, 0x0006, "I2C Conmunication Error!");
-                return;
-            }
-
-            ResetReg43And44(_dev_addr, 73);  //Rest Reg0x43 and Reg0x44
-
-            if (!WriteMasterBit1(_dev_addr, 73))
-            {
-                DisplayAutoTrimOperateMes("Fuse Master bit", false, 73);
-                //DisplayAutoTrimResult(false);
-                DisplayAutoTrimResult(false, 0x0006, "I2C Conmunication Error!");
-                return;
-            }
-
-            Thread.Sleep(50);
-            DisplayAutoTrimOperateMes("Delay 50ms", 73);
-
-            ReadBackReg1ToReg5(_dev_addr);
-
-            Thread.Sleep(20);
-            DisplayAutoTrimOperateMes("Delay 20ms", 73);
-
-            //New fuse clock method
-            if (!FuseClockOn(_dev_addr, fusePulseWidth, fuseDurationTime, 500, 73))
-            {
-                //DisplayAutoTrimResult(false);
-                DisplayAutoTrimResult(false, 0x0006, "I2C Conmunication Error!");
-                return;
-            }
-
-            ResetReg43And44(_dev_addr, 73);  //Rest Reg0x43 and Reg0x44
-
-            #endregion
-
-            #region 7.4 Marginal Read Master Bits
-
-            uint masterReg = 0;
-
-            _reg_Addr = 0x43;
-            _reg_Value = 0x0B;
-
-            writeResult = oneWrie_device.I2CWrite_Single(_dev_addr, _reg_Addr, _reg_Value);
-            if (writeResult)
-                DisplayOperateMes("Re-load succeeded!\r\n");
-            else
-                DisplayOperateMes("I2C write failed,  Re-load Failed!\r\n", Color.Red);
-
-            //Delay 50ms
-            Thread.Sleep(50);
-            DisplayOperateMes("Delay 50ms");
-
-            _reg_Addr = 0x43;
-            _reg_Value = 0x0;
-
-            writeResult = oneWrie_device.I2CWrite_Single(_dev_addr, _reg_Addr, _reg_Value);
-            //Console.WriteLine("I2C write result->{0}", oneWrie_device.I2CWrite_Single(_dev_addr, _reg_addr, _reg_data));
-            if (writeResult)
-                DisplayOperateMes("Reset Reg0x43 succeeded!\r\n");
-            else
-                DisplayOperateMes("Reset Reg0x43 failed!\r\n", Color.Red);
-
-            Thread.Sleep(50);
-            DisplayOperateMes("Delay 50ms");
-
-            masterReg = oneWrie_device.I2CRead_Single(_dev_addr, 0x84);
-            DisplayAutoTrimOperateMes("Read back master bits", 74);
-            DisplayAutoTrimOperateMes("Reg84 = 0x" + masterReg.ToString("X"));
-
-            _reg_Addr = 0x43;
-            _reg_Value = 0x0E;
-
-            writeResult = oneWrie_device.I2CWrite_Single(_dev_addr, _reg_Addr, _reg_Value);
-            if (writeResult)
-                DisplayOperateMes("Marginal Read succeeded!\r\n");
-            else
-                DisplayOperateMes("I2C write failed, Marginal Read Failed!\r\n", Color.Red);
-
-            //Delay 50ms
-            Thread.Sleep(50);
-            DisplayOperateMes("Delay 50ms");
-
-            _reg_Addr = 0x43;
-            _reg_Value = 0x0;
-
-            writeResult = oneWrie_device.I2CWrite_Single(_dev_addr, _reg_Addr, _reg_Value);
-            //Console.WriteLine("I2C write result->{0}", oneWrie_device.I2CWrite_Single(_dev_addr, _reg_addr, _reg_data));
-            if (writeResult)
-                DisplayOperateMes("Reset Reg0x43 succeeded!\r\n");
-            else
-                DisplayOperateMes("Reset Reg0x43 failed!\r\n", Color.Red);
-
-            Thread.Sleep(100);
-            DisplayOperateMes("Delay 100ms");
-
-            //masterReg = 0;
-            masterReg = oneWrie_device.I2CRead_Single(_dev_addr, 0x84);
-            DisplayAutoTrimOperateMes("Reg84 = 0x" + masterReg.ToString("X"));
-
-            if (masterReg == 0)
-            {
-                DisplayAutoTrimOperateMes("Marginal read back data checking didn't pass!", 74);
-                //DisplayAutoTrimOperateMes("Reg84 = 0x" + masterReg.ToString("X"));
-                DisplayAutoTrimResult(false, 0x0004, "Marginal Read Error!");
-                return;
-            }
-
-
-            #endregion
-
-            #endregion
-
-            #region 8. Re-power on at 5V, capture Vout@0A and Vout@15A
-
-            #region 8.1 Re-Power at 5V
-            //Power Off
-            setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VDD_POWER_OFF);
-            message = "Set VDD Power Off";
-            DisplayAutoTrimOperateMes(message, setResult, 81);
-
-            ////VDD to 5V
-            setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VDD_FROM_5V);
-            message = "Set VDD to 5V";
-            DisplayAutoTrimOperateMes(message, setResult, 81);
-
-            //Delay 500ms
-            Thread.Sleep(500);
-            DisplayAutoTrimOperateMes("Delay 500ms", 81);
-
-            //Power On
-            setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VDD_POWER_ON);
-            message = "Set VDD Power On";
-            DisplayAutoTrimOperateMes(message, setResult, 81);
-
-            Thread.Sleep(50);
-            DisplayAutoTrimOperateMes("Delay 50ms", 81);
-
-            #endregion
-
-            #region 8.2 Set up signal path for AIN capture
-            //Vout with cap
-            setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VOUT_WITH_CAP);
-            message = "Set Vout with Cap";
-            DisplayAutoTrimOperateMes(message, setResult, 82);
-
-            //Vref with cap
-            setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VREF_WITH_CAP);
-            message = "Set Vref with Cap";
-            DisplayAutoTrimOperateMes(message, setResult, 82);
-
-            //Vout to Vin
-            setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VIN_TO_VOUT);
-            message = "Set VIN to Vout";
-            DisplayAutoTrimOperateMes(message, setResult, 82);
-
-            //Delay 200ms
-            Thread.Sleep(200);
-            DisplayAutoTrimOperateMes("Delay 200ms", 82);
-
-            #endregion
-
-            #region 8.3 Capture Vout @ 0A and IPx
-            //Capture Vout@0A
-            //IP0_Auto = AverageVout_Customer("0 A", sampleNum);
-            //DisplayAutoTrimOperateMes("Vout@0A = " + IP0_Auto.ToString("F3"), 83);
-
-            //Change Current to 15A
-            //dr = MessageBox.Show("Please Change Current To 15A", "Change Current", MessageBoxButtons.OKCancel);
-            //if (dr == DialogResult.Cancel)
-            //{
-                //DisplayAutoTrimResult(false);
-                //this.lbl_passOrFailed.ForeColor = Color.Red;
-                //this.lbl_passOrFailed.Text = "C.N.D!";
-                //DisplayAutoTrimResult(false, 0x0007, "Operation Canceled!");
-                //return;
-            //}
-
-            //Delay 200ms
-            //Thread.Sleep(200);
-            //DisplayAutoTrimOperateMes("Delay 200ms", 83);
-
-            //Capture Vout@IPx
-            Vout_IP = AverageVout_Customer(sampleNum);
-            DisplayAutoTrimOperateMes(string.Format("Vout@{0} = " + Vout_IP.ToString("F3"), StrIPx_Auto), 83);
-            #endregion
-
-            #region 8.4 Verdict Pass! or Fail!
-            //Judge Vout@0A
-            //bool ifPass_IP0 = false;
-            //if (!(IP0_Auto <= 2.530 && IP0_Auto >= 2.470))
-            //{
-            //    //DisplayAutoTrimResult(false);
-            //    DisplayAutoTrimResult(false, 0x000F, "Vout@0A = " + IP0_Auto.ToString("F3"));
-            //    if (IP0_Auto < 2)
-            //    {
-            //        DisplayAutoTrimResult(false, 0x0004, "Please Re-Trim Master Bits!");
-            //    }
-            //    return;
-            //}
-            //else
-            //{
-            //    ifPass_IP0 = true;
-            //}
-
-            //Judge Vout@15A
-            //bool ifPass_IP15 = false;
-
-            if ((Vout_IP <= (2.530 + targetGain_customer * selectedCurrent_Auto / 1000d) && Vout_IP >= (2.470 + targetGain_customer * selectedCurrent_Auto / 1000d)))
-            {
-                //DisplayAutoTrimResult(false);
-                ifPass_IP15_Last = true;
-                //DisplayAutoTrimResult(false, 0x000F, "Vout@15A = " + IP15_Auto.ToString("F3"));
-                //return;
-            }
-            else if (Vout_IP <= (2.750 + targetGain_customer * selectedCurrent_Auto / 1000d) && Vout_IP >= (2.250 + targetGain_customer * selectedCurrent_Auto / 1000d))
-            {
-                ifMginalRead_IP15_Last = true;
-            }
-            else
-            {
-                if (Vout_IP < 2)
-                {
-                    DisplayAutoTrimResult(false, 0x0004, "Please Re-Trim Master Bits!");
-                }
-                else
-                {
-                    DisplayAutoTrimResult(false, 0x000F, string.Format("Vout@{0} = " + Vout_IP.ToString("F3"),StrIPx_Auto));
-                }
-
-                return;
-            }
-
-            if (masterReg == 3 || masterReg == 2)
-            {
-                //Final Judgement
-                if (ifPass_IP0 && ifPass_IP15 && ifPass_IP15_Last)
-                    DisplayAutoTrimResult(true, 0x0000, string.Format("Bin1\tVout@0A = " + Vout_0A.ToString("F3") + "\tVout@{0} = " + Vout_IP.ToString("F3"),StrIPx_Auto));
-                else if (ifMginalRead_IP15_Last)
-                    DisplayAutoTrimResult(true, 0x0000, string.Format("Bin3\tVout@0A = " + Vout_0A.ToString("F3") + "\tVout@{0} = " + Vout_IP.ToString("F3"),StrIPx_Auto));
-                else
-                    DisplayAutoTrimResult(true, 0x0000, string.Format("Bin2\tVout@0A = " + Vout_0A.ToString("F3") + "\tVout@{0} = " + Vout_IP.ToString("F3"),StrIPx_Auto));
-                //else
-                    //DisplayAutoTrimResult(false);
-                //DisplayAutoTrimResult(true, 0x0000, "Bin4\tVout@0A = " + IP0_Auto.ToString("F3") + "\tVout@15A = " + IP15_Auto.ToString("F3"));
-            }
-            else
-            {
-                //Final Judgement
-                if (ifPass_IP0 && ifPass_IP15 && ifPass_IP15_Last)
-                    DisplayAutoTrimResult(true, 0x0000, string.Format("Bin4\tVout@0A = " + Vout_0A.ToString("F3") + "\tVout@{0} = " + Vout_IP.ToString("F3"),StrIPx_Auto));
-                else if (ifMginalRead_IP15_Last)
-                    DisplayAutoTrimResult(true, 0x0000, string.Format("Bin6\tVout@0A = " + Vout_0A.ToString("F3") + "\tVout@{0} = " + Vout_IP.ToString("F3"),StrIPx_Auto));
-                else
-                    DisplayAutoTrimResult(true, 0x0000, string.Format("Bin5\tVout@0A = " + Vout_0A.ToString("F3") + "\tVout@{0} = " + Vout_IP.ToString("F3"),StrIPx_Auto));
-                //Final Judgement
-                //if (ifPass_IP0 && ifPass_IP15 && ifMginalRead)
-                //    DisplayAutoTrimResult(true, 0x0000, "Bin5\tVout@0A = " + IP0_Auto.ToString("F3") + "\tVout@15A = " + IP15_Auto.ToString("F3"));
-                //else if (ifPass_IP0 && ifPass_IP15)
-                //    DisplayAutoTrimResult(true, 0x0000, "Bin4\tVout@0A = " + IP0_Auto.ToString("F3") + "\tVout@15A = " + IP15_Auto.ToString("F3"));
-                //else if (ifMginalRead)
-                //{
-                //    DisplayAutoTrimResult(true, 0x0000, "Bin6\tVout@0A = " + IP0_Auto.ToString("F3") + "\tVout@15A = " + IP15_Auto.ToString("F3"));
-                //}
-                //else
-                //    DisplayAutoTrimResult(false);
-                //DisplayAutoTrimResult(true, 0x0000, "Bin5\tVout@0A = " + IP0_Auto.ToString("F3") + "\tVout@15A = " + IP15_Auto.ToString("F3"));
-            }
-
-            //Final Judgement
-            //if (ifPass_IP0 && ifPass_IP15 && ifMginalRead)
-            //    DisplayAutoTrimResult(true, 0x0000, "Bin2\tVout@0A = " + IP0_Auto.ToString("F3") + "\tVout@15A = " + IP15_Auto.ToString("F3"));
-            //else if (ifPass_IP0 && ifPass_IP15  )
-            //    DisplayAutoTrimResult(true, 0x0000, "Bin1\tVout@0A = " + IP0_Auto.ToString("F3") + "\tVout@15A = " + IP15_Auto.ToString("F3"));
-            //else if ( ifMginalRead )
-            //{
-            //    DisplayAutoTrimResult(true, 0x0000, "Bin3\tVout@0A = " + IP0_Auto.ToString("F3") + "\tVout@15A = " + IP15_Auto.ToString("F3"));
-            //}
-            //else
-            //    DisplayAutoTrimResult(false);
-
-            DisplayAutoTrimOperateMes("Vout@0A = " + Vout_0A.ToString("F3"), 83);
-            DisplayAutoTrimOperateMes(string.Format("Vout@{0} = " + Vout_IP.ToString("F3"),StrIPx_Auto), 83);
-            #endregion
-
-            #endregion
-
-            #region 9. Reset Vout@0A,Vout@15A and Reg0x80~Reg0x84
-            Vout_0A = 0;
-            Vout_IP = 0;
-            Reg80Value = 0;
-            Reg81Value = 0;
-            Reg82Value = 0;
-            Reg83Value = 0;
-            //Reg84Value = 0;
-            #endregion
-             
+            /* Restore register value to preset */
+            RestoreReg80ToReg83Value();
         }
 
         //sel_vr button
@@ -4399,8 +3251,6 @@ namespace CurrentSensorV3
             }
         }
 
-        #endregion Events
-
         private void txt_dev_addr_onewire_EngT_TextChanged(object sender, EventArgs e)
         {
             string temp;
@@ -4508,31 +3358,21 @@ namespace CurrentSensorV3
             txt_PresetVoutIP_PreT.Text = AverageVout().ToString("F3");
         }
 
-        uint ix_forGainCtrl = 0;
-        uint Ix_ForGainCtrl
-        {
-            get { return this.ix_forGainCtrl; }
-            set 
-            {
-                this.ix_forGainCtrl = value;
-                this.txt_ChosenGain_AutoT.Text = RoughTable_Customer[0][ix_forGainCtrl].ToString("F2");
-            }
-        }
         private void btn_GainCtrlPlus_PreT_Click(object sender, EventArgs e)
         {
             RePower();
 
             EnterTestMode();
 
-            if (Ix_ForGainCtrl > 0)
-                Ix_ForGainCtrl--;
+            if (Ix_ForRoughGainCtrl > 0)
+                Ix_ForRoughGainCtrl--;
 
             int wrNum = 2;
             uint[] data = new uint[2 * wrNum];
             data[0] = 0x80;
-            data[1] = Convert.ToUInt32(RoughTable_Customer[1][Ix_ForGainCtrl]);     //Reg0x80
+            data[1] = Convert.ToUInt32(RoughTable_Customer[1][Ix_ForRoughGainCtrl]);     //Reg0x80
             data[2] = 0x81;
-            data[3] = Convert.ToUInt32(RoughTable_Customer[2][Ix_ForGainCtrl]);   //Reg0x81
+            data[3] = Convert.ToUInt32(RoughTable_Customer[2][Ix_ForRoughGainCtrl]);   //Reg0x81
 
             //back up to register 
             /* bit5 & bit6 & bit7 of 0x80 */
@@ -4558,15 +3398,15 @@ namespace CurrentSensorV3
 
             EnterTestMode();
 
-            if (Ix_ForGainCtrl < 15)
-                Ix_ForGainCtrl++;
+            if (Ix_ForRoughGainCtrl < 15)
+                Ix_ForRoughGainCtrl++;
 
             int wrNum = 2;
             uint[] data = new uint[2 * wrNum];
             data[0] = 0x80;
-            data[1] = Convert.ToUInt32(RoughTable_Customer[1][Ix_ForGainCtrl]);     //Reg0x80
+            data[1] = Convert.ToUInt32(RoughTable_Customer[1][Ix_ForRoughGainCtrl]);     //Reg0x80
             data[2] = 0x81;
-            data[3] = Convert.ToUInt32(RoughTable_Customer[2][Ix_ForGainCtrl]);     //Reg0x81
+            data[3] = Convert.ToUInt32(RoughTable_Customer[2][Ix_ForRoughGainCtrl]);     //Reg0x81
 
             //back up to register 
             /* bit5 & bit6 & bit7 of 0x80 */
@@ -4662,7 +3502,7 @@ namespace CurrentSensorV3
 
         private void cmb_IPRange_PreT_SelectedIndexChanged(object sender, EventArgs e)
         {
-            /* bit of 0x82 and 0x83 */
+            /* bit7 of 0x82 and 0x83 */
             bit_op_mask = bit7_Mask;
             uint[] valueTable = new uint[6]
             {
@@ -4671,7 +3511,7 @@ namespace CurrentSensorV3
                 0x80,0x0                
             };
 
-            int ix_TableStart = this.cmb_TempCmp_PreT.SelectedIndex * 2;
+            int ix_TableStart = this.cmb_IPRange_PreT.SelectedIndex * 2;
             //back up to register and update GUI
             Reg82Value &= ~bit_op_mask;
             Reg82Value |= valueTable[ix_TableStart];
@@ -4809,7 +3649,7 @@ namespace CurrentSensorV3
 
                 // Preset Gain
                 msg = string.Format("Preset Gain|{0}|{1}",
-                    this.Ix_ForGainCtrl.ToString(), RoughTable_Customer[0][Ix_ForGainCtrl].ToString("F2"));
+                    this.Ix_ForRoughGainCtrl.ToString(), RoughTable_Customer[0][Ix_ForRoughGainCtrl].ToString("F2"));
                 sw.WriteLine(msg);
 
                 sw.Close();
@@ -4867,9 +3707,12 @@ namespace CurrentSensorV3
 
                 // Preset Gain
                 msg = sr.ReadLine().Split("|".ToCharArray());
-                Ix_ForGainCtrl = uint.Parse(msg[1]);
+                Ix_ForRoughGainCtrl = uint.Parse(msg[1]);
 
                 sr.Close();
+
+                //Backup value for autotrim
+                StoreReg80ToReg83Value();
             }
             catch
             {
@@ -4879,8 +3722,10 @@ namespace CurrentSensorV3
 
 
 
-        
 
+
+
+        #endregion Events
 
 
 

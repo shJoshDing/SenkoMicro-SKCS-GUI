@@ -194,8 +194,10 @@
             this.label31 = new System.Windows.Forms.Label();
             this.AutoTrimTab = new System.Windows.Forms.TabPage();
             this.groupBox8 = new System.Windows.Forms.GroupBox();
+            this.label57 = new System.Windows.Forms.Label();
+            this.txt_ChosenGain_AutoT = new System.Windows.Forms.TextBox();
+            this.label58 = new System.Windows.Forms.Label();
             this.txt_IP_AutoT = new System.Windows.Forms.TextBox();
-            this.btn_loadconfig_AutoT = new System.Windows.Forms.Button();
             this.txt_TargetGain_AutoT = new System.Windows.Forms.TextBox();
             this.txt_IPRange_AutoT = new System.Windows.Forms.TextBox();
             this.txt_TempComp_AutoT = new System.Windows.Forms.TextBox();
@@ -207,6 +209,7 @@
             this.label47 = new System.Windows.Forms.Label();
             this.label48 = new System.Windows.Forms.Label();
             this.label49 = new System.Windows.Forms.Label();
+            this.btn_loadconfig_AutoT = new System.Windows.Forms.Button();
             this.label22 = new System.Windows.Forms.Label();
             this.label21 = new System.Windows.Forms.Label();
             this.numUD_TargetGain_Customer = new System.Windows.Forms.NumericUpDown();
@@ -224,9 +227,6 @@
             this.contextMenuStrip_Clear = new System.Windows.Forms.ToolStripMenuItem();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.txt_OutputLogInfo = new System.Windows.Forms.RichTextBox();
-            this.txt_ChosenGain_AutoT = new System.Windows.Forms.TextBox();
-            this.label58 = new System.Windows.Forms.Label();
-            this.label57 = new System.Windows.Forms.Label();
             this.statusStrip.SuspendLayout();
             this.toolStrip.SuspendLayout();
             this.tabControl1.SuspendLayout();
@@ -673,22 +673,22 @@
             // rbtn_InsideFilterDefault_EngT
             // 
             this.rbtn_InsideFilterDefault_EngT.AutoSize = true;
+            this.rbtn_InsideFilterDefault_EngT.Checked = true;
             this.rbtn_InsideFilterDefault_EngT.Location = new System.Drawing.Point(76, 3);
             this.rbtn_InsideFilterDefault_EngT.Name = "rbtn_InsideFilterDefault_EngT";
             this.rbtn_InsideFilterDefault_EngT.Size = new System.Drawing.Size(59, 17);
             this.rbtn_InsideFilterDefault_EngT.TabIndex = 1;
+            this.rbtn_InsideFilterDefault_EngT.TabStop = true;
             this.rbtn_InsideFilterDefault_EngT.Text = "Default";
             this.rbtn_InsideFilterDefault_EngT.UseVisualStyleBackColor = true;
             // 
             // rbtn_InsideFilterOff_EngT
             // 
             this.rbtn_InsideFilterOff_EngT.AutoSize = true;
-            this.rbtn_InsideFilterOff_EngT.Checked = true;
             this.rbtn_InsideFilterOff_EngT.Location = new System.Drawing.Point(3, 3);
             this.rbtn_InsideFilterOff_EngT.Name = "rbtn_InsideFilterOff_EngT";
             this.rbtn_InsideFilterOff_EngT.Size = new System.Drawing.Size(64, 17);
             this.rbtn_InsideFilterOff_EngT.TabIndex = 0;
-            this.rbtn_InsideFilterOff_EngT.TabStop = true;
             this.rbtn_InsideFilterOff_EngT.Text = "Filter Off";
             this.rbtn_InsideFilterOff_EngT.UseVisualStyleBackColor = true;
             this.rbtn_InsideFilterOff_EngT.CheckedChanged += new System.EventHandler(this.rbtn_InsideFilterOff_EngT_CheckedChanged);
@@ -715,22 +715,22 @@
             // rbtn_VoutOpetionDefault_EngT
             // 
             this.rbtn_VoutOpetionDefault_EngT.AutoSize = true;
+            this.rbtn_VoutOpetionDefault_EngT.Checked = true;
             this.rbtn_VoutOpetionDefault_EngT.Location = new System.Drawing.Point(76, 3);
             this.rbtn_VoutOpetionDefault_EngT.Name = "rbtn_VoutOpetionDefault_EngT";
             this.rbtn_VoutOpetionDefault_EngT.Size = new System.Drawing.Size(59, 17);
             this.rbtn_VoutOpetionDefault_EngT.TabIndex = 1;
+            this.rbtn_VoutOpetionDefault_EngT.TabStop = true;
             this.rbtn_VoutOpetionDefault_EngT.Text = "Default";
             this.rbtn_VoutOpetionDefault_EngT.UseVisualStyleBackColor = true;
             // 
             // rbtn_VoutOptionHigh_EngT
             // 
             this.rbtn_VoutOptionHigh_EngT.AutoSize = true;
-            this.rbtn_VoutOptionHigh_EngT.Checked = true;
             this.rbtn_VoutOptionHigh_EngT.Location = new System.Drawing.Point(3, 3);
             this.rbtn_VoutOptionHigh_EngT.Name = "rbtn_VoutOptionHigh_EngT";
             this.rbtn_VoutOptionHigh_EngT.Size = new System.Drawing.Size(72, 17);
             this.rbtn_VoutOptionHigh_EngT.TabIndex = 0;
-            this.rbtn_VoutOptionHigh_EngT.TabStop = true;
             this.rbtn_VoutOptionHigh_EngT.Text = "Vout High";
             this.rbtn_VoutOptionHigh_EngT.UseVisualStyleBackColor = true;
             this.rbtn_VoutOptionHigh_EngT.CheckedChanged += new System.EventHandler(this.rbtn_VoutOptionHigh_EngT_CheckedChanged);
@@ -947,6 +947,7 @@
             this.rbt_signalPathSeting_Mout_EngT.TabIndex = 4;
             this.rbt_signalPathSeting_Mout_EngT.Text = "Mout";
             this.rbt_signalPathSeting_Mout_EngT.UseVisualStyleBackColor = true;
+            this.rbt_signalPathSeting_Mout_EngT.CheckedChanged += new System.EventHandler(this.rbt_signalPathSeting_CheckedChanged);
             // 
             // rbt_signalPathSeting_510Out_EngT
             // 
@@ -958,6 +959,7 @@
             this.rbt_signalPathSeting_510Out_EngT.TabIndex = 3;
             this.rbt_signalPathSeting_510Out_EngT.Text = "510out";
             this.rbt_signalPathSeting_510Out_EngT.UseVisualStyleBackColor = true;
+            this.rbt_signalPathSeting_510Out_EngT.CheckedChanged += new System.EventHandler(this.rbt_signalPathSeting_CheckedChanged);
             // 
             // rbt_signalPathSeting_VCS_EngT
             // 
@@ -969,6 +971,7 @@
             this.rbt_signalPathSeting_VCS_EngT.TabIndex = 2;
             this.rbt_signalPathSeting_VCS_EngT.Text = "VCS";
             this.rbt_signalPathSeting_VCS_EngT.UseVisualStyleBackColor = true;
+            this.rbt_signalPathSeting_VCS_EngT.CheckedChanged += new System.EventHandler(this.rbt_signalPathSeting_CheckedChanged);
             // 
             // rbt_signalPathSeting_Vref_EngT
             // 
@@ -980,6 +983,7 @@
             this.rbt_signalPathSeting_Vref_EngT.TabIndex = 1;
             this.rbt_signalPathSeting_Vref_EngT.Text = "Vref";
             this.rbt_signalPathSeting_Vref_EngT.UseVisualStyleBackColor = true;
+            this.rbt_signalPathSeting_Vref_EngT.CheckedChanged += new System.EventHandler(this.rbt_signalPathSeting_CheckedChanged);
             // 
             // rbt_signalPathSeting_Vout_EngT
             // 
@@ -2240,6 +2244,7 @@
             this.AutoTrimTab.TabIndex = 1;
             this.AutoTrimTab.Text = "AutoTrim";
             this.AutoTrimTab.UseVisualStyleBackColor = true;
+            this.AutoTrimTab.Enter += new System.EventHandler(this.AutoTrimTab_Enter);
             // 
             // groupBox8
             // 
@@ -2265,6 +2270,41 @@
             this.groupBox8.TabStop = false;
             this.groupBox8.Text = "Preset";
             // 
+            // label57
+            // 
+            this.label57.AutoSize = true;
+            this.label57.Font = new System.Drawing.Font("Times New Roman", 17F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.label57.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.label57.Location = new System.Drawing.Point(524, 98);
+            this.label57.Name = "label57";
+            this.label57.Size = new System.Drawing.Size(23, 19);
+            this.label57.TabIndex = 112;
+            this.label57.Text = "%";
+            // 
+            // txt_ChosenGain_AutoT
+            // 
+            this.txt_ChosenGain_AutoT.BackColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.txt_ChosenGain_AutoT.Font = new System.Drawing.Font("Microsoft Sans Serif", 17F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Pixel);
+            this.txt_ChosenGain_AutoT.ForeColor = System.Drawing.Color.White;
+            this.txt_ChosenGain_AutoT.Location = new System.Drawing.Point(418, 94);
+            this.txt_ChosenGain_AutoT.Name = "txt_ChosenGain_AutoT";
+            this.txt_ChosenGain_AutoT.ReadOnly = true;
+            this.txt_ChosenGain_AutoT.Size = new System.Drawing.Size(100, 27);
+            this.txt_ChosenGain_AutoT.TabIndex = 111;
+            this.txt_ChosenGain_AutoT.Text = "12.36";
+            this.txt_ChosenGain_AutoT.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // label58
+            // 
+            this.label58.AutoSize = true;
+            this.label58.Font = new System.Drawing.Font("Times New Roman", 17F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.label58.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.label58.Location = new System.Drawing.Point(320, 98);
+            this.label58.Name = "label58";
+            this.label58.Size = new System.Drawing.Size(96, 19);
+            this.label58.TabIndex = 109;
+            this.label58.Text = "Chosen Gain";
+            // 
             // txt_IP_AutoT
             // 
             this.txt_IP_AutoT.BackColor = System.Drawing.SystemColors.ControlDarkDark;
@@ -2277,17 +2317,6 @@
             this.txt_IP_AutoT.TabIndex = 108;
             this.txt_IP_AutoT.Text = "20";
             this.txt_IP_AutoT.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            // 
-            // btn_loadconfig_AutoT
-            // 
-            this.btn_loadconfig_AutoT.Font = new System.Drawing.Font("Courier New", 12.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btn_loadconfig_AutoT.Location = new System.Drawing.Point(502, 165);
-            this.btn_loadconfig_AutoT.Name = "btn_loadconfig_AutoT";
-            this.btn_loadconfig_AutoT.Size = new System.Drawing.Size(134, 32);
-            this.btn_loadconfig_AutoT.TabIndex = 106;
-            this.btn_loadconfig_AutoT.Text = "Load Config";
-            this.btn_loadconfig_AutoT.UseVisualStyleBackColor = true;
-            this.btn_loadconfig_AutoT.Click += new System.EventHandler(this.btn_loadconfig_AutoT_Click);
             // 
             // txt_TargetGain_AutoT
             // 
@@ -2417,6 +2446,17 @@
             this.label49.Size = new System.Drawing.Size(87, 19);
             this.label49.TabIndex = 91;
             this.label49.Text = "Target Gain";
+            // 
+            // btn_loadconfig_AutoT
+            // 
+            this.btn_loadconfig_AutoT.Font = new System.Drawing.Font("Courier New", 12.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btn_loadconfig_AutoT.Location = new System.Drawing.Point(502, 165);
+            this.btn_loadconfig_AutoT.Name = "btn_loadconfig_AutoT";
+            this.btn_loadconfig_AutoT.Size = new System.Drawing.Size(134, 32);
+            this.btn_loadconfig_AutoT.TabIndex = 106;
+            this.btn_loadconfig_AutoT.Text = "Load Config";
+            this.btn_loadconfig_AutoT.UseVisualStyleBackColor = true;
+            this.btn_loadconfig_AutoT.Click += new System.EventHandler(this.btn_loadconfig_AutoT_Click);
             // 
             // label22
             // 
@@ -2630,41 +2670,6 @@
             this.txt_OutputLogInfo.Size = new System.Drawing.Size(291, 500);
             this.txt_OutputLogInfo.TabIndex = 88;
             this.txt_OutputLogInfo.Text = "";
-            // 
-            // txt_ChosenGain_AutoT
-            // 
-            this.txt_ChosenGain_AutoT.BackColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.txt_ChosenGain_AutoT.Font = new System.Drawing.Font("Microsoft Sans Serif", 17F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Pixel);
-            this.txt_ChosenGain_AutoT.ForeColor = System.Drawing.Color.White;
-            this.txt_ChosenGain_AutoT.Location = new System.Drawing.Point(418, 94);
-            this.txt_ChosenGain_AutoT.Name = "txt_ChosenGain_AutoT";
-            this.txt_ChosenGain_AutoT.ReadOnly = true;
-            this.txt_ChosenGain_AutoT.Size = new System.Drawing.Size(100, 27);
-            this.txt_ChosenGain_AutoT.TabIndex = 111;
-            this.txt_ChosenGain_AutoT.Text = "12.36";
-            this.txt_ChosenGain_AutoT.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            // 
-            // label58
-            // 
-            this.label58.AutoSize = true;
-            this.label58.Font = new System.Drawing.Font("Times New Roman", 17F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.label58.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.label58.Location = new System.Drawing.Point(320, 98);
-            this.label58.Name = "label58";
-            this.label58.Size = new System.Drawing.Size(96, 19);
-            this.label58.TabIndex = 109;
-            this.label58.Text = "Chosen Gain";
-            // 
-            // label57
-            // 
-            this.label57.AutoSize = true;
-            this.label57.Font = new System.Drawing.Font("Times New Roman", 17F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.label57.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.label57.Location = new System.Drawing.Point(524, 98);
-            this.label57.Name = "label57";
-            this.label57.Size = new System.Drawing.Size(23, 19);
-            this.label57.TabIndex = 112;
-            this.label57.Text = "%";
             // 
             // CurrentSensorConsole
             // 

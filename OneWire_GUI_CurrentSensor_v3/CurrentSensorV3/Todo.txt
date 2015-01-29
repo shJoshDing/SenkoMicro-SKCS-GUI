@@ -4,3 +4,6 @@
 4. cmb_PolaritySelect_EngT_SelectedIndexChanged
 
 5. AutoTrim btn-> 1. 注释写power on, 但代码写repower  ？？？？
+
+6.        private void txt_reg80_TextChanged(object sender, EventArgs e) 函数空的
+7. Offset 表A（粗调） 没有用或
