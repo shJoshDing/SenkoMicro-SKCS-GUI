@@ -147,7 +147,7 @@ namespace CurrentSensorV3
             get { return this.moduleTypeindex; }
         }
 
-        uint ix_forRoughGainCtrl = 0;
+        uint ix_forRoughGainCtrl = 15;
         uint Ix_ForRoughGainCtrl
         {
             get { return this.ix_forRoughGainCtrl; }
@@ -3364,8 +3364,8 @@ namespace CurrentSensorV3
 
             EnterTestMode();
 
-            if (Ix_ForRoughGainCtrl > 0)
-                Ix_ForRoughGainCtrl--;
+            if (Ix_ForRoughGainCtrl < 15)
+                Ix_ForRoughGainCtrl++;
 
             int wrNum = 2;
             uint[] data = new uint[2 * wrNum];
@@ -3398,8 +3398,8 @@ namespace CurrentSensorV3
 
             EnterTestMode();
 
-            if (Ix_ForRoughGainCtrl < 15)
-                Ix_ForRoughGainCtrl++;
+            if (Ix_ForRoughGainCtrl > 0)
+                Ix_ForRoughGainCtrl--;
 
             int wrNum = 2;
             uint[] data = new uint[2 * wrNum];

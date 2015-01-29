@@ -2291,7 +2291,7 @@
             this.txt_ChosenGain_AutoT.ReadOnly = true;
             this.txt_ChosenGain_AutoT.Size = new System.Drawing.Size(100, 27);
             this.txt_ChosenGain_AutoT.TabIndex = 111;
-            this.txt_ChosenGain_AutoT.Text = "12.36";
+            this.txt_ChosenGain_AutoT.Text = "100";
             this.txt_ChosenGain_AutoT.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // label58
