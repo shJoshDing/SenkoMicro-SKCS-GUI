@@ -158,7 +158,10 @@
             this.btn_GainCtrlMinus_PreT = new System.Windows.Forms.Button();
             this.btn_GainCtrlPlus_PreT = new System.Windows.Forms.Button();
             this.btn_Vout_PreT = new System.Windows.Forms.Button();
+            this.label36 = new System.Windows.Forms.Label();
             this.label41 = new System.Windows.Forms.Label();
+            this.txt_PresetVoutIP_PreT = new System.Windows.Forms.TextBox();
+            this.label37 = new System.Windows.Forms.Label();
             this.label42 = new System.Windows.Forms.Label();
             this.label43 = new System.Windows.Forms.Label();
             this.label44 = new System.Windows.Forms.Label();
@@ -171,9 +174,6 @@
             this.label39 = new System.Windows.Forms.Label();
             this.txt_IP_PreT = new System.Windows.Forms.TextBox();
             this.label34 = new System.Windows.Forms.Label();
-            this.label36 = new System.Windows.Forms.Label();
-            this.txt_PresetVoutIP_PreT = new System.Windows.Forms.TextBox();
-            this.label37 = new System.Windows.Forms.Label();
             this.txt_TargetGain_PreT = new System.Windows.Forms.TextBox();
             this.label38 = new System.Windows.Forms.Label();
             this.cmb_IPRange_PreT = new System.Windows.Forms.ComboBox();
@@ -1808,6 +1808,17 @@
             this.btn_Vout_PreT.UseVisualStyleBackColor = true;
             this.btn_Vout_PreT.Click += new System.EventHandler(this.btn_Vout_PreT_Click);
             // 
+            // label36
+            // 
+            this.label36.AutoSize = true;
+            this.label36.Font = new System.Drawing.Font("Times New Roman", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label36.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.label36.Location = new System.Drawing.Point(127, 97);
+            this.label36.Name = "label36";
+            this.label36.Size = new System.Drawing.Size(14, 14);
+            this.label36.TabIndex = 86;
+            this.label36.Text = "V";
+            // 
             // label41
             // 
             this.label41.AutoSize = true;
@@ -1817,6 +1828,30 @@
             this.label41.Size = new System.Drawing.Size(30, 14);
             this.label41.TabIndex = 87;
             this.label41.Text = "Reg4";
+            // 
+            // txt_PresetVoutIP_PreT
+            // 
+            this.txt_PresetVoutIP_PreT.BackColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.txt_PresetVoutIP_PreT.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txt_PresetVoutIP_PreT.ForeColor = System.Drawing.Color.White;
+            this.txt_PresetVoutIP_PreT.Location = new System.Drawing.Point(52, 87);
+            this.txt_PresetVoutIP_PreT.Name = "txt_PresetVoutIP_PreT";
+            this.txt_PresetVoutIP_PreT.ReadOnly = true;
+            this.txt_PresetVoutIP_PreT.Size = new System.Drawing.Size(72, 31);
+            this.txt_PresetVoutIP_PreT.TabIndex = 85;
+            this.txt_PresetVoutIP_PreT.Text = "0";
+            this.txt_PresetVoutIP_PreT.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // label37
+            // 
+            this.label37.AutoSize = true;
+            this.label37.Font = new System.Drawing.Font("Times New Roman", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label37.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.label37.Location = new System.Drawing.Point(64, 67);
+            this.label37.Name = "label37";
+            this.label37.Size = new System.Drawing.Size(49, 14);
+            this.label37.TabIndex = 84;
+            this.label37.Text = "Vout@IP";
             // 
             // label42
             // 
@@ -1966,41 +2001,6 @@
             this.label34.Size = new System.Drawing.Size(18, 14);
             this.label34.TabIndex = 87;
             this.label34.Text = "IP";
-            // 
-            // label36
-            // 
-            this.label36.AutoSize = true;
-            this.label36.Font = new System.Drawing.Font("Times New Roman", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label36.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.label36.Location = new System.Drawing.Point(118, 97);
-            this.label36.Name = "label36";
-            this.label36.Size = new System.Drawing.Size(14, 14);
-            this.label36.TabIndex = 86;
-            this.label36.Text = "V";
-            // 
-            // txt_PresetVoutIP_PreT
-            // 
-            this.txt_PresetVoutIP_PreT.BackColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.txt_PresetVoutIP_PreT.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txt_PresetVoutIP_PreT.ForeColor = System.Drawing.Color.White;
-            this.txt_PresetVoutIP_PreT.Location = new System.Drawing.Point(59, 87);
-            this.txt_PresetVoutIP_PreT.Name = "txt_PresetVoutIP_PreT";
-            this.txt_PresetVoutIP_PreT.ReadOnly = true;
-            this.txt_PresetVoutIP_PreT.Size = new System.Drawing.Size(56, 31);
-            this.txt_PresetVoutIP_PreT.TabIndex = 85;
-            this.txt_PresetVoutIP_PreT.Text = "0";
-            this.txt_PresetVoutIP_PreT.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            // 
-            // label37
-            // 
-            this.label37.AutoSize = true;
-            this.label37.Font = new System.Drawing.Font("Times New Roman", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label37.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.label37.Location = new System.Drawing.Point(64, 67);
-            this.label37.Name = "label37";
-            this.label37.Size = new System.Drawing.Size(49, 14);
-            this.label37.TabIndex = 84;
-            this.label37.Text = "Vout@IP";
             // 
             // txt_TargetGain_PreT
             // 

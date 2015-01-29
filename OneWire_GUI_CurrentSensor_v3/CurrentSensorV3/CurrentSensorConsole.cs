@@ -38,7 +38,7 @@ namespace CurrentSensorV3
         /// <summary>
         /// Delay Define
         /// </summary>
-        int Delay_Power = 500;  //ms
+        int Delay_Power = 1000;  //ms
         int Delay_Operation = 300;  //ms
         int Delay_General = 300;    //ms
 
@@ -61,8 +61,8 @@ namespace CurrentSensorV3
         }
 
         string StrIPx_Auto = "15A";
-        double selectedCurrent_Auto = 15;   //A
-        double targetGain_customer = 25;    //mV/A
+        double selectedCurrent_Auto = 20;   //A
+        double targetGain_customer = 100;    //mV/A
         double TargetGain_customer
         {
             get { return this.targetGain_customer; }
@@ -1035,7 +1035,8 @@ namespace CurrentSensorV3
                     ix = i;
                 }
             }
-            offset = temp;
+            //offset = temp;
+            offset = 100 * offset / offsetTable[0][ix];
             return ix;
         }
 
@@ -1787,6 +1788,12 @@ namespace CurrentSensorV3
 
         private void EnterTestMode()
         {
+            //set pilot firstly
+            numUD_pilotwidth_ow_ValueChanged(null, null);
+
+            //set CONFIG to VOUT
+            oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_CONFIG_TO_VOUT);
+
             //Enter test mode
             uint _reg_addr = 0x55;
             uint _reg_data = 0xAA;
@@ -2127,6 +2134,8 @@ namespace CurrentSensorV3
                 return;
             }
 
+            Delay(Delay_Operation);
+
             _reg_addr = 0x43;
             _reg_data = 0x0E;
             writeResult = oneWrie_device.I2CWrite_Single(this.DeviceAddress, _reg_addr, _reg_data);
@@ -2144,9 +2153,9 @@ namespace CurrentSensorV3
             _reg_data = 0x0;
             writeResult = oneWrie_device.I2CWrite_Single(this.DeviceAddress, _reg_addr, _reg_data);
             if (writeResult)
-                DisplayOperateMes("Reset Reg0x43 succeeded!\r\n");
+                DisplayOperateMes("Marginal Read Setup succeeded!\r\n");
             else
-                DisplayOperateMes("Reset Reg0x43 failed!\r\n", Color.Red);
+                DisplayOperateMes("Marginal Read Setup failed!\r\n", Color.Red);
         }
 
         private void SafetyReadPreset()
@@ -2162,6 +2171,8 @@ namespace CurrentSensorV3
                 return;
             }
 
+            Delay(Delay_Operation);
+
             _reg_addr = 0x43;
             _reg_data = 0x06;
             writeResult = oneWrie_device.I2CWrite_Single(this.DeviceAddress, _reg_addr, _reg_data);
@@ -2170,6 +2181,8 @@ namespace CurrentSensorV3
                 DisplayOperateMes("2nd I2C write failed, Safety Read Failed!\r\n", Color.Red);
                 return;
             }
+
+            Delay(Delay_Operation);
 
             _reg_addr = 0x43;
             _reg_data = 0x0E;
@@ -2199,13 +2212,16 @@ namespace CurrentSensorV3
             _reg_data = 0x0;
             writeResult = oneWrie_device.I2CWrite_Single(this.DeviceAddress, _reg_addr, _reg_data);
             if (writeResult)
-                DisplayOperateMes("Reset Reg0x84 succeeded!\r\n");
+                DisplayOperateMes("Safety Read Setup succeeded!\r\n");
             else
-                DisplayOperateMes("Reset Reg0x84 failed!\r\n", Color.Red);
+                DisplayOperateMes("Safety Read Setup failed!\r\n", Color.Red);
         }
 
         private bool BurstRead(uint _reg_addr_start, int num, uint[] _readBack_data)
         {
+            //set pilot firstly
+            numUD_pilotwidth_ow_ValueChanged(null, null);
+
             if (oneWrie_device.I2CRead_Burst(this.DeviceAddress, _reg_addr_start, 5, _readBack_data) == 0)
             {
                 for (int ix = 0; ix < num; ix++)
@@ -2337,6 +2353,7 @@ namespace CurrentSensorV3
             DisplayOperateMes("Lookup offset = " + offsetTuning.ToString("F4") + "%");
 
             Ix_ForOffsetATable = LookupOffset(ref offsetTuning, OffsetTableA_Customer);
+            //offsetTuning = offsetTuning / OffsetTableA_Customer[0][Ix_ForOffsetATable]; 
             Ix_ForOffsetBTable = LookupOffset(ref offsetTuning, OffsetTableB_Customer);
 
             DisplayOperateMes("Offset TableA chose Index = " + Ix_ForOffsetATable.ToString() +
@@ -3000,8 +3017,8 @@ namespace CurrentSensorV3
              * if ( = ), go on
              * else bMarginal = true; */
             MarginalReadPreset();
-            uint[] tempReadback = new uint[4];
-            BurstRead(0x80, 4, tempReadback);
+            uint[] tempReadback = new uint[5];
+            BurstRead(0x80, 5, tempReadback);
             bMarginal = false;
             if ((tempReadback[0] != Reg80Value) | tempReadback[1] != Reg81Value | 
                 tempReadback[2] != Reg82Value |tempReadback[3] != Reg83Value)
@@ -3014,8 +3031,8 @@ namespace CurrentSensorV3
              * if ( = ), go on 
              * else bSafety = true; */
             SafetyReadPreset();
-            tempReadback = new uint[4];
-            BurstRead(0x80, 4, tempReadback);
+            tempReadback = new uint[5];
+            BurstRead(0x80, 5, tempReadback);
             bSafety = false;
             if ((tempReadback[0] != Reg80Value) | tempReadback[1] != Reg81Value |
                 tempReadback[2] != Reg82Value | tempReadback[3] != Reg83Value)
@@ -3036,6 +3053,28 @@ namespace CurrentSensorV3
 
             /* Fuse */
             FuseClockOn(DeviceAddress, (double)num_UD_pulsewidth_ow_EngT.Value, (double)numUD_pulsedurationtime_ow_EngT.Value);
+
+            Delay(Delay_Operation);
+
+            /* Margianl Read master bits*/
+            MarginalReadPreset();
+            tempReadback = new uint[5];
+            BurstRead(0x80, 5, tempReadback);
+            //bSafety = false;
+            if ( tempReadback[4] < 3 )
+                bMarginal |= true;
+
+            Delay(Delay_Operation);
+
+            /* Safety Read master bits*/
+            SafetyReadPreset();
+            tempReadback = new uint[5];
+            BurstRead(0x80, 5, tempReadback);
+            //bSafety = false;
+            if (tempReadback[4] < 3)
+                bSafety |= true;
+
+
 
             /* Repower on 5V */            
             oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VDD_FROM_5V);
@@ -3077,7 +3116,7 @@ namespace CurrentSensorV3
                 }
             }
             /* bin4,5,6 */
-            else if (bMarginal == false)
+            else if (bMarginal == true)
             {
                 if (2.5 * (1 - 0.01) <= Vout_0A && Vout_0A <= 2.5 * (1 + 0.01) && Vout_IP <= 4.5 * (1 + 0.01) && Vout_IP >= 4.5 * (1 - 0.01))
                 {
@@ -3360,6 +3399,8 @@ namespace CurrentSensorV3
 
         private void btn_GainCtrlPlus_PreT_Click(object sender, EventArgs e)
         {
+            oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VOUT_WITHOUT_CAP);
+
             RePower();
 
             EnterTestMode();
@@ -3388,12 +3429,16 @@ namespace CurrentSensorV3
             if (!RegisterWrite(wrNum, data))
                 DisplayOperateMes("Register write failed!", Color.Red);
 
-            EnterNomalMode();
-            txt_PresetVoutIP_PreT.Text = AverageVout().ToString("F3");
+            //EnterNomalMode();
+            //txt_PresetVoutIP_PreT.Text = AverageVout().ToString("F3");
+
+            oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VOUT_WITH_CAP);
         }
 
         private void btn_GainCtrlMinus_PreT_Click(object sender, EventArgs e)
         {
+            oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VOUT_WITHOUT_CAP);
+
             RePower();
 
             EnterTestMode();
@@ -3422,8 +3467,10 @@ namespace CurrentSensorV3
             if (!RegisterWrite(wrNum, data))
                 DisplayOperateMes("Register write failed!", Color.Red);
 
-            EnterNomalMode();
-            txt_PresetVoutIP_PreT.Text = AverageVout().ToString("F3");
+            //EnterNomalMode();
+            //txt_PresetVoutIP_PreT.Text = AverageVout().ToString("F3");
+
+            oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VOUT_WITH_CAP);
         }
 
         private void cmb_Module_EngT_SelectedIndexChanged(object sender, EventArgs e)
