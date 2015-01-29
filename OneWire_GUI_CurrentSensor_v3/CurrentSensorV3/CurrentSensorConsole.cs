@@ -1760,9 +1760,10 @@ namespace CurrentSensorV3
 
         private void EnterNomalMode()
         {
-            //oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_CONFIG_TO_VOUT);
+            oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VOUT_WITHOUT_CAP);
             rbt_signalPathSeting_Config_EngT.Checked = true;
-            Thread.Sleep(100);
+            //Thread.Sleep(100);
+            Delay(Delay_Operation);
 
             uint _reg_addr = 0x55;
             uint _reg_data = 0xAA;
@@ -1778,9 +1779,10 @@ namespace CurrentSensorV3
             else
                 DisplayOperateMes("I2C write failed, Enter Normal Mode Failed!\r\n", Color.Red);
 
-            Thread.Sleep(100);
+            //Thread.Sleep(100);
+            Delay(Delay_Operation);
 
-            //oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VIN_TO_VOUT);
+            oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VOUT_WITH_CAP);
             rbt_signalPathSeting_AIn_EngT.Checked = true;
 
             rbt_withCap_Vout_EngT.Checked = true;
