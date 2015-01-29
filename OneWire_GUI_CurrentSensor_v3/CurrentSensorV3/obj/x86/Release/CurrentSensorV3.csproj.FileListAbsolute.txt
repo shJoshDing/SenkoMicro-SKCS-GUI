@@ -11,3 +11,5 @@ C:\My Disk D\Project_Mo\SVN_SDC\MPH\OneWireMPH\OneWire_GUI_CurrentSensor_v3\Curr
 C:\My Disk D\Project_Mo\SVN_SDC\MPH\OneWireMPH\OneWire_GUI_CurrentSensor_v3\CurrentSensorV3\obj\x86\Release\SKCS v3.x.x.rc.pdb
 D:\PORJECT\SKCS\GUI\RevB\OneWire_GUI_CurrentSensor_v3.0.2\OneWire_GUI_CurrentSensor_v3\CurrentSensorV3\obj\x86\Release\SKCS v3.x.x.rc.exe
 D:\PORJECT\SKCS\GUI\RevB\OneWire_GUI_CurrentSensor_v3.0.2\OneWire_GUI_CurrentSensor_v3\CurrentSensorV3\obj\x86\Release\SKCS v3.x.x.rc.pdb
+C:\Users\IBM-201\Documents\GitHub\SenkoMicro-SKCS-GUI\SenkoMicro-SKCS-GUI\OneWire_GUI_CurrentSensor_v3\CurrentSensorV3\obj\x86\Release\SKCS v3.x.x.rc.exe
+C:\Users\IBM-201\Documents\GitHub\SenkoMicro-SKCS-GUI\SenkoMicro-SKCS-GUI\OneWire_GUI_CurrentSensor_v3\CurrentSensorV3\obj\x86\Release\SKCS v3.x.x.rc.pdb
