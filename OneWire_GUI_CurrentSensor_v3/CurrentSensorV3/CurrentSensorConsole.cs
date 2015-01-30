@@ -1765,6 +1765,11 @@ namespace CurrentSensorV3
             //Thread.Sleep(100);
             Delay(Delay_Operation);
 
+            oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_CONFIG_TO_VOUT);
+            rbt_signalPathSeting_Config_EngT.Checked = true;
+            //Thread.Sleep(100);
+            Delay(Delay_Operation);
+
             uint _reg_addr = 0x55;
             uint _reg_data = 0xAA;
             oneWrie_device.I2CWrite_Single(this.DeviceAddress, _reg_addr, _reg_data);
@@ -2943,7 +2948,7 @@ namespace CurrentSensorV3
             Vout_IP = AverageVout();
             DisplayOperateMes("Vout @ IP = " + Vout_IP.ToString("F3"));
 
-            if (Vout_IP > 4.9 || Vout_IP < 2)
+            if (Vout_IP > 4.95 || Vout_IP < 2)
             {
                 DisplayOperateMes("Module power is abnormal!", Color.Red);
                 return;
@@ -3122,15 +3127,15 @@ namespace CurrentSensorV3
             {
                 if (2.5 * (1 - 0.01) <= Vout_0A && Vout_0A <= 2.5 * (1 + 0.01) && Vout_IP <= 4.5 * (1 + 0.01) && Vout_IP >= 4.5 * (1 - 0.01))
                 {
-                    DisplayOperateMes("Pass! Bin3");
+                    DisplayOperateMes("Pass! Bin4");
                 }
                 else if (2.5 * (1 - 0.31) <= Vout_0A && Vout_0A <= 2.5 * (1 + 0.03) && Vout_IP <= 4.5 * (1 + 0.03) && Vout_IP >= 4.5 * (1 - 0.03))
                 {
-                    DisplayOperateMes("Pass! Bin4");
+                    DisplayOperateMes("Pass! Bin5");
                 }
                 else if (2.5 * (1 - 0.06) <= Vout_0A && Vout_0A <= 2.5 * (1 + 0.06) && Vout_IP <= 4.5 * (1 + 0.06) && Vout_IP >= 4.5 * (1 - 0.06))
                 {
-                    DisplayOperateMes("Pass! Bin5");
+                    DisplayOperateMes("Pass! Bin6");
                 }
                 else
                 {
@@ -3142,21 +3147,24 @@ namespace CurrentSensorV3
             {
                 if (2.5 * (1 - 0.01) <= Vout_0A && Vout_0A <= 2.5 * (1 + 0.01) && Vout_IP <= 4.5 * (1 + 0.01) && Vout_IP >= 4.5 * (1 - 0.01))
                 {
-                    DisplayOperateMes("Pass! Bin6");
+                    DisplayOperateMes("Pass! Bin7");
                 }
                 else if (2.5 * (1 - 0.31) <= Vout_0A && Vout_0A <= 2.5 * (1 + 0.03) && Vout_IP <= 4.5 * (1 + 0.03) && Vout_IP >= 4.5 * (1 - 0.03))
                 {
-                    DisplayOperateMes("Pass! Bin7");
+                    DisplayOperateMes("Pass! Bin8");
                 }
                 else if (2.5 * (1 - 0.06) <= Vout_0A && Vout_0A <= 2.5 * (1 + 0.06) && Vout_IP <= 4.5 * (1 + 0.06) && Vout_IP >= 4.5 * (1 - 0.06))
                 {
-                    DisplayOperateMes("Pass! Bin8");
+                    DisplayOperateMes("Pass! Bin9");
                 }
                 else
                 {
                     DisplayOperateMes("Fail!");
                 }
             }
+
+            DisplayOperateMes("Vout @ 0A = " + Vout_0A.ToString("F3"));
+            DisplayOperateMes("Vout @ IP = " + Vout_IP.ToString("F3"));
 
             //reset vout_0A, vout_IP and power off
             Vout_0A = 0;
