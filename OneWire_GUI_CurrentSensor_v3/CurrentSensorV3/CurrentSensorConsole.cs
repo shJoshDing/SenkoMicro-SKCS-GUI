@@ -51,11 +51,11 @@ namespace CurrentSensorV3
         {
             set
             {
-                this.ip = Math.Round(value,3);
+                this.ip = Math.Round(value,0);
                 //Set three ip combobox on the GUI
-                this.txt_IP_EngT.Text = this.ip.ToString("F3");
-                this.txt_IP_PreT.Text = this.ip.ToString("F3");
-                this.txt_IP_AutoT.Text = this.ip.ToString("F3");
+                this.txt_IP_EngT.Text = this.ip.ToString("F0");
+                this.txt_IP_PreT.Text = this.ip.ToString("F0");
+                this.txt_IP_AutoT.Text = this.ip.ToString("F0");
             }
             get { return this.ip; }
         }
@@ -63,6 +63,21 @@ namespace CurrentSensorV3
         string StrIPx_Auto = "15A";
         double selectedCurrent_Auto = 20;   //A
         double targetGain_customer = 100;    //mV/A
+        double targetVoltage_customer = 2;
+        double TargetVoltage_customer
+        {
+            get { return this.targetVoltage_customer; }
+            set
+            {
+                this.targetVoltage_customer = value;
+
+                //Update GUI
+                this.txt_targetvoltage_PreT.Text = this.targetVoltage_customer.ToString();
+                //this.txt_TargetGain_PreT.Text = this.targetVoltage_customer.ToString();
+                this.txt_TargertVoltage_AutoT.Text = this.targetVoltage_customer.ToString();
+            }
+        }
+
         double TargetGain_customer
         {
             get { return this.targetGain_customer; }
@@ -155,6 +170,7 @@ namespace CurrentSensorV3
             {
                 this.ix_forRoughGainCtrl = value;
                 this.txt_ChosenGain_AutoT.Text = RoughTable_Customer[0][ix_forRoughGainCtrl].ToString("F2");
+                this.txt_ChosenGain_PreT.Text = RoughTable_Customer[0][ix_forRoughGainCtrl].ToString("F2");
             }
         }
 
@@ -2282,6 +2298,7 @@ namespace CurrentSensorV3
             {
                 //temp = (4500d - 2000d) / double.Parse(this.txt_TargetGain.Text);
                 TargetGain_customer = double.Parse((sender as TextBox).Text);
+                //TargetGain_customer = (double.Parse((sender as TextBox).Text) * 2000d)/IP;
             }
             catch
             {
@@ -2293,8 +2310,8 @@ namespace CurrentSensorV3
                 TargetGain_customer = TargetGain_customer;      //Force to update text to default.
             }
 
-            double temp = 2000d / TargetGain_customer;
-            this.IP = temp;  
+            //double temp = 2000d / TargetGain_customer;
+            //this.IP = temp;  
             //this.txt_IP_EngT.Text = temp.ToString();
             //this.txt_IP_PreT.Text = temp.ToString();
             //this.txt_IP_AutoT.Text = temp.ToString();
@@ -3515,6 +3532,8 @@ namespace CurrentSensorV3
             {
                 this.IP = this.IP;  //force update GUI
             }
+
+            TargetGain_customer = targetVoltage_customer * 1000d / IP;
         }
 
         private void cmb_SensitivityAdapt_PreT_SelectedIndexChanged(object sender, EventArgs e)
@@ -3704,9 +3723,19 @@ namespace CurrentSensorV3
                     this.cmb_TempCmp_PreT.SelectedIndex.ToString(), this.cmb_TempCmp_PreT.SelectedItem.ToString());
                 sw.WriteLine(msg);
 
-                // Preset Gain
+                // Chosen Gain
                 msg = string.Format("Preset Gain|{0}|{1}",
                     this.Ix_ForRoughGainCtrl.ToString(), RoughTable_Customer[0][Ix_ForRoughGainCtrl].ToString("F2"));
+                sw.WriteLine(msg);
+
+                // Target Voltage
+                msg = string.Format("Target Voltage|{0}",
+                    this.txt_targetvoltage_PreT.Text );
+                sw.WriteLine(msg);
+
+                // IP
+                msg = string.Format("IP|{0}",
+                    this.txt_IP_PreT.Text );
                 sw.WriteLine(msg);
 
                 sw.Close();
@@ -3766,6 +3795,16 @@ namespace CurrentSensorV3
                 msg = sr.ReadLine().Split("|".ToCharArray());
                 Ix_ForRoughGainCtrl = uint.Parse(msg[1]);
 
+                // Target Voltage
+                msg = sr.ReadLine().Split("|".ToCharArray());
+                //ix = int.Parse(msg[1]);
+                this.txt_targetvoltage_PreT.Text = msg[1];
+
+                // IP
+                msg = sr.ReadLine().Split("|".ToCharArray());
+                //ix = int.Parse(msg[1]);
+                this.txt_IP_PreT.Text = msg[1];
+
                 sr.Close();
 
                 //Backup value for autotrim
@@ -3778,14 +3817,79 @@ namespace CurrentSensorV3
         }
 
 
+        
+
+        private void txt_targetvoltage_PreT_TextChanged(object sender, EventArgs e)
+        {
+            //targetVoltage_customer = double.Parse((sender as TextBox).Text);
+            //TargetGain_customer = (targetVoltage_customer * 2000d) / IP;
+
+            try
+            {
+                //temp = (4500d - 2000d) / double.Parse(this.txt_TargetGain.Text);
+                TargetVoltage_customer = double.Parse((sender as TextBox).Text);
+                //TargetGain_customer = (double.Parse((sender as TextBox).Text) * 2000d)/IP;
+            }
+            catch
+            {
+                string tempStr = string.Format("Target voltage set failed, will use default value {0}", this.TargetVoltage_customer);
+                DisplayOperateMes(tempStr, Color.Red);
+            }
+            finally
+            {
+                TargetVoltage_customer = TargetVoltage_customer;      //Force to update text to default.
+            }
+
+            TargetGain_customer = (TargetVoltage_customer * 1000d) / IP;
+        }
+
+
+
+        private void txt_ChosenGain_PreT_TextChanged(object sender, EventArgs e)
+        {
+            //data[1] = Convert.ToUInt32(RoughTable_Customer[1][Ix_ForRoughGainCtrl]);     //Reg0x80
+            //data[3] = Convert.ToUInt32(RoughTable_Customer[2][Ix_ForRoughGainCtrl]);     //Reg0x81
+
+            //Reset rough gain used register bits
+            /* bit5 & bit6 & bit7 of 0x80 */
+            bit_op_mask = bit5_Mask | bit6_Mask | bit7_Mask;
+            Reg80Value &= ~bit_op_mask;
+            Reg80Value |= Convert.ToUInt32(RoughTable_Customer[1][Ix_ForRoughGainCtrl]);     //Reg0x80[1];
+
+            /* bit0 of 0x81 */
+            bit_op_mask = bit0_Mask;
+            Reg81Value &= ~bit_op_mask;
+            Reg81Value |= Convert.ToUInt32(RoughTable_Customer[2][Ix_ForRoughGainCtrl]);     //Reg0x81;
+        }
+
+
+
+        private void txt_reg80_EngT_TextChanged(object sender, EventArgs e)
+        {
+            this.txt_Reg80_PreT.Text = this.txt_reg80_EngT.Text;
+        }
+
+
+
+        private void txt_reg81_EngT_TextChanged(object sender, EventArgs e)
+        {
+            this.txt_Reg81_PreT.Text = this.txt_reg81_EngT.Text;
+        }
+
+        private void txt_reg82_EngT_TextChanged(object sender, EventArgs e)
+        {
+            this.txt_Reg82_PreT.Text = this.txt_reg82_EngT.Text;
+        }
+
+        private void txt_reg83_EngT_TextChanged(object sender, EventArgs e)
+        {
+            this.txt_Reg83_PreT.Text = this.txt_reg83_EngT.Text;
+        }
 
 
 
 
         #endregion Events
-
-
-
     }
 
     
