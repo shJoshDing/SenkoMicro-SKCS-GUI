@@ -40,7 +40,7 @@ namespace CurrentSensorV3
         /// </summary>
         int Delay_Power = 1000;  //ms
         int Delay_Operation = 300;  //ms
-        int Delay_General = 300;    //ms
+        int Delay_Fuse = 1000;    //ms
 
         double ADCOffset = 0;
 
@@ -1814,6 +1814,9 @@ namespace CurrentSensorV3
             //set pilot firstly
             numUD_pilotwidth_ow_ValueChanged(null, null);
 
+            //set CONFIG without cap
+            oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VOUT_WITHOUT_CAP);
+
             //set CONFIG to VOUT
             oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_CONFIG_TO_VOUT);
 
@@ -2912,6 +2915,8 @@ namespace CurrentSensorV3
             DialogResult dr;
             bool bMarginal = false;
             bool bSafety = false;
+            uint[] tempReadback = new uint[5];
+            double dVip_Target = 2.5 + TargetVoltage_customer;
 
             /* AutoTrim code */
             /*  power on */
@@ -2946,6 +2951,15 @@ namespace CurrentSensorV3
                 return;
             }
 
+            /*Enter test mode, write PreSet Gain code, and enter nomal mode*/
+            EnterTestMode();
+
+            /*Write  PreSet Gain code */
+            RegisterWrite(4, new uint[8] { 0x80, Reg80Value, 0x81, Reg81Value, 0x82, Reg82Value, 0x83, Reg83Value });
+
+            /*Read back  PreSet Gain code */
+            BurstRead(0x80, 5, tempReadback);
+
             /* Change Current to IP  */
             dr = MessageBox.Show(String.Format("Please Change Current To {0}A", IP), "Change Current", MessageBoxButtons.OKCancel);
             if (dr == DialogResult.Cancel)
@@ -2957,7 +2971,8 @@ namespace CurrentSensorV3
             /* Get vout @ IP */            
             oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_CONFIG_TO_VOUT);
             oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VOUT_WITHOUT_CAP);
-            EnterTestMode();  // ??? 多余的
+            
+            //EnterTestMode();  // ??? 多余的
             
             EnterNomalMode();
             oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VOUT_WITH_CAP);
@@ -2965,11 +2980,11 @@ namespace CurrentSensorV3
             Vout_IP = AverageVout();
             DisplayOperateMes("Vout @ IP = " + Vout_IP.ToString("F3"));
 
-            if (Vout_IP > 4.95 || Vout_IP < 2)
-            {
-                DisplayOperateMes("Module power is abnormal!", Color.Red);
-                return;
-            }
+            //if (Vout_IP > 4.95 || Vout_IP < 2)
+            //{
+            //    DisplayOperateMes("PreTrim Code is not suitable!", Color.Red);
+            //    return;
+            //}
 
             /* Change Current to 0A */
             dr = MessageBox.Show(String.Format("Please Change Current To 0A"), "Change Current", MessageBoxButtons.OKCancel);
@@ -2981,6 +2996,13 @@ namespace CurrentSensorV3
             Delay(Delay_Operation);
             Vout_0A = AverageVout();
 
+            /*Judge PreSet gain; delta Vout target >= delta Vout test * 86.07% */
+            if ((Vout_IP - Vout_0A) < (2.5 + TargetVoltage_customer) || (Vout_IP - Vout_0A) <= TargetVoltage_customer * 100/86.07 )
+            {
+                DisplayOperateMes("PreTrim Code is not suitable!", Color.Red);
+                return;
+            }
+
             /* Gain Calculate */
             btn_CalcGainCode_EngT_Click(null, null);        // Calculate the base code(Ix_ForPrecisonGainCtrl)
             if (this.cmb_Module_PreT.SelectedItem.ToString() == "+-15V")
@@ -2991,8 +3013,8 @@ namespace CurrentSensorV3
             /* Repower on */
             RePower();
 
-            oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_CONFIG_TO_VOUT);
-            oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VOUT_WITHOUT_CAP);
+            //oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_CONFIG_TO_VOUT);
+            //oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VOUT_WITHOUT_CAP);
             EnterTestMode();
 
             /* Todo: write trim code to regsiters */
@@ -3017,8 +3039,8 @@ namespace CurrentSensorV3
             oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VDD_FROM_EXT);
             RePower();
 
-            oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_CONFIG_TO_VOUT);
-            oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VOUT_WITHOUT_CAP);
+            //oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_CONFIG_TO_VOUT);
+            //oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VOUT_WITHOUT_CAP);
             EnterTestMode();
 
             /* Todo: write trim code to regsiters */
@@ -3027,12 +3049,14 @@ namespace CurrentSensorV3
             /* fuse */
             FuseClockOn(DeviceAddress, (double)num_UD_pulsewidth_ow_EngT.Value, (double)numUD_pulsedurationtime_ow_EngT.Value);
 
+            Delay(Delay_Fuse);
+
             /* Repower on 5V */            
             oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VDD_FROM_5V);
             RePower();
 
-            oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_CONFIG_TO_VOUT);
-            oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VOUT_WITHOUT_CAP);
+            //oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_CONFIG_TO_VOUT);
+            //oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VOUT_WITHOUT_CAP);
             //EnterTestMode();  // MarginalReadPreset contain this
 
             Delay(Delay_Operation);
@@ -3041,7 +3065,7 @@ namespace CurrentSensorV3
              * if ( = ), go on
              * else bMarginal = true; */
             MarginalReadPreset();
-            uint[] tempReadback = new uint[5];
+            //uint[] tempReadback = new uint[5];
             BurstRead(0x80, 5, tempReadback);
             bMarginal = false;
             if ((tempReadback[0] != Reg80Value) | tempReadback[1] != Reg81Value | 
@@ -3066,8 +3090,8 @@ namespace CurrentSensorV3
             oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VDD_FROM_EXT);
             RePower();
 
-            oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_CONFIG_TO_VOUT);
-            oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VOUT_WITHOUT_CAP);
+            //oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_CONFIG_TO_VOUT);
+            //oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VOUT_WITHOUT_CAP);
             EnterTestMode();
 
             Delay(Delay_Operation);
@@ -3078,7 +3102,7 @@ namespace CurrentSensorV3
             /* Fuse */
             FuseClockOn(DeviceAddress, (double)num_UD_pulsewidth_ow_EngT.Value, (double)numUD_pulsedurationtime_ow_EngT.Value);
 
-            Delay(Delay_Operation);
+            Delay(Delay_Fuse);
 
             /* Margianl Read master bits*/
             MarginalReadPreset();
@@ -3107,6 +3131,8 @@ namespace CurrentSensorV3
             oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VIN_TO_VOUT);
             oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VOUT_WITH_CAP);
 
+            Delay(Delay_Operation);
+
             Vout_0A = AverageVout();
 
             /* Change Current to IP  */
@@ -3122,15 +3148,15 @@ namespace CurrentSensorV3
             /* bin1,2,3 */
             if (!(bSafety || bMarginal))
             {
-                if (2.5 * (1 - 0.01) <= Vout_0A && Vout_0A <= 2.5 * (1 + 0.01) && Vout_IP <= 4.5 * (1 + 0.01) && Vout_IP >= 4.5 * (1 - 0.01))
+                if (2.5 * (1 - 0.01) <= Vout_0A && Vout_0A <= 2.5 * (1 + 0.01) && Vout_IP <= dVip_Target * (1 + 0.01) && Vout_IP >= dVip_Target * (1 - 0.01))
                 {
                     DisplayOperateMes("Pass! Bin1");
                 }
-                else if (2.5 * (1 - 0.31) <= Vout_0A && Vout_0A <= 2.5 * (1 + 0.03) && Vout_IP <= 4.5 * (1 + 0.03) && Vout_IP >= 4.5 * (1 - 0.03))
+                else if (2.5 * (1 - 0.31) <= Vout_0A && Vout_0A <= 2.5 * (1 + 0.03) && Vout_IP <= dVip_Target * (1 + 0.03) && Vout_IP >= dVip_Target * (1 - 0.03))
                 {
                     DisplayOperateMes("Pass! Bin2");
                 }
-                else if (2.5 * (1 - 0.06) <= Vout_0A && Vout_0A <= 2.5 * (1 + 0.06) && Vout_IP <= 4.5 * (1 + 0.06) && Vout_IP >= 4.5 * (1 - 0.06))
+                else if (2.5 * (1 - 0.06) <= Vout_0A && Vout_0A <= 2.5 * (1 + 0.06) && Vout_IP <= dVip_Target * (1 + 0.06) && Vout_IP >= dVip_Target * (1 - 0.06))
                 {
                     DisplayOperateMes("Pass! Bin3");
                 }
@@ -3142,15 +3168,15 @@ namespace CurrentSensorV3
             /* bin4,5,6 */
             else if (bMarginal == true)
             {
-                if (2.5 * (1 - 0.01) <= Vout_0A && Vout_0A <= 2.5 * (1 + 0.01) && Vout_IP <= 4.5 * (1 + 0.01) && Vout_IP >= 4.5 * (1 - 0.01))
+                if (2.5 * (1 - 0.01) <= Vout_0A && Vout_0A <= 2.5 * (1 + 0.01) && Vout_IP <= dVip_Target * (1 + 0.01) && Vout_IP >= dVip_Target * (1 - 0.01))
                 {
                     DisplayOperateMes("Pass! Bin4");
                 }
-                else if (2.5 * (1 - 0.31) <= Vout_0A && Vout_0A <= 2.5 * (1 + 0.03) && Vout_IP <= 4.5 * (1 + 0.03) && Vout_IP >= 4.5 * (1 - 0.03))
+                else if (2.5 * (1 - 0.31) <= Vout_0A && Vout_0A <= 2.5 * (1 + 0.03) && Vout_IP <= dVip_Target * (1 + 0.03) && Vout_IP >= dVip_Target * (1 - 0.03))
                 {
                     DisplayOperateMes("Pass! Bin5");
                 }
-                else if (2.5 * (1 - 0.06) <= Vout_0A && Vout_0A <= 2.5 * (1 + 0.06) && Vout_IP <= 4.5 * (1 + 0.06) && Vout_IP >= 4.5 * (1 - 0.06))
+                else if (2.5 * (1 - 0.06) <= Vout_0A && Vout_0A <= 2.5 * (1 + 0.06) && Vout_IP <= dVip_Target * (1 + 0.06) && Vout_IP >= dVip_Target * (1 - 0.06))
                 {
                     DisplayOperateMes("Pass! Bin6");
                 }
@@ -3162,15 +3188,15 @@ namespace CurrentSensorV3
             /* bin7,8,9 */
             else
             {
-                if (2.5 * (1 - 0.01) <= Vout_0A && Vout_0A <= 2.5 * (1 + 0.01) && Vout_IP <= 4.5 * (1 + 0.01) && Vout_IP >= 4.5 * (1 - 0.01))
+                if (2.5 * (1 - 0.01) <= Vout_0A && Vout_0A <= 2.5 * (1 + 0.01) && Vout_IP <= dVip_Target * (1 + 0.01) && Vout_IP >= dVip_Target * (1 - 0.01))
                 {
                     DisplayOperateMes("Pass! Bin7");
                 }
-                else if (2.5 * (1 - 0.31) <= Vout_0A && Vout_0A <= 2.5 * (1 + 0.03) && Vout_IP <= 4.5 * (1 + 0.03) && Vout_IP >= 4.5 * (1 - 0.03))
+                else if (2.5 * (1 - 0.31) <= Vout_0A && Vout_0A <= 2.5 * (1 + 0.03) && Vout_IP <= dVip_Target * (1 + 0.03) && Vout_IP >= dVip_Target * (1 - 0.03))
                 {
                     DisplayOperateMes("Pass! Bin8");
                 }
-                else if (2.5 * (1 - 0.06) <= Vout_0A && Vout_0A <= 2.5 * (1 + 0.06) && Vout_IP <= 4.5 * (1 + 0.06) && Vout_IP >= 4.5 * (1 - 0.06))
+                else if (2.5 * (1 - 0.06) <= Vout_0A && Vout_0A <= 2.5 * (1 + 0.06) && Vout_IP <= dVip_Target * (1 + 0.06) && Vout_IP >= dVip_Target * (1 - 0.06))
                 {
                     DisplayOperateMes("Pass! Bin9");
                 }
@@ -3409,6 +3435,7 @@ namespace CurrentSensorV3
 
         private void btn_Vout0A_EngT_Click(object sender, EventArgs e)
         {
+            //oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VIN_TO_VOUT);
             oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VIN_TO_VOUT);
             rbt_signalPathSeting_AIn_EngT.Checked = true;
             rbt_signalPathSeting_Vout_EngT.Checked = true;
@@ -3884,6 +3911,20 @@ namespace CurrentSensorV3
         private void txt_reg83_EngT_TextChanged(object sender, EventArgs e)
         {
             this.txt_Reg83_PreT.Text = this.txt_reg83_EngT.Text;
+        }
+
+
+
+        private void btn_AdcOut_EngT_Click(object sender, EventArgs e)
+        {
+            double temp = 0;
+            //oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VIN_TO_VOUT);
+            rbt_signalPathSeting_AIn_EngT.Checked = true;
+            //rbt_signalPathSeting_Vout_EngT.Checked = true;
+            temp = AverageVout();
+            this.txt_AdcOut_EngT.Text = temp.ToString("F3");
+            //Vout_0A = AverageVout();
+            DisplayOperateMes("ADC Out = " + temp.ToString("F3"));
         }
 
 
