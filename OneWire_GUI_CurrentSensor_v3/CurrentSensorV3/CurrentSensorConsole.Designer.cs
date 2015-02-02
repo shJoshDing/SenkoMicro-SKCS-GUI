@@ -43,6 +43,8 @@
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.EngineeringTab = new System.Windows.Forms.TabPage();
+            this.btn_AdcOut_EngT = new System.Windows.Forms.Button();
+            this.txt_AdcOut_EngT = new System.Windows.Forms.TextBox();
             this.numUD_OffsetB = new System.Windows.Forms.NumericUpDown();
             this.label56 = new System.Windows.Forms.Label();
             this.numUD_SlopeK = new System.Windows.Forms.NumericUpDown();
@@ -239,8 +241,6 @@
             this.contextMenuStrip_Clear = new System.Windows.Forms.ToolStripMenuItem();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.txt_OutputLogInfo = new System.Windows.Forms.RichTextBox();
-            this.txt_AdcOut_EngT = new System.Windows.Forms.TextBox();
-            this.btn_AdcOut_EngT = new System.Windows.Forms.Button();
             this.statusStrip.SuspendLayout();
             this.toolStrip.SuspendLayout();
             this.tabControl1.SuspendLayout();
@@ -419,6 +419,26 @@
             this.EngineeringTab.TabIndex = 0;
             this.EngineeringTab.Text = "Engineering";
             this.EngineeringTab.UseVisualStyleBackColor = true;
+            // 
+            // btn_AdcOut_EngT
+            // 
+            this.btn_AdcOut_EngT.Location = new System.Drawing.Point(359, 409);
+            this.btn_AdcOut_EngT.Name = "btn_AdcOut_EngT";
+            this.btn_AdcOut_EngT.Size = new System.Drawing.Size(56, 20);
+            this.btn_AdcOut_EngT.TabIndex = 88;
+            this.btn_AdcOut_EngT.Text = "ADC";
+            this.btn_AdcOut_EngT.UseVisualStyleBackColor = true;
+            this.btn_AdcOut_EngT.Click += new System.EventHandler(this.btn_AdcOut_EngT_Click);
+            // 
+            // txt_AdcOut_EngT
+            // 
+            this.txt_AdcOut_EngT.BackColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.txt_AdcOut_EngT.Location = new System.Drawing.Point(359, 390);
+            this.txt_AdcOut_EngT.Name = "txt_AdcOut_EngT";
+            this.txt_AdcOut_EngT.ReadOnly = true;
+            this.txt_AdcOut_EngT.Size = new System.Drawing.Size(56, 20);
+            this.txt_AdcOut_EngT.TabIndex = 87;
+            this.txt_AdcOut_EngT.Text = "0.000";
             // 
             // numUD_OffsetB
             // 
@@ -1794,7 +1814,7 @@
             this.label64.AutoSize = true;
             this.label64.Font = new System.Drawing.Font("Times New Roman", 17F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.label64.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.label64.Location = new System.Drawing.Point(201, 79);
+            this.label64.Location = new System.Drawing.Point(247, 79);
             this.label64.Name = "label64";
             this.label64.Size = new System.Drawing.Size(23, 19);
             this.label64.TabIndex = 113;
@@ -1803,7 +1823,7 @@
             // btn_SaveConfig_PreT
             // 
             this.btn_SaveConfig_PreT.Font = new System.Drawing.Font("Microsoft Sans Serif", 17F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.btn_SaveConfig_PreT.Location = new System.Drawing.Point(380, 51);
+            this.btn_SaveConfig_PreT.Location = new System.Drawing.Point(408, 34);
             this.btn_SaveConfig_PreT.Name = "btn_SaveConfig_PreT";
             this.btn_SaveConfig_PreT.Size = new System.Drawing.Size(134, 32);
             this.btn_SaveConfig_PreT.TabIndex = 91;
@@ -1815,7 +1835,7 @@
             // 
             this.btn_GainCtrlMinus_PreT.BackgroundImage = global::CurrentSensorV3.Properties.Resources.Minus;
             this.btn_GainCtrlMinus_PreT.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.btn_GainCtrlMinus_PreT.Location = new System.Drawing.Point(304, 72);
+            this.btn_GainCtrlMinus_PreT.Location = new System.Drawing.Point(353, 75);
             this.btn_GainCtrlMinus_PreT.Name = "btn_GainCtrlMinus_PreT";
             this.btn_GainCtrlMinus_PreT.Size = new System.Drawing.Size(32, 32);
             this.btn_GainCtrlMinus_PreT.TabIndex = 90;
@@ -1825,7 +1845,7 @@
             // btn_GainCtrlPlus_PreT
             // 
             this.btn_GainCtrlPlus_PreT.BackgroundImage = global::CurrentSensorV3.Properties.Resources.Plus;
-            this.btn_GainCtrlPlus_PreT.Location = new System.Drawing.Point(245, 72);
+            this.btn_GainCtrlPlus_PreT.Location = new System.Drawing.Point(294, 75);
             this.btn_GainCtrlPlus_PreT.Name = "btn_GainCtrlPlus_PreT";
             this.btn_GainCtrlPlus_PreT.Size = new System.Drawing.Size(32, 32);
             this.btn_GainCtrlPlus_PreT.TabIndex = 89;
@@ -1835,7 +1855,7 @@
             // btn_Vout_PreT
             // 
             this.btn_Vout_PreT.Font = new System.Drawing.Font("Microsoft Sans Serif", 17F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.btn_Vout_PreT.Location = new System.Drawing.Point(244, 31);
+            this.btn_Vout_PreT.Location = new System.Drawing.Point(293, 34);
             this.btn_Vout_PreT.Name = "btn_Vout_PreT";
             this.btn_Vout_PreT.Size = new System.Drawing.Size(92, 32);
             this.btn_Vout_PreT.TabIndex = 88;
@@ -1848,7 +1868,7 @@
             this.label36.AutoSize = true;
             this.label36.Font = new System.Drawing.Font("Times New Roman", 17F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.label36.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.label36.Location = new System.Drawing.Point(201, 38);
+            this.label36.Location = new System.Drawing.Point(246, 39);
             this.label36.Name = "label36";
             this.label36.Size = new System.Drawing.Size(20, 19);
             this.label36.TabIndex = 86;
@@ -1869,7 +1889,7 @@
             this.txt_ChosenGain_PreT.BackColor = System.Drawing.SystemColors.ControlDarkDark;
             this.txt_ChosenGain_PreT.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txt_ChosenGain_PreT.ForeColor = System.Drawing.Color.White;
-            this.txt_ChosenGain_PreT.Location = new System.Drawing.Point(114, 73);
+            this.txt_ChosenGain_PreT.Location = new System.Drawing.Point(160, 73);
             this.txt_ChosenGain_PreT.Name = "txt_ChosenGain_PreT";
             this.txt_ChosenGain_PreT.ReadOnly = true;
             this.txt_ChosenGain_PreT.Size = new System.Drawing.Size(83, 31);
@@ -1883,7 +1903,7 @@
             this.txt_PresetVoutIP_PreT.BackColor = System.Drawing.SystemColors.ControlDarkDark;
             this.txt_PresetVoutIP_PreT.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txt_PresetVoutIP_PreT.ForeColor = System.Drawing.Color.White;
-            this.txt_PresetVoutIP_PreT.Location = new System.Drawing.Point(114, 32);
+            this.txt_PresetVoutIP_PreT.Location = new System.Drawing.Point(159, 33);
             this.txt_PresetVoutIP_PreT.Name = "txt_PresetVoutIP_PreT";
             this.txt_PresetVoutIP_PreT.ReadOnly = true;
             this.txt_PresetVoutIP_PreT.Size = new System.Drawing.Size(83, 31);
@@ -1896,18 +1916,18 @@
             this.label63.AutoSize = true;
             this.label63.Font = new System.Drawing.Font("Times New Roman", 17F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.label63.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.label63.Location = new System.Drawing.Point(23, 79);
+            this.label63.Location = new System.Drawing.Point(9, 79);
             this.label63.Name = "label63";
-            this.label63.Size = new System.Drawing.Size(96, 19);
+            this.label63.Size = new System.Drawing.Size(156, 19);
             this.label63.TabIndex = 84;
-            this.label63.Text = "Chosen Gain";
+            this.label63.Text = "Chosen Gain/Default ";
             // 
             // label37
             // 
             this.label37.AutoSize = true;
             this.label37.Font = new System.Drawing.Font("Times New Roman", 17F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.label37.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.label37.Location = new System.Drawing.Point(36, 38);
+            this.label37.Location = new System.Drawing.Point(49, 39);
             this.label37.Name = "label37";
             this.label37.Size = new System.Drawing.Size(70, 19);
             this.label37.TabIndex = 84;
@@ -2098,11 +2118,11 @@
             this.label59.AutoSize = true;
             this.label59.Font = new System.Drawing.Font("Times New Roman", 17F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.label59.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.label59.Location = new System.Drawing.Point(387, 23);
+            this.label59.Location = new System.Drawing.Point(392, 23);
             this.label59.Name = "label59";
-            this.label59.Size = new System.Drawing.Size(106, 19);
+            this.label59.Size = new System.Drawing.Size(91, 19);
             this.label59.TabIndex = 82;
-            this.label59.Text = "Target Voltage";
+            this.label59.Text = "VIP-Voffset";
             // 
             // txt_TargetGain_PreT
             // 
@@ -2770,11 +2790,11 @@
             this.label61.AutoSize = true;
             this.label61.Font = new System.Drawing.Font("Times New Roman", 17F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.label61.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.label61.Location = new System.Drawing.Point(338, 22);
+            this.label61.Location = new System.Drawing.Point(349, 22);
             this.label61.Name = "label61";
-            this.label61.Size = new System.Drawing.Size(106, 19);
+            this.label61.Size = new System.Drawing.Size(91, 19);
             this.label61.TabIndex = 91;
-            this.label61.Text = "Target Voltage";
+            this.label61.Text = "VIP-Voffset";
             // 
             // contextMenuStrip
             // 
@@ -2855,26 +2875,6 @@
             this.txt_OutputLogInfo.Size = new System.Drawing.Size(291, 500);
             this.txt_OutputLogInfo.TabIndex = 88;
             this.txt_OutputLogInfo.Text = "";
-            // 
-            // txt_AdcOut_EngT
-            // 
-            this.txt_AdcOut_EngT.BackColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.txt_AdcOut_EngT.Location = new System.Drawing.Point(359, 390);
-            this.txt_AdcOut_EngT.Name = "txt_AdcOut_EngT";
-            this.txt_AdcOut_EngT.ReadOnly = true;
-            this.txt_AdcOut_EngT.Size = new System.Drawing.Size(56, 20);
-            this.txt_AdcOut_EngT.TabIndex = 87;
-            this.txt_AdcOut_EngT.Text = "0.000";
-            // 
-            // btn_AdcOut_EngT
-            // 
-            this.btn_AdcOut_EngT.Location = new System.Drawing.Point(359, 409);
-            this.btn_AdcOut_EngT.Name = "btn_AdcOut_EngT";
-            this.btn_AdcOut_EngT.Size = new System.Drawing.Size(56, 20);
-            this.btn_AdcOut_EngT.TabIndex = 88;
-            this.btn_AdcOut_EngT.Text = "ADC";
-            this.btn_AdcOut_EngT.UseVisualStyleBackColor = true;
-            this.btn_AdcOut_EngT.Click += new System.EventHandler(this.btn_AdcOut_EngT_Click);
             // 
             // CurrentSensorConsole
             // 

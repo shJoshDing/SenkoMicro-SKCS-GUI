@@ -1025,7 +1025,7 @@ namespace CurrentSensorV3
             double temp = Math.Abs(tuningGain);
             for (int i = 0; i < gainTable[0].Length; i++)
             {
-                if (temp - Math.Abs(gainTable[0][i]) <= 0)
+                if (temp - Math.Abs(gainTable[0][i]) >= 0)
                 {
                     if ((i > 0) && (i < gainTable[0].Length - 1))
                     {
@@ -2359,7 +2359,7 @@ namespace CurrentSensorV3
             DisplayOperateMes("Test Gain = " + testGain.ToString());
 
             double gainTuning = 100 * GainTuningCalc_Customer(testGain, TargetGain_customer);   //计算修正值，供查表用
-            DisplayOperateMes("Choose Gain = " + gainTuning.ToString("F4") + "%");
+            DisplayOperateMes("Ideal Gain = " + gainTuning.ToString("F4") + "%");
 
             Ix_ForPrecisonGainCtrl = LookupPreciseGain(gainTuning, PreciseTable_Customer);
             DisplayOperateMes("Precise Gain Index = " + Ix_ForPrecisonGainCtrl.ToString() +
@@ -2995,9 +2995,13 @@ namespace CurrentSensorV3
             }
             Delay(Delay_Operation);
             Vout_0A = AverageVout();
+            DisplayOperateMes("Vout @ 0A = " + Vout_0A.ToString("F3"));
+            DisplayOperateMes("Delta Vout = " + (Vout_IP-Vout_0A).ToString("F3"));
+            DisplayOperateMes("Target Delta Vout = " + TargetVoltage_customer.ToString("F3"));
+            DisplayOperateMes("Target Delta Vout*100/86.07 = " + (TargetVoltage_customer * 100 / 86.07).ToString("F3"));
 
             /*Judge PreSet gain; delta Vout target >= delta Vout test * 86.07% */
-            if ((Vout_IP - Vout_0A) < (2.5 + TargetVoltage_customer) || (Vout_IP - Vout_0A) <= TargetVoltage_customer * 100/86.07 )
+            if ((Vout_IP - Vout_0A) < TargetVoltage_customer || (Vout_IP - Vout_0A) >= TargetVoltage_customer * 100/86.07 )
             {
                 DisplayOperateMes("PreTrim Code is not suitable!", Color.Red);
                 return;
@@ -3446,6 +3450,23 @@ namespace CurrentSensorV3
 
         private void btn_Vout_PreT_Click(object sender, EventArgs e)
         {
+            RePower();
+            EnterTestMode();
+
+            int wrNum = 4;
+            uint[] data = new uint[2 * wrNum];
+            data[0] = 0x80;
+            data[1] = Reg80Value;
+            data[2] = 0x81;
+            data[3] = Reg81Value;
+            data[4] = 0x82;
+            data[5] = Reg82Value;
+            data[6] = 0x83;
+            data[7] = Reg83Value;
+
+            if (!RegisterWrite(wrNum, data))
+               DisplayOperateMes("Register write failed!", Color.Red);
+
             EnterNomalMode();
 
             txt_PresetVoutIP_PreT.Text = AverageVout().ToString("F3");
@@ -3453,21 +3474,25 @@ namespace CurrentSensorV3
 
         private void btn_GainCtrlPlus_PreT_Click(object sender, EventArgs e)
         {
-            oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VOUT_WITHOUT_CAP);
+            //oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VOUT_WITHOUT_CAP);
 
-            RePower();
+            //RePower();
 
-            EnterTestMode();
+            //EnterTestMode();
 
             if (Ix_ForRoughGainCtrl < 15)
                 Ix_ForRoughGainCtrl++;
 
-            int wrNum = 2;
+            int wrNum = 4;
             uint[] data = new uint[2 * wrNum];
             data[0] = 0x80;
             data[1] = Convert.ToUInt32(RoughTable_Customer[1][Ix_ForRoughGainCtrl]);     //Reg0x80
             data[2] = 0x81;
             data[3] = Convert.ToUInt32(RoughTable_Customer[2][Ix_ForRoughGainCtrl]);   //Reg0x81
+            data[4] = 0x82;
+            data[5] = Reg82Value;                                                        //Reg0x82
+            data[6] = 0x83;
+            data[7] = Reg83Value;                                                        //Reg0x83
 
             //back up to register 
             /* bit5 & bit6 & bit7 of 0x80 */
@@ -3480,32 +3505,36 @@ namespace CurrentSensorV3
             Reg81Value &= ~bit_op_mask;
             Reg81Value |= data[3];
 
-            if (!RegisterWrite(wrNum, data))
-                DisplayOperateMes("Register write failed!", Color.Red);
+            //if (!RegisterWrite(wrNum, data))
+             //   DisplayOperateMes("Register write failed!", Color.Red);
 
             //EnterNomalMode();
             //txt_PresetVoutIP_PreT.Text = AverageVout().ToString("F3");
 
-            oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VOUT_WITH_CAP);
+            //oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VOUT_WITH_CAP);
         }
 
         private void btn_GainCtrlMinus_PreT_Click(object sender, EventArgs e)
         {
-            oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VOUT_WITHOUT_CAP);
+            //oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VOUT_WITHOUT_CAP);
 
-            RePower();
+            //RePower();
 
-            EnterTestMode();
+            //EnterTestMode();
 
             if (Ix_ForRoughGainCtrl > 0)
                 Ix_ForRoughGainCtrl--;
 
-            int wrNum = 2;
+            int wrNum = 4;
             uint[] data = new uint[2 * wrNum];
             data[0] = 0x80;
             data[1] = Convert.ToUInt32(RoughTable_Customer[1][Ix_ForRoughGainCtrl]);     //Reg0x80
             data[2] = 0x81;
             data[3] = Convert.ToUInt32(RoughTable_Customer[2][Ix_ForRoughGainCtrl]);     //Reg0x81
+            data[4] = 0x82;
+            data[5] = Reg82Value;                                                        //Reg0x82
+            data[6] = 0x83;
+            data[7] = Reg83Value;                                                        //Reg0x83
 
             //back up to register 
             /* bit5 & bit6 & bit7 of 0x80 */
@@ -3518,13 +3547,13 @@ namespace CurrentSensorV3
             Reg81Value &= ~bit_op_mask;
             Reg81Value |= data[3];
 
-            if (!RegisterWrite(wrNum, data))
-                DisplayOperateMes("Register write failed!", Color.Red);
+            //if (!RegisterWrite(wrNum, data))
+            //    DisplayOperateMes("Register write failed!", Color.Red);
 
             //EnterNomalMode();
             //txt_PresetVoutIP_PreT.Text = AverageVout().ToString("F3");
 
-            oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VOUT_WITH_CAP);
+            //oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VOUT_WITH_CAP);
         }
 
         private void cmb_Module_EngT_SelectedIndexChanged(object sender, EventArgs e)
