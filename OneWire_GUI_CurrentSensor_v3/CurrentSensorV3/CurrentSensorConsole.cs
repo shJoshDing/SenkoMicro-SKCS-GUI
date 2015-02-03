@@ -42,7 +42,7 @@ namespace CurrentSensorV3
         int Delay_Operation = 300;  //ms
         int Delay_Fuse = 1000;    //ms
 
-        double ADCOffset = 0;
+        double ADCOffset = -0.007;
 
         double Vout_0A = 0;
         double Vout_IP = 0;
@@ -402,7 +402,7 @@ namespace CurrentSensorV3
         {
             double result = oneWrie_device.AverageADCSamples(oneWrie_device.ADCSampleTransfer(SampleRate, SampleRateNum));
 
-            result = (ADCOffset + 1000d * (result * 5d / 4096d))/100d;
+            result = 1000d * (ADCOffset + (result * 5d / 4096d)) / 100d;
             return result;
         }
 
@@ -2394,7 +2394,7 @@ namespace CurrentSensorV3
             DisplayOperateMes("Reg3 Value = " + Reg82Value.ToString() + "(+ 0x" + Convert.ToInt32(OffsetTableA_Customer[2][Ix_ForOffsetATable]).ToString("X") + ")\r\n");
 
             bit_op_mask = bit2_Mask | bit3_Mask | bit4_Mask | bit5_Mask;
-            Reg83Value &= bit_op_mask;
+            Reg83Value &= ~bit_op_mask;
             Reg83Value |= Convert.ToUInt32(OffsetTableB_Customer[1][Ix_ForOffsetBTable]);
             DisplayOperateMes("Reg4 Value = " + Reg83Value.ToString() + "(+ 0x" + Convert.ToInt32(OffsetTableB_Customer[1][Ix_ForOffsetBTable]).ToString("X") + ")\r\n");
         }
