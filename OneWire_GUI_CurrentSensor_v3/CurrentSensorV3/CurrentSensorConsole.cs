@@ -1548,7 +1548,12 @@ namespace CurrentSensorV3
             uint _reg_Addr = 0x43;
             uint _reg_Value = 0x03;
             if (oneWrie_device.I2CWrite_Single(_dev_addr, _reg_Addr, _reg_Value))
-                DisplayAutoTrimOperateMes("I2C Write 1 before Fuse Clock", true);
+            {
+                if (bAutoTrimTest)
+                {
+                    DisplayAutoTrimOperateMes("I2C Write 1 before Fuse Clock", true);
+                }
+            }
             else
             {
                 return false;
@@ -1560,7 +1565,12 @@ namespace CurrentSensorV3
             _reg_Addr = 0x44;
             _reg_Value = 0xAA;
             if (oneWrie_device.I2CWrite_Single(_dev_addr, _reg_Addr, _reg_Value))
-                DisplayAutoTrimOperateMes("I2C Write 2 before Fuse Clock", true);
+            {
+                if (bAutoTrimTest)
+                {
+                    DisplayAutoTrimOperateMes("I2C Write 2 before Fuse Clock", true);
+                }
+            }
             else
             {
                 return false; ;
@@ -1570,7 +1580,12 @@ namespace CurrentSensorV3
 
             //Fuse 
             if (oneWrie_device.FuseClockSwitch(fusePulseWidth, fuseDurationTime))
-                DisplayAutoTrimOperateMes("Fuse Clock On", true);
+            {
+                if (bAutoTrimTest)
+                {
+                    DisplayAutoTrimOperateMes("Fuse Clock On", true);
+                }
+            }
             else
             {
                 return false;
@@ -1796,7 +1811,12 @@ namespace CurrentSensorV3
             bool writeResult = oneWrie_device.I2CWrite_Single(this.DeviceAddress, _reg_addr, _reg_data);
             //Console.WriteLine("I2C write result->{0}", oneWrie_device.I2CWrite_Single(_dev_addr, _reg_addr, _reg_data));
             if (writeResult)
-                DisplayOperateMes("Enter Nomal Mode succeeded!\r\n");
+            {
+                if (bAutoTrimTest)
+                {
+                    DisplayOperateMes("Enter Nomal Mode succeeded!\r\n");
+                }
+            }
             else
                 DisplayOperateMes("I2C write failed, Enter Normal Mode Failed!\r\n", Color.Red);
 
@@ -1823,8 +1843,13 @@ namespace CurrentSensorV3
             //Enter test mode
             uint _reg_addr = 0x55;
             uint _reg_data = 0xAA;
-            if(oneWrie_device.I2CWrite_Single(this.DeviceAddress, _reg_addr, _reg_data))
-                DisplayOperateMes("Enter test mode succeeded!");
+            if (oneWrie_device.I2CWrite_Single(this.DeviceAddress, _reg_addr, _reg_data))
+            {
+                if (bAutoTrimTest)
+                {
+                    DisplayOperateMes("Enter test mode succeeded!");
+                }
+            }
             else
                 DisplayOperateMes("Enter test mode failed!");
         }
@@ -2112,7 +2137,12 @@ namespace CurrentSensorV3
         private void PowerOff()
         {
             if (oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VDD_POWER_OFF))
-                DisplayOperateMes("Power off succeeded!\r\n");
+            {
+                if (bAutoTrimTest)
+                {
+                    DisplayOperateMes("Power off succeeded!\r\n");
+                }
+            }
             else
                 DisplayOperateMes("Power off failed!\r\n");
         }
@@ -2120,7 +2150,12 @@ namespace CurrentSensorV3
         private void PowerOn()
         {
             if (oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VDD_POWER_ON))
-                DisplayOperateMes("Power on succeeded!\r\n");
+            {
+                if (bAutoTrimTest)
+                {
+                    DisplayOperateMes("Power on succeeded!\r\n");
+                }
+            }
             else
                 DisplayOperateMes("Power on failed!\r\n");
         }
@@ -2128,7 +2163,10 @@ namespace CurrentSensorV3
         private void Delay(int time)
         {
             Thread.Sleep(time);
-            DisplayOperateMes(String.Format("Delay {0}ms",time));
+            if (bAutoTrimTest)
+            {
+                DisplayOperateMes(String.Format("Delay {0}ms", time));
+            }
         }
 
         private void StoreReg80ToReg83Value()
@@ -2166,7 +2204,12 @@ namespace CurrentSensorV3
             _reg_data = 0x0E;
             writeResult = oneWrie_device.I2CWrite_Single(this.DeviceAddress, _reg_addr, _reg_data);
             if (writeResult)
-                DisplayOperateMes("Marginal Read succeeded!\r\n");
+            {
+                if (bAutoTrimTest)
+                {
+                    DisplayOperateMes("Marginal Read succeeded!\r\n");
+                }
+            }
             else
             {
                 DisplayOperateMes("I2C write failed, Marginal Read Failed!\r\n", Color.Red);
@@ -2179,7 +2222,12 @@ namespace CurrentSensorV3
             _reg_data = 0x0;
             writeResult = oneWrie_device.I2CWrite_Single(this.DeviceAddress, _reg_addr, _reg_data);
             if (writeResult)
-                DisplayOperateMes("Marginal Read Setup succeeded!\r\n");
+            {
+                if (bAutoTrimTest)
+                {
+                    DisplayOperateMes("Marginal Read Setup succeeded!\r\n");
+                }
+            }
             else
                 DisplayOperateMes("Marginal Read Setup failed!\r\n", Color.Red);
         }
@@ -2225,7 +2273,12 @@ namespace CurrentSensorV3
             _reg_data = 0x0;
             writeResult = oneWrie_device.I2CWrite_Single(this.DeviceAddress, _reg_addr, _reg_data);
             if (writeResult)
-                DisplayOperateMes("Reset Reg0x43 succeeded!\r\n");
+            {
+                if (bAutoTrimTest)
+                {
+                    DisplayOperateMes("Reset Reg0x43 succeeded!\r\n");
+                }
+            }
             else
             {
                 DisplayOperateMes("Reset Reg0x43 failed!\r\n", Color.Red);
@@ -2238,7 +2291,12 @@ namespace CurrentSensorV3
             _reg_data = 0x0;
             writeResult = oneWrie_device.I2CWrite_Single(this.DeviceAddress, _reg_addr, _reg_data);
             if (writeResult)
-                DisplayOperateMes("Safety Read Setup succeeded!\r\n");
+            {
+                if (bAutoTrimTest)
+                {
+                    DisplayOperateMes("Safety Read Setup succeeded!\r\n");
+                }
+            }
             else
                 DisplayOperateMes("Safety Read Setup failed!\r\n", Color.Red);
         }
@@ -2252,14 +2310,17 @@ namespace CurrentSensorV3
             {
                 for (int ix = 0; ix < num; ix++)
                 {
-                    DisplayOperateMes(string.Format("Reg{0} = 0x{1}", ix, _readBack_data[ix].ToString("X2")));
+                    if (bAutoTrimTest)
+                    {
+                        DisplayOperateMes(string.Format("Reg{0} = 0x{1}", ix, _readBack_data[ix].ToString("X2")));
+                    }
                     //DisplayOperateMes("Reg1 = 0x" + _readBack_data[0].ToString("X") +
                     //    "\r\nReg2 = 0x" + _readBack_data[1].ToString("X") +
                     //    "\r\nReg3 = 0x" + _readBack_data[2].ToString("X") +
                     //    "\r\nReg4 = 0x" + _readBack_data[3].ToString("X") +
                     //    "\r\nReg5 = 0x" + _readBack_data[4].ToString("X"));
                 }
-                DisplayOperateMes("");
+                //DisplayOperateMes("");
                 return true;
             }
             else
@@ -2353,50 +2414,81 @@ namespace CurrentSensorV3
         {
             //Rough Trim
             string baseMes = "Calculate Gain Operation:";
-            DisplayOperateMes(baseMes);
+            if (bAutoTrimTest)
+            {
+                DisplayOperateMes(baseMes);
+            }
 
             double testGain = GainCalculate();
-            DisplayOperateMes("Test Gain = " + testGain.ToString());
+            if (bAutoTrimTest)
+            {
+                DisplayOperateMes("Test Gain = " + testGain.ToString());
+            }
 
             double gainTuning = 100 * GainTuningCalc_Customer(testGain, TargetGain_customer);   //计算修正值，供查表用
-            DisplayOperateMes("Ideal Gain = " + gainTuning.ToString("F4") + "%");
+            if (bAutoTrimTest)
+            {
+                DisplayOperateMes("Ideal Gain = " + gainTuning.ToString("F4") + "%");
+            }
 
             Ix_ForPrecisonGainCtrl = LookupPreciseGain(gainTuning, PreciseTable_Customer);
-            DisplayOperateMes("Precise Gain Index = " + Ix_ForPrecisonGainCtrl.ToString() +
-                ";Choosed Gain = " + PreciseTable_Customer[0][Ix_ForPrecisonGainCtrl].ToString() + "%");
+            if (bAutoTrimTest)
+            {
+                DisplayOperateMes("Precise Gain Index = " + Ix_ForPrecisonGainCtrl.ToString() +
+                    ";Choosed Gain = " + PreciseTable_Customer[0][Ix_ForPrecisonGainCtrl].ToString() + "%");
+            }
 
             bit_op_mask = bit0_Mask | bit1_Mask | bit2_Mask | bit3_Mask | bit4_Mask;
             Reg80Value &= ~bit_op_mask;
             Reg80Value |= Convert.ToUInt32(PreciseTable_Customer[1][Ix_ForPrecisonGainCtrl]);
-            DisplayOperateMes("Reg1 Value = " + Reg80Value.ToString() +
-                "(+ 0x" + Convert.ToInt32(PreciseTable_Customer[1][Ix_ForPrecisonGainCtrl]).ToString("X") + ")\r\n");
+            if (bAutoTrimTest)
+            {
+                DisplayOperateMes("Reg1 Value = " + Reg80Value.ToString() +
+                    "(+ 0x" + Convert.ToInt32(PreciseTable_Customer[1][Ix_ForPrecisonGainCtrl]).ToString("X") + ")\r\n");
+            }
         }
 
         private void btn_offset_Click(object sender, EventArgs e)
         {
             string baseMes = "Offset Trim Operation:";
-            DisplayOperateMes(baseMes);
+            if (bAutoTrimTest)
+            {
+                DisplayOperateMes(baseMes);
+            }
             double offsetTuning = 100 * OffsetTuningCalc_Customer();
-            DisplayOperateMes("Lookup offset = " + offsetTuning.ToString("F4") + "%");
+            if (bAutoTrimTest)
+            {
+                DisplayOperateMes("Lookup offset = " + offsetTuning.ToString("F4") + "%");
+            }
 
             Ix_ForOffsetATable = LookupOffset(ref offsetTuning, OffsetTableA_Customer);
             //offsetTuning = offsetTuning / OffsetTableA_Customer[0][Ix_ForOffsetATable]; 
             Ix_ForOffsetBTable = LookupOffset(ref offsetTuning, OffsetTableB_Customer);
 
-            DisplayOperateMes("Offset TableA chose Index = " + Ix_ForOffsetATable.ToString() +
-                ";Choosed OffsetA = " + OffsetTableA_Customer[0][Ix_ForOffsetATable].ToString("F4"));
-            DisplayOperateMes("Offset TableB chose Index = " + Ix_ForOffsetBTable.ToString() +
-                ";Choosed OffsetB = " + OffsetTableB_Customer[0][Ix_ForOffsetBTable].ToString("F4"));
+            if (bAutoTrimTest)
+            {
+                DisplayOperateMes("Offset TableA chose Index = " + Ix_ForOffsetATable.ToString() +
+                    ";Choosed OffsetA = " + OffsetTableA_Customer[0][Ix_ForOffsetATable].ToString("F4"));
+                DisplayOperateMes("Offset TableB chose Index = " + Ix_ForOffsetBTable.ToString() +
+                    ";Choosed OffsetB = " + OffsetTableB_Customer[0][Ix_ForOffsetBTable].ToString("F4"));
+            }
 
             Reg81Value += Convert.ToUInt32(OffsetTableA_Customer[1][Ix_ForOffsetATable]);
             Reg82Value += Convert.ToUInt32(OffsetTableA_Customer[2][Ix_ForOffsetATable]);
-            DisplayOperateMes("Reg2 Value = " + Reg81Value.ToString() + "(+ 0x" + Convert.ToInt32(OffsetTableA_Customer[1][Ix_ForOffsetATable]).ToString("X") + ")\r\n");
-            DisplayOperateMes("Reg3 Value = " + Reg82Value.ToString() + "(+ 0x" + Convert.ToInt32(OffsetTableA_Customer[2][Ix_ForOffsetATable]).ToString("X") + ")\r\n");
+
+            if (bAutoTrimTest)
+            {
+                DisplayOperateMes("Reg2 Value = " + Reg81Value.ToString() + "(+ 0x" + Convert.ToInt32(OffsetTableA_Customer[1][Ix_ForOffsetATable]).ToString("X") + ")\r\n");
+                DisplayOperateMes("Reg3 Value = " + Reg82Value.ToString() + "(+ 0x" + Convert.ToInt32(OffsetTableA_Customer[2][Ix_ForOffsetATable]).ToString("X") + ")\r\n");
+            }
 
             bit_op_mask = bit2_Mask | bit3_Mask | bit4_Mask | bit5_Mask;
             Reg83Value &= ~bit_op_mask;
             Reg83Value |= Convert.ToUInt32(OffsetTableB_Customer[1][Ix_ForOffsetBTable]);
-            DisplayOperateMes("Reg4 Value = " + Reg83Value.ToString() + "(+ 0x" + Convert.ToInt32(OffsetTableB_Customer[1][Ix_ForOffsetBTable]).ToString("X") + ")\r\n");
+            if (bAutoTrimTest)
+            {
+                DisplayOperateMes("Reg4 Value = " + Reg83Value.ToString() + "(+ 0x" + Convert.ToInt32(OffsetTableB_Customer[1][Ix_ForOffsetBTable]).ToString("X") + ")\r\n");
+            }
         }
 
         private void btn_writeFuseCode_Click(object sender, EventArgs e)
@@ -2918,24 +3010,46 @@ namespace CurrentSensorV3
             uint[] tempReadback = new uint[5];
             double dVip_Target = 2.5 + TargetVoltage_customer;
 
+            DisplayOperateMes("Start...\r\n");
+            this.lbl_passOrFailed.ForeColor = Color.Black;
+            this.lbl_passOrFailed.Text = "START!";
+
             /* AutoTrim code */
             /*  power on */
             RePower();
             
             Delay(Delay_Operation); 
 
-            /* Get module current */            
+            /* Get module current */
             if (oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VIN_TO_VCS))
-                DisplayOperateMes("Set ADC VIN to VCS");
+            {
+                if (bAutoTrimTest)
+                {
+                    DisplayOperateMes("Set ADC VIN to VCS");
+                }
+            }
             else
+            {
                 DisplayOperateMes("Set ADC VIN to VCS failed", Color.Red);
+                PowerOff();
+                return;
+            }
 
             Delay(Delay_Operation);
 
             if (oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_SET_CURRENT_SENCE))
-                DisplayOperateMes("Set ADC current sensor");
+            {
+                if (bAutoTrimTest)
+                {
+                    DisplayOperateMes("Set ADC current sensor");
+                }
+            }
             else
+            {
                 DisplayOperateMes("Set ADC current sensor failed", Color.Red);
+                PowerOff();
+                return;
+            }
 
             this.txt_ModuleCurrent_EngT.Text = GetModuleCurrent().ToString("F1");
             this.txt_ModuleCurrent_PreT.Text = this.txt_ModuleCurrent_EngT.Text;
@@ -2965,6 +3079,7 @@ namespace CurrentSensorV3
             if (dr == DialogResult.Cancel)
             {
                 DisplayOperateMes("AutoTrim Canceled!", Color.Red);
+                PowerOff();
                 return;
             }
 
@@ -2991,6 +3106,7 @@ namespace CurrentSensorV3
             if (dr == DialogResult.Cancel)
             {
                 DisplayOperateMes("AutoTrim Canceled!", Color.Red);
+                PowerOff();
                 return;
             }
             Delay(Delay_Operation);
@@ -3004,8 +3120,13 @@ namespace CurrentSensorV3
             if ((Vout_IP - Vout_0A) < TargetVoltage_customer || (Vout_IP - Vout_0A) >= TargetVoltage_customer * 100/86.07 )
             {
                 DisplayOperateMes("PreTrim Code is not suitable!", Color.Red);
+                PowerOff();
                 return;
             }
+
+            DisplayOperateMes("Processing...\r\n");
+            this.lbl_passOrFailed.ForeColor = Color.Black;
+            this.lbl_passOrFailed.Text = "Processing!";
 
             /* Gain Calculate */
             btn_CalcGainCode_EngT_Click(null, null);        // Calculate the base code(Ix_ForPrecisonGainCtrl)
@@ -3032,7 +3153,10 @@ namespace CurrentSensorV3
             /* Offset trim code calculate */
             if (this.cmb_Module_PreT.SelectedItem.ToString() == "5V")
             {
-                btn_offset_Click(null, null); 
+                btn_offset_Click(null, null);
+                DisplayOperateMes("Processing...\r\n");
+                //this.lbl_passOrFailed.ForeColor = Color.Black;
+                //this.lbl_passOrFailed.Text = "Processing!";
             }
             else
             {
@@ -3052,6 +3176,8 @@ namespace CurrentSensorV3
 
             /* fuse */
             FuseClockOn(DeviceAddress, (double)num_UD_pulsewidth_ow_EngT.Value, (double)numUD_pulsedurationtime_ow_EngT.Value);
+
+            DisplayOperateMes("Processing...\r\n");
 
             Delay(Delay_Fuse);
 
@@ -3105,6 +3231,7 @@ namespace CurrentSensorV3
 
             /* Fuse */
             FuseClockOn(DeviceAddress, (double)num_UD_pulsewidth_ow_EngT.Value, (double)numUD_pulsedurationtime_ow_EngT.Value);
+            DisplayOperateMes("Processing...\r\n");
 
             Delay(Delay_Fuse);
 
@@ -3144,71 +3271,91 @@ namespace CurrentSensorV3
             if (dr == DialogResult.Cancel)
             {
                 DisplayOperateMes("AutoTrim Canceled!", Color.Red);
+                PowerOff();
                 return;
             }
 
             Vout_IP = AverageVout();
 
+            DisplayOperateMes("Done...\r\n");
+
             /* bin1,2,3 */
-            if (!(bSafety || bMarginal))
+            if ( ! bMarginal )
             {
                 if (2.5 * (1 - 0.01) <= Vout_0A && Vout_0A <= 2.5 * (1 + 0.01) && Vout_IP <= dVip_Target * (1 + 0.01) && Vout_IP >= dVip_Target * (1 - 0.01))
                 {
                     DisplayOperateMes("Pass! Bin1");
+                    this.lbl_passOrFailed.ForeColor = Color.Green;
+                    this.lbl_passOrFailed.Text = "Pass!";
                 }
-                else if (2.5 * (1 - 0.31) <= Vout_0A && Vout_0A <= 2.5 * (1 + 0.03) && Vout_IP <= dVip_Target * (1 + 0.03) && Vout_IP >= dVip_Target * (1 - 0.03))
+                else if (2.5 * (1 - 0.31) <= Vout_0A && Vout_0A <= 2.5 * (1 + 0.02) && Vout_IP <= dVip_Target * (1 + 0.03) && Vout_IP >= dVip_Target * (1 - 0.02))
                 {
                     DisplayOperateMes("Pass! Bin2");
+                    this.lbl_passOrFailed.ForeColor = Color.Green;
+                    this.lbl_passOrFailed.Text = "Pass!";
                 }
-                else if (2.5 * (1 - 0.06) <= Vout_0A && Vout_0A <= 2.5 * (1 + 0.06) && Vout_IP <= dVip_Target * (1 + 0.06) && Vout_IP >= dVip_Target * (1 - 0.06))
+                else if (2.5 * (1 - 0.06) <= Vout_0A && Vout_0A <= 2.5 * (1 + 0.03) && Vout_IP <= dVip_Target * (1 + 0.06) && Vout_IP >= dVip_Target * (1 - 0.03))
                 {
                     DisplayOperateMes("Pass! Bin3");
+                    this.lbl_passOrFailed.ForeColor = Color.Green;
+                    this.lbl_passOrFailed.Text = "Pass!";
                 }
                 else
                 {
                     DisplayOperateMes("Fail!");
+                    this.lbl_passOrFailed.ForeColor = Color.Red;
+                    this.lbl_passOrFailed.Text = "Fail!";
                 }
             }
             /* bin4,5,6 */
-            else if (bMarginal == true)
-            {
-                if (2.5 * (1 - 0.01) <= Vout_0A && Vout_0A <= 2.5 * (1 + 0.01) && Vout_IP <= dVip_Target * (1 + 0.01) && Vout_IP >= dVip_Target * (1 - 0.01))
-                {
-                    DisplayOperateMes("Pass! Bin4");
-                }
-                else if (2.5 * (1 - 0.31) <= Vout_0A && Vout_0A <= 2.5 * (1 + 0.03) && Vout_IP <= dVip_Target * (1 + 0.03) && Vout_IP >= dVip_Target * (1 - 0.03))
-                {
-                    DisplayOperateMes("Pass! Bin5");
-                }
-                else if (2.5 * (1 - 0.06) <= Vout_0A && Vout_0A <= 2.5 * (1 + 0.06) && Vout_IP <= dVip_Target * (1 + 0.06) && Vout_IP >= dVip_Target * (1 - 0.06))
-                {
-                    DisplayOperateMes("Pass! Bin6");
-                }
-                else
-                {
-                    DisplayOperateMes("Fail!");
-                }
-            }
-            /* bin7,8,9 */
+            //else if (bMarginal == true)
             else
             {
                 if (2.5 * (1 - 0.01) <= Vout_0A && Vout_0A <= 2.5 * (1 + 0.01) && Vout_IP <= dVip_Target * (1 + 0.01) && Vout_IP >= dVip_Target * (1 - 0.01))
                 {
-                    DisplayOperateMes("Pass! Bin7");
+                    DisplayOperateMes("M.R.E! Bin4");
+                    this.lbl_passOrFailed.ForeColor = Color.Red;
+                    this.lbl_passOrFailed.Text = "M.R.E!";
                 }
                 else if (2.5 * (1 - 0.31) <= Vout_0A && Vout_0A <= 2.5 * (1 + 0.03) && Vout_IP <= dVip_Target * (1 + 0.03) && Vout_IP >= dVip_Target * (1 - 0.03))
                 {
-                    DisplayOperateMes("Pass! Bin8");
+                    DisplayOperateMes("M.R.E! Bin5");
+                    this.lbl_passOrFailed.ForeColor = Color.Red;
+                    this.lbl_passOrFailed.Text = "M.R.E!";
                 }
                 else if (2.5 * (1 - 0.06) <= Vout_0A && Vout_0A <= 2.5 * (1 + 0.06) && Vout_IP <= dVip_Target * (1 + 0.06) && Vout_IP >= dVip_Target * (1 - 0.06))
                 {
-                    DisplayOperateMes("Pass! Bin9");
+                    DisplayOperateMes("M.R.E! Bin6");
+                    this.lbl_passOrFailed.ForeColor = Color.Red;
+                    this.lbl_passOrFailed.Text = "M.R.E!";
                 }
                 else
                 {
                     DisplayOperateMes("Fail!");
+                    this.lbl_passOrFailed.ForeColor = Color.Red;
+                    this.lbl_passOrFailed.Text = "Fail!";
                 }
             }
+            /* bin7,8,9 */
+            //else
+            //{
+            //    if (2.5 * (1 - 0.01) <= Vout_0A && Vout_0A <= 2.5 * (1 + 0.01) && Vout_IP <= dVip_Target * (1 + 0.01) && Vout_IP >= dVip_Target * (1 - 0.01))
+            //    {
+            //        DisplayOperateMes("Pass! Bin7");
+            //    }
+            //    else if (2.5 * (1 - 0.31) <= Vout_0A && Vout_0A <= 2.5 * (1 + 0.03) && Vout_IP <= dVip_Target * (1 + 0.03) && Vout_IP >= dVip_Target * (1 - 0.03))
+            //    {
+            //        DisplayOperateMes("Pass! Bin8");
+            //    }
+            //    else if (2.5 * (1 - 0.06) <= Vout_0A && Vout_0A <= 2.5 * (1 + 0.06) && Vout_IP <= dVip_Target * (1 + 0.06) && Vout_IP >= dVip_Target * (1 - 0.06))
+            //    {
+            //        DisplayOperateMes("Pass! Bin9");
+            //    }
+            //    else
+            //    {
+            //        DisplayOperateMes("Fail!");
+            //    }
+            //}
 
             DisplayOperateMes("Vout @ 0A = " + Vout_0A.ToString("F3"));
             DisplayOperateMes("Vout @ IP = " + Vout_IP.ToString("F3"));
@@ -3220,6 +3367,10 @@ namespace CurrentSensorV3
 
             /* Restore register value to preset */
             RestoreReg80ToReg83Value();
+
+            DisplayOperateMes("Next...\r\n");
+            this.lbl_passOrFailed.ForeColor = Color.Black;
+            this.lbl_passOrFailed.Text = "Done!";
         }
 
         //sel_vr button

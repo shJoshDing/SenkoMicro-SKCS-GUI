@@ -1823,7 +1823,7 @@
             // btn_SaveConfig_PreT
             // 
             this.btn_SaveConfig_PreT.Font = new System.Drawing.Font("Microsoft Sans Serif", 17F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.btn_SaveConfig_PreT.Location = new System.Drawing.Point(408, 34);
+            this.btn_SaveConfig_PreT.Location = new System.Drawing.Point(440, 34);
             this.btn_SaveConfig_PreT.Name = "btn_SaveConfig_PreT";
             this.btn_SaveConfig_PreT.Size = new System.Drawing.Size(134, 32);
             this.btn_SaveConfig_PreT.TabIndex = 91;
@@ -1878,11 +1878,12 @@
             // 
             this.label41.AutoSize = true;
             this.label41.Font = new System.Drawing.Font("Times New Roman", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label41.Location = new System.Drawing.Point(541, 81);
+            this.label41.Location = new System.Drawing.Point(524, 104);
             this.label41.Name = "label41";
             this.label41.Size = new System.Drawing.Size(30, 14);
             this.label41.TabIndex = 87;
             this.label41.Text = "Reg4";
+            this.label41.Visible = false;
             // 
             // txt_ChosenGain_PreT
             // 
@@ -1937,44 +1938,48 @@
             // 
             this.label42.AutoSize = true;
             this.label42.Font = new System.Drawing.Font("Times New Roman", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label42.Location = new System.Drawing.Point(541, 63);
+            this.label42.Location = new System.Drawing.Point(524, 86);
             this.label42.Name = "label42";
             this.label42.Size = new System.Drawing.Size(30, 14);
             this.label42.TabIndex = 86;
             this.label42.Text = "Reg3";
+            this.label42.Visible = false;
             // 
             // label43
             // 
             this.label43.AutoSize = true;
             this.label43.Font = new System.Drawing.Font("Times New Roman", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label43.Location = new System.Drawing.Point(541, 45);
+            this.label43.Location = new System.Drawing.Point(433, 104);
             this.label43.Name = "label43";
             this.label43.Size = new System.Drawing.Size(30, 14);
             this.label43.TabIndex = 85;
             this.label43.Text = "Reg2";
+            this.label43.Visible = false;
             // 
             // label44
             // 
             this.label44.AutoSize = true;
             this.label44.Font = new System.Drawing.Font("Times New Roman", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label44.Location = new System.Drawing.Point(541, 27);
+            this.label44.Location = new System.Drawing.Point(433, 86);
             this.label44.Name = "label44";
             this.label44.Size = new System.Drawing.Size(30, 14);
             this.label44.TabIndex = 84;
             this.label44.Text = "Reg1";
+            this.label44.Visible = false;
             // 
             // txt_Reg83_PreT
             // 
             this.txt_Reg83_PreT.BackColor = System.Drawing.SystemColors.ControlDarkDark;
             this.txt_Reg83_PreT.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Pixel);
             this.txt_Reg83_PreT.ForeColor = System.Drawing.Color.White;
-            this.txt_Reg83_PreT.Location = new System.Drawing.Point(574, 78);
+            this.txt_Reg83_PreT.Location = new System.Drawing.Point(557, 101);
             this.txt_Reg83_PreT.Name = "txt_Reg83_PreT";
             this.txt_Reg83_PreT.ReadOnly = true;
             this.txt_Reg83_PreT.Size = new System.Drawing.Size(56, 20);
             this.txt_Reg83_PreT.TabIndex = 83;
             this.txt_Reg83_PreT.Text = "0x00";
             this.txt_Reg83_PreT.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.txt_Reg83_PreT.Visible = false;
             this.txt_Reg83_PreT.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txt_RegValue_KeyPress);
             // 
             // txt_Reg82_PreT
@@ -1982,13 +1987,14 @@
             this.txt_Reg82_PreT.BackColor = System.Drawing.SystemColors.ControlDarkDark;
             this.txt_Reg82_PreT.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Pixel);
             this.txt_Reg82_PreT.ForeColor = System.Drawing.Color.White;
-            this.txt_Reg82_PreT.Location = new System.Drawing.Point(574, 60);
+            this.txt_Reg82_PreT.Location = new System.Drawing.Point(557, 83);
             this.txt_Reg82_PreT.Name = "txt_Reg82_PreT";
             this.txt_Reg82_PreT.ReadOnly = true;
             this.txt_Reg82_PreT.Size = new System.Drawing.Size(56, 20);
             this.txt_Reg82_PreT.TabIndex = 82;
             this.txt_Reg82_PreT.Text = "0x00";
             this.txt_Reg82_PreT.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.txt_Reg82_PreT.Visible = false;
             this.txt_Reg82_PreT.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txt_RegValue_KeyPress);
             // 
             // txt_Reg81_PreT
@@ -1996,13 +2002,14 @@
             this.txt_Reg81_PreT.BackColor = System.Drawing.SystemColors.ControlDarkDark;
             this.txt_Reg81_PreT.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Pixel);
             this.txt_Reg81_PreT.ForeColor = System.Drawing.Color.White;
-            this.txt_Reg81_PreT.Location = new System.Drawing.Point(574, 42);
+            this.txt_Reg81_PreT.Location = new System.Drawing.Point(466, 101);
             this.txt_Reg81_PreT.Name = "txt_Reg81_PreT";
             this.txt_Reg81_PreT.ReadOnly = true;
             this.txt_Reg81_PreT.Size = new System.Drawing.Size(56, 20);
             this.txt_Reg81_PreT.TabIndex = 81;
             this.txt_Reg81_PreT.Text = "0x00";
             this.txt_Reg81_PreT.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.txt_Reg81_PreT.Visible = false;
             this.txt_Reg81_PreT.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txt_RegValue_KeyPress);
             // 
             // txt_Reg80_PreT
@@ -2010,13 +2017,14 @@
             this.txt_Reg80_PreT.BackColor = System.Drawing.SystemColors.ControlDarkDark;
             this.txt_Reg80_PreT.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Pixel);
             this.txt_Reg80_PreT.ForeColor = System.Drawing.Color.White;
-            this.txt_Reg80_PreT.Location = new System.Drawing.Point(574, 24);
+            this.txt_Reg80_PreT.Location = new System.Drawing.Point(466, 83);
             this.txt_Reg80_PreT.Name = "txt_Reg80_PreT";
             this.txt_Reg80_PreT.ReadOnly = true;
             this.txt_Reg80_PreT.Size = new System.Drawing.Size(56, 20);
             this.txt_Reg80_PreT.TabIndex = 80;
             this.txt_Reg80_PreT.Text = "0x00";
             this.txt_Reg80_PreT.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.txt_Reg80_PreT.Visible = false;
             this.txt_Reg80_PreT.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txt_RegValue_KeyPress);
             // 
             // groupBox6
