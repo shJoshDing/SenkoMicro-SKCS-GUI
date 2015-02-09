@@ -22,8 +22,8 @@ namespace CurrentSensorV3
 
         #region Param Definition
 
-        //bool bAutoTrimTest = true;          //Debug mode, display engineer tab
-        bool bAutoTrimTest = false;          //Release mode, bon't display engineer tab
+        bool bAutoTrimTest = true;          //Debug mode, display engineer tab
+        //bool bAutoTrimTest = false;       //Release mode, bon't display engineer tab
 
         //double IP15 = 0;
         //double IP10 = 0;
@@ -42,7 +42,22 @@ namespace CurrentSensorV3
         int Delay_Operation = 300;  //ms
         int Delay_Fuse = 1000;    //ms
 
-        double ADCOffset = -0.007;
+        double ADCOffset = 0;
+        double AadcOffset
+        {
+            set
+            {
+                this.ADCOffset = Math.Round(value, 0);
+                //Set three adcofset combobox on the GUI
+                //this.txt_IP_EngT.Text = this.ip.ToString("F0");
+                this.txt_AdcOffset_PreT.Text = this.ADCOffset.ToString("F0");
+                this.txt_AdcOffset_AutoT.Text = this.ADCOffset.ToString("F0");
+            }
+            get { return this.ADCOffset; }
+        }
+
+
+        double RefVoltOffset = -0.007;
 
         double Vout_0A = 0;
         double Vout_IP = 0;
@@ -386,7 +401,7 @@ namespace CurrentSensorV3
         {
             double result = oneWrie_device.AverageADCSamples(oneWrie_device.ADCSampleTransfer(SampleRate, SampleRateNum));
 
-            result = ADCOffset + (result * 5d / 4096d);
+            result = RefVoltOffset - AadcOffset/1000d + (result * 5d / 4096d);
             return result;
         }
 
@@ -394,7 +409,7 @@ namespace CurrentSensorV3
         {
             double result = oneWrie_device.AverageADCSamples(oneWrie_device.ADCSampleTransfer(SampleRate, sampleNum));
 
-            result = ADCOffset + (result * 5d / 4096d);
+            result = RefVoltOffset - AadcOffset/1000d + (result * 5d / 4096d);
             return result;
         }
 
@@ -402,7 +417,7 @@ namespace CurrentSensorV3
         {
             double result = oneWrie_device.AverageADCSamples(oneWrie_device.ADCSampleTransfer(SampleRate, SampleRateNum));
 
-            result = 1000d * (ADCOffset + (result * 5d / 4096d)) / 100d;
+            result = 1000d * (RefVoltOffset + (result * 5d / 4096d)) / 100d;
             return result;
         }
 
@@ -2361,6 +2376,8 @@ namespace CurrentSensorV3
             try
             {
                 //temp = (4500d - 2000d) / double.Parse(this.txt_TargetGain.Text);
+                if ((sender as TextBox).Text.ToCharArray()[(sender as TextBox).Text.Length - 1].ToString() == ".")
+                    return;
                 TargetGain_customer = double.Parse((sender as TextBox).Text);
                 //TargetGain_customer = (double.Parse((sender as TextBox).Text) * 2000d)/IP;
             }
@@ -2371,7 +2388,7 @@ namespace CurrentSensorV3
             }
             finally
             {
-                TargetGain_customer = TargetGain_customer;      //Force to update text to default.
+                //TargetGain_customer = TargetGain_customer;      //Force to update text to default.
             }
 
             //double temp = 2000d / TargetGain_customer;
@@ -2743,13 +2760,19 @@ namespace CurrentSensorV3
 
             if (setResult)
             {
-                message += " succeeded!\r\n";
-                DisplayOperateMes(message);
+                if (bAutoTrimTest)
+                {
+                    message += " succeeded!\r\n";
+                    DisplayOperateMes(message);
+                }
             }
             else
             {
-                message += " Failed!\r\n";
-                DisplayOperateMes(message, Color.Red);
+                if (bAutoTrimTest)
+                {
+                    message += " Failed!\r\n";
+                    DisplayOperateMes(message, Color.Red);
+                }
             }
         }
 
@@ -2769,13 +2792,19 @@ namespace CurrentSensorV3
 
             if (setResult)
             {
-                message += " succeeded!\r\n";
-                DisplayOperateMes(message);
+                if (bAutoTrimTest)
+                {
+                    message += " succeeded!\r\n";
+                    DisplayOperateMes(message);
+                }
             }
             else
             {
-                message += " Failed!\r\n";
-                DisplayOperateMes(message, Color.Red);
+                if (bAutoTrimTest)
+                {
+                    message += " Failed!\r\n";
+                    DisplayOperateMes(message, Color.Red);
+                }
             }
         }
 
@@ -2794,13 +2823,19 @@ namespace CurrentSensorV3
                 message = "Vref without Cap set";
             if (setResult)
             {
-                message += " succeeded!\r\n";
-                DisplayOperateMes(message);
+                if (bAutoTrimTest)
+                {
+                    message += " succeeded!\r\n";
+                    DisplayOperateMes(message);
+                }
             }
             else
             {
-                message += " Failed!\r\n";
-                DisplayOperateMes(message, Color.Red);
+                if (bAutoTrimTest)
+                {
+                    message += " Failed!\r\n";
+                    DisplayOperateMes(message, Color.Red);
+                }
             }
         }
 
@@ -2871,13 +2906,19 @@ namespace CurrentSensorV3
 
             if (setResult)
             {
-                message += " succeeded!\r\n";
-                DisplayOperateMes(message);
+                if (bAutoTrimTest)
+                {
+                    message += " succeeded!\r\n";
+                    DisplayOperateMes(message);
+                }
             }
             else
             {
-                message += " Failed!\r\n";
-                DisplayOperateMes(message, Color.Red);
+                if (bAutoTrimTest)
+                {
+                    message += " Failed!\r\n";
+                    DisplayOperateMes(message, Color.Red);
+                }
             }
         }
 
@@ -2898,13 +2939,19 @@ namespace CurrentSensorV3
 
             if (setResult)
             {
-                message += " succeeded!\r\n";
-                DisplayOperateMes(message);
+                if (bAutoTrimTest)
+                {
+                    message += " succeeded!\r\n";
+                    DisplayOperateMes(message);
+                }
             }
             else
             {
-                message += " Failed!\r\n";
-                DisplayOperateMes(message, Color.Red);
+                if (bAutoTrimTest)
+                {
+                    message += " Failed!\r\n";
+                    DisplayOperateMes(message, Color.Red);
+                }
             }
         }
 
@@ -3084,8 +3131,8 @@ namespace CurrentSensorV3
             }
 
             /* Get vout @ IP */            
-            oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_CONFIG_TO_VOUT);
-            oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VOUT_WITHOUT_CAP);
+            //oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_CONFIG_TO_VOUT);
+            //oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VOUT_WITHOUT_CAP);
             
             //EnterTestMode();  // ??? 多余的
             
@@ -3117,12 +3164,142 @@ namespace CurrentSensorV3
             DisplayOperateMes("Target Delta Vout*100/86.07 = " + (TargetVoltage_customer * 100 / 86.07).ToString("F3"));
 
             /*Judge PreSet gain; delta Vout target >= delta Vout test * 86.07% */
-            if ((Vout_IP - Vout_0A) < TargetVoltage_customer || (Vout_IP - Vout_0A) >= TargetVoltage_customer * 100/86.07 )
+            //if ((Vout_IP - Vout_0A) < TargetVoltage_customer || (Vout_IP - Vout_0A) >= TargetVoltage_customer * 100/86.07 )
+            //{
+            //    DisplayOperateMes("PreTrim Code is not suitable!", Color.Red);
+            //    PowerOff();
+            //    return;
+            //}
+
+            if (((Vout_IP - Vout_0A) < TargetVoltage_customer) && ((Vout_IP - Vout_0A) > 0))
+            {
+                Reg80Value = Convert.ToUInt32(RoughTable_Customer[1][Ix_ForRoughGainCtrl + 1]);
+                Reg81Value = Convert.ToUInt32(RoughTable_Customer[2][Ix_ForRoughGainCtrl + 1]);
+
+                RePower();
+
+                /*Enter test mode, write PreSet Gain code, and enter nomal mode*/
+                EnterTestMode();
+
+                /*Write  PreSet Gain code */
+                RegisterWrite(4, new uint[8] { 0x80, Reg80Value, 0x81, Reg81Value, 0x82, Reg82Value, 0x83, Reg83Value });
+
+                /*Read back  PreSet Gain code */
+                BurstRead(0x80, 5, tempReadback);
+
+                /* Change Current to IP  */
+                dr = MessageBox.Show(String.Format("Please Change Current To {0}A", IP), "Change Current", MessageBoxButtons.OKCancel);
+                if (dr == DialogResult.Cancel)
+                {
+                    DisplayOperateMes("AutoTrim Canceled!", Color.Red);
+                    PowerOff();
+                    return;
+                }
+
+                /* Get vout @ IP */
+                //oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_CONFIG_TO_VOUT);
+                //oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VOUT_WITHOUT_CAP);
+
+                //EnterTestMode();  // ??? 多余的
+
+                EnterNomalMode();
+                oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VOUT_WITH_CAP);
+                Delay(Delay_Operation);
+                Vout_IP = AverageVout();
+                DisplayOperateMes("Vout @ IP = " + Vout_IP.ToString("F3"));
+
+                //if (Vout_IP > 4.95 || Vout_IP < 2)
+                //{
+                //    DisplayOperateMes("PreTrim Code is not suitable!", Color.Red);
+                //    return;
+                //}
+
+                /* Change Current to 0A */
+                dr = MessageBox.Show(String.Format("Please Change Current To 0A"), "Change Current", MessageBoxButtons.OKCancel);
+                if (dr == DialogResult.Cancel)
+                {
+                    DisplayOperateMes("AutoTrim Canceled!", Color.Red);
+                    PowerOff();
+                    return;
+                }
+                Delay(Delay_Operation);
+                Vout_0A = AverageVout();
+                DisplayOperateMes("Vout @ 0A = " + Vout_0A.ToString("F3"));
+                DisplayOperateMes("Delta Vout = " + (Vout_IP - Vout_0A).ToString("F3"));
+                DisplayOperateMes("Target Delta Vout = " + TargetVoltage_customer.ToString("F3"));
+                DisplayOperateMes("Target Delta Vout*100/86.07 = " + (TargetVoltage_customer * 100 / 86.07).ToString("F3"));
+
+            }
+
+            else if ( ( (Vout_IP - Vout_0A) > TargetVoltage_customer * 100 / 86.07 )  )
+            {
+                Reg80Value = Convert.ToUInt32(RoughTable_Customer[1][Ix_ForRoughGainCtrl - 1]);
+                Reg81Value = Convert.ToUInt32(RoughTable_Customer[2][Ix_ForRoughGainCtrl - 1]);
+
+                RePower();
+
+                /*Enter test mode, write PreSet Gain code, and enter nomal mode*/
+                EnterTestMode();
+
+                /*Write  PreSet Gain code */
+                RegisterWrite(4, new uint[8] { 0x80, Reg80Value, 0x81, Reg81Value, 0x82, Reg82Value, 0x83, Reg83Value });
+
+                /*Read back  PreSet Gain code */
+                BurstRead(0x80, 5, tempReadback);
+
+                /* Change Current to IP  */
+                dr = MessageBox.Show(String.Format("Please Change Current To {0}A", IP), "Change Current", MessageBoxButtons.OKCancel);
+                if (dr == DialogResult.Cancel)
+                {
+                    DisplayOperateMes("AutoTrim Canceled!", Color.Red);
+                    PowerOff();
+                    return;
+                }
+
+                /* Get vout @ IP */
+                //oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_CONFIG_TO_VOUT);
+                //oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VOUT_WITHOUT_CAP);
+
+                //EnterTestMode();  // ??? 多余的
+
+                EnterNomalMode();
+                oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VOUT_WITH_CAP);
+                Delay(Delay_Operation);
+                Vout_IP = AverageVout();
+                DisplayOperateMes("Vout @ IP = " + Vout_IP.ToString("F3"));
+
+                //if (Vout_IP > 4.95 || Vout_IP < 2)
+                //{
+                //    DisplayOperateMes("PreTrim Code is not suitable!", Color.Red);
+                //    return;
+                //}
+
+                /* Change Current to 0A */
+                dr = MessageBox.Show(String.Format("Please Change Current To 0A"), "Change Current", MessageBoxButtons.OKCancel);
+                if (dr == DialogResult.Cancel)
+                {
+                    DisplayOperateMes("AutoTrim Canceled!", Color.Red);
+                    PowerOff();
+                    return;
+                }
+                Delay(Delay_Operation);
+                Vout_0A = AverageVout();
+                DisplayOperateMes("Vout @ 0A = " + Vout_0A.ToString("F3"));
+                DisplayOperateMes("Delta Vout = " + (Vout_IP - Vout_0A).ToString("F3"));
+                DisplayOperateMes("Target Delta Vout = " + TargetVoltage_customer.ToString("F3"));
+                DisplayOperateMes("Target Delta Vout*100/86.07 = " + (TargetVoltage_customer * 100 / 86.07).ToString("F3"));
+
+            }
+
+            /*Judge PreSet gain; delta Vout target >= delta Vout test * 86.07% */
+            if ((Vout_IP - Vout_0A) < TargetVoltage_customer || (Vout_IP - Vout_0A) >= TargetVoltage_customer * 100 / 86.07)
             {
                 DisplayOperateMes("PreTrim Code is not suitable!", Color.Red);
                 PowerOff();
                 return;
             }
+
+
 
             DisplayOperateMes("Processing...\r\n");
             this.lbl_passOrFailed.ForeColor = Color.Black;
@@ -3945,6 +4122,11 @@ namespace CurrentSensorV3
                     this.txt_IP_PreT.Text );
                 sw.WriteLine(msg);
 
+                // ADC Offset
+                msg = string.Format("ADC Offset|{0}",
+                    this.txt_AdcOffset_PreT.Text);
+                sw.WriteLine(msg);
+
                 sw.Close();
             }
             catch
@@ -4012,6 +4194,11 @@ namespace CurrentSensorV3
                 //ix = int.Parse(msg[1]);
                 this.txt_IP_PreT.Text = msg[1];
 
+                // ADC Offset
+                msg = sr.ReadLine().Split("|".ToCharArray());
+                //ix = int.Parse(msg[1]);
+                this.txt_AdcOffset_AutoT.Text = msg[1];
+
                 sr.Close();
 
                 //Backup value for autotrim
@@ -4034,6 +4221,8 @@ namespace CurrentSensorV3
             try
             {
                 //temp = (4500d - 2000d) / double.Parse(this.txt_TargetGain.Text);
+                if ((sender as TextBox).Text.ToCharArray()[(sender as TextBox).Text.Length - 1].ToString() == ".")
+                    return;
                 TargetVoltage_customer = double.Parse((sender as TextBox).Text);
                 //TargetGain_customer = (double.Parse((sender as TextBox).Text) * 2000d)/IP;
             }
@@ -4044,7 +4233,7 @@ namespace CurrentSensorV3
             }
             finally
             {
-                TargetVoltage_customer = TargetVoltage_customer;      //Force to update text to default.
+                //TargetVoltage_customer = TargetVoltage_customer;      //Force to update text to default.
             }
 
             TargetGain_customer = (TargetVoltage_customer * 1000d) / IP;
@@ -4107,10 +4296,18 @@ namespace CurrentSensorV3
             DisplayOperateMes("ADC Out = " + temp.ToString("F3"));
         }
 
-
+        private void txt_AdcOffset_PreT_TextChanged(object sender, EventArgs e)
+        {
+            if ((sender as TextBox).Text.ToCharArray()[(sender as TextBox).Text.Length - 1].ToString() == ".")
+                return;
+            AadcOffset = double.Parse((sender as TextBox).Text);
+            //AadcOffset = AadcOffset;
+        }
 
 
         #endregion Events
+
+       
     }
 
     
