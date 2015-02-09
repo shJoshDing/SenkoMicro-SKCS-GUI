@@ -22,8 +22,8 @@ namespace CurrentSensorV3
 
         #region Param Definition
 
-        bool bAutoTrimTest = true;          //Debug mode, display engineer tab
-        //bool bAutoTrimTest = false;          //Release mode, bon't display engineer tab
+        //bool bAutoTrimTest = true;          //Debug mode, display engineer tab
+        bool bAutoTrimTest = false;          //Release mode, bon't display engineer tab
 
         //double IP15 = 0;
         //double IP10 = 0;
@@ -2287,18 +2287,18 @@ namespace CurrentSensorV3
 
             Delay(Delay_Operation);    //delay 300ms
 
-            _reg_addr = 0x84;
-            _reg_data = 0x0;
-            writeResult = oneWrie_device.I2CWrite_Single(this.DeviceAddress, _reg_addr, _reg_data);
-            if (writeResult)
-            {
-                if (bAutoTrimTest)
-                {
-                    DisplayOperateMes("Safety Read Setup succeeded!\r\n");
-                }
-            }
-            else
-                DisplayOperateMes("Safety Read Setup failed!\r\n", Color.Red);
+            //_reg_addr = 0x84;
+            //_reg_data = 0x0;
+            //writeResult = oneWrie_device.I2CWrite_Single(this.DeviceAddress, _reg_addr, _reg_data);
+            //if (writeResult)
+            //{
+            //    if (bAutoTrimTest)
+            //    {
+            //        DisplayOperateMes("Safety Read Setup succeeded!\r\n");
+            //    }
+            //}
+            //else
+            //    DisplayOperateMes("Safety Read Setup failed!\r\n", Color.Red);
         }
 
         private bool BurstRead(uint _reg_addr_start, int num, uint[] _readBack_data)
@@ -3280,7 +3280,7 @@ namespace CurrentSensorV3
             DisplayOperateMes("Done...\r\n");
 
             /* bin1,2,3 */
-            if ( ! bMarginal )
+            if ( (! bMarginal)&&(!bSafety) )
             {
                 if (2.5 * (1 - 0.01) <= Vout_0A && Vout_0A <= 2.5 * (1 + 0.01) && Vout_IP <= dVip_Target * (1 + 0.01) && Vout_IP >= dVip_Target * (1 - 0.01))
                 {
@@ -3308,8 +3308,8 @@ namespace CurrentSensorV3
                 }
             }
             /* bin4,5,6 */
-            //else if (bMarginal == true)
-            else
+            else if (bMarginal == true)
+            //else
             {
                 if (2.5 * (1 - 0.01) <= Vout_0A && Vout_0A <= 2.5 * (1 + 0.01) && Vout_IP <= dVip_Target * (1 + 0.01) && Vout_IP >= dVip_Target * (1 - 0.01))
                 {
@@ -3337,25 +3337,25 @@ namespace CurrentSensorV3
                 }
             }
             /* bin7,8,9 */
-            //else
-            //{
-            //    if (2.5 * (1 - 0.01) <= Vout_0A && Vout_0A <= 2.5 * (1 + 0.01) && Vout_IP <= dVip_Target * (1 + 0.01) && Vout_IP >= dVip_Target * (1 - 0.01))
-            //    {
-            //        DisplayOperateMes("Pass! Bin7");
-            //    }
-            //    else if (2.5 * (1 - 0.31) <= Vout_0A && Vout_0A <= 2.5 * (1 + 0.03) && Vout_IP <= dVip_Target * (1 + 0.03) && Vout_IP >= dVip_Target * (1 - 0.03))
-            //    {
-            //        DisplayOperateMes("Pass! Bin8");
-            //    }
-            //    else if (2.5 * (1 - 0.06) <= Vout_0A && Vout_0A <= 2.5 * (1 + 0.06) && Vout_IP <= dVip_Target * (1 + 0.06) && Vout_IP >= dVip_Target * (1 - 0.06))
-            //    {
-            //        DisplayOperateMes("Pass! Bin9");
-            //    }
-            //    else
-            //    {
-            //        DisplayOperateMes("Fail!");
-            //    }
-            //}
+            else
+            {
+                if (2.5 * (1 - 0.01) <= Vout_0A && Vout_0A <= 2.5 * (1 + 0.01) && Vout_IP <= dVip_Target * (1 + 0.01) && Vout_IP >= dVip_Target * (1 - 0.01))
+                {
+                    DisplayOperateMes("Pass! Bin7");
+                }
+                else if (2.5 * (1 - 0.31) <= Vout_0A && Vout_0A <= 2.5 * (1 + 0.03) && Vout_IP <= dVip_Target * (1 + 0.03) && Vout_IP >= dVip_Target * (1 - 0.03))
+                {
+                    DisplayOperateMes("Pass! Bin8");
+                }
+                else if (2.5 * (1 - 0.06) <= Vout_0A && Vout_0A <= 2.5 * (1 + 0.06) && Vout_IP <= dVip_Target * (1 + 0.06) && Vout_IP >= dVip_Target * (1 - 0.06))
+                {
+                    DisplayOperateMes("Pass! Bin9");
+                }
+                else
+                {
+                    DisplayOperateMes("Fail!");
+                }
+            }
 
             DisplayOperateMes("Vout @ 0A = " + Vout_0A.ToString("F3"));
             DisplayOperateMes("Vout @ IP = " + Vout_IP.ToString("F3"));
