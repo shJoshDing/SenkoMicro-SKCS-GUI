@@ -3148,6 +3148,54 @@ namespace CurrentSensorV3
             //    return;
             //}
 
+            ///* Change Current to 0A */
+            //dr = MessageBox.Show(String.Format("Please Change Current To 0A"), "Change Current", MessageBoxButtons.OKCancel);
+            //if (dr == DialogResult.Cancel)
+            //{
+            //    DisplayOperateMes("AutoTrim Canceled!", Color.Red);
+            //    PowerOff();
+            //    return;
+            //}
+            //Delay(Delay_Operation);
+            //Vout_0A = AverageVout();
+            //DisplayOperateMes("Vout @ 0A = " + Vout_0A.ToString("F3"));
+            //DisplayOperateMes("Delta Vout = " + (Vout_IP-Vout_0A).ToString("F3"));
+            //DisplayOperateMes("Target Delta Vout = " + TargetVoltage_customer.ToString("F3"));
+            //DisplayOperateMes("Target Delta Vout*100/86.07 = " + (TargetVoltage_customer * 100 / 86.07).ToString("F3"));
+
+            /*Judge PreSet gain; delta Vout target >= delta Vout test * 86.07% */
+            if ( Vout_IP > 4.9 )
+            {
+                DisplayOperateMes("Module Vout is SATURATION!", Color.Red);
+                PowerOff();
+                return;
+            }
+
+            #region autoAdaptingGoughGain algorithm
+            /* autoAdaptingGoughGain algorithm*/
+            double autoAdaptingGoughGain = 0;
+            int Ix_forAutoAdaptingRoughGain = 0;
+            autoAdaptingGoughGain = (Vout_IP - Vout_0A)*1000d / IP * RoughTable_Customer[0][Ix_ForRoughGainCtrl]/100d;
+            Ix_forAutoAdaptingRoughGain = LookupRoughGain_Customer(autoAdaptingGoughGain, RoughTable_Customer);
+            Reg80Value = Convert.ToUInt32(RoughTable_Customer[1][Ix_forAutoAdaptingRoughGain]);
+            Reg81Value = Convert.ToUInt32(RoughTable_Customer[2][Ix_forAutoAdaptingRoughGain]);
+
+            RePower();
+            EnterTestMode();
+
+            /*Write  PreSet Gain code */
+            RegisterWrite(4, new uint[8] { 0x80, Reg80Value, 0x81, Reg81Value, 0x82, Reg82Value, 0x83, Reg83Value });
+
+            /*Read back  PreSet Gain code */
+            BurstRead(0x80, 5, tempReadback);
+
+            EnterNomalMode();
+            oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VOUT_WITH_CAP);
+            Delay(Delay_Operation);
+            Vout_IP = AverageVout();
+            DisplayOperateMes("Vout @ IP = " + Vout_IP.ToString("F3"));
+
+
             /* Change Current to 0A */
             dr = MessageBox.Show(String.Format("Please Change Current To 0A"), "Change Current", MessageBoxButtons.OKCancel);
             if (dr == DialogResult.Cancel)
@@ -3159,137 +3207,134 @@ namespace CurrentSensorV3
             Delay(Delay_Operation);
             Vout_0A = AverageVout();
             DisplayOperateMes("Vout @ 0A = " + Vout_0A.ToString("F3"));
-            DisplayOperateMes("Delta Vout = " + (Vout_IP-Vout_0A).ToString("F3"));
+            DisplayOperateMes("Delta Vout = " + (Vout_IP - Vout_0A).ToString("F3"));
             DisplayOperateMes("Target Delta Vout = " + TargetVoltage_customer.ToString("F3"));
             DisplayOperateMes("Target Delta Vout*100/86.07 = " + (TargetVoltage_customer * 100 / 86.07).ToString("F3"));
 
-            /*Judge PreSet gain; delta Vout target >= delta Vout test * 86.07% */
-            //if ((Vout_IP - Vout_0A) < TargetVoltage_customer || (Vout_IP - Vout_0A) >= TargetVoltage_customer * 100/86.07 )
+            #endregion
+
+            #region pretrim algorithm
+            //if (((Vout_IP - Vout_0A) < TargetVoltage_customer) && ((Vout_IP - Vout_0A) > 0))
             //{
-            //    DisplayOperateMes("PreTrim Code is not suitable!", Color.Red);
-            //    PowerOff();
-            //    return;
+            //    Reg80Value = Convert.ToUInt32(RoughTable_Customer[1][Ix_ForRoughGainCtrl + 1]);
+            //    Reg81Value = Convert.ToUInt32(RoughTable_Customer[2][Ix_ForRoughGainCtrl + 1]);
+
+            //    RePower();
+
+            //    /*Enter test mode, write PreSet Gain code, and enter nomal mode*/
+            //    EnterTestMode();
+
+            //    /*Write  PreSet Gain code */
+            //    RegisterWrite(4, new uint[8] { 0x80, Reg80Value, 0x81, Reg81Value, 0x82, Reg82Value, 0x83, Reg83Value });
+
+            //    /*Read back  PreSet Gain code */
+            //    BurstRead(0x80, 5, tempReadback);
+
+            //    /* Change Current to IP  */
+            //    dr = MessageBox.Show(String.Format("Please Change Current To {0}A", IP), "Change Current", MessageBoxButtons.OKCancel);
+            //    if (dr == DialogResult.Cancel)
+            //    {
+            //        DisplayOperateMes("AutoTrim Canceled!", Color.Red);
+            //        PowerOff();
+            //        return;
+            //    }
+
+            //    /* Get vout @ IP */
+            //    //oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_CONFIG_TO_VOUT);
+            //    //oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VOUT_WITHOUT_CAP);
+
+            //    //EnterTestMode();  // ??? 多余的
+
+            //    EnterNomalMode();
+            //    oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VOUT_WITH_CAP);
+            //    Delay(Delay_Operation);
+            //    Vout_IP = AverageVout();
+            //    DisplayOperateMes("Vout @ IP = " + Vout_IP.ToString("F3"));
+
+            //    //if (Vout_IP > 4.95 || Vout_IP < 2)
+            //    //{
+            //    //    DisplayOperateMes("PreTrim Code is not suitable!", Color.Red);
+            //    //    return;
+            //    //}
+
+            //    /* Change Current to 0A */
+            //    dr = MessageBox.Show(String.Format("Please Change Current To 0A"), "Change Current", MessageBoxButtons.OKCancel);
+            //    if (dr == DialogResult.Cancel)
+            //    {
+            //        DisplayOperateMes("AutoTrim Canceled!", Color.Red);
+            //        PowerOff();
+            //        return;
+            //    }
+            //    Delay(Delay_Operation);
+            //    Vout_0A = AverageVout();
+            //    DisplayOperateMes("Vout @ 0A = " + Vout_0A.ToString("F3"));
+            //    DisplayOperateMes("Delta Vout = " + (Vout_IP - Vout_0A).ToString("F3"));
+            //    DisplayOperateMes("Target Delta Vout = " + TargetVoltage_customer.ToString("F3"));
+            //    DisplayOperateMes("Target Delta Vout*100/86.07 = " + (TargetVoltage_customer * 100 / 86.07).ToString("F3"));
+
             //}
 
-            if (((Vout_IP - Vout_0A) < TargetVoltage_customer) && ((Vout_IP - Vout_0A) > 0))
-            {
-                Reg80Value = Convert.ToUInt32(RoughTable_Customer[1][Ix_ForRoughGainCtrl + 1]);
-                Reg81Value = Convert.ToUInt32(RoughTable_Customer[2][Ix_ForRoughGainCtrl + 1]);
+            //else if ( ( (Vout_IP - Vout_0A) > TargetVoltage_customer * 100 / 86.07 )  )
+            //{
+            //    Reg80Value = Convert.ToUInt32(RoughTable_Customer[1][Ix_ForRoughGainCtrl - 1]);
+            //    Reg81Value = Convert.ToUInt32(RoughTable_Customer[2][Ix_ForRoughGainCtrl - 1]);
 
-                RePower();
+            //    RePower();
 
-                /*Enter test mode, write PreSet Gain code, and enter nomal mode*/
-                EnterTestMode();
+            //    /*Enter test mode, write PreSet Gain code, and enter nomal mode*/
+            //    EnterTestMode();
 
-                /*Write  PreSet Gain code */
-                RegisterWrite(4, new uint[8] { 0x80, Reg80Value, 0x81, Reg81Value, 0x82, Reg82Value, 0x83, Reg83Value });
+            //    /*Write  PreSet Gain code */
+            //    RegisterWrite(4, new uint[8] { 0x80, Reg80Value, 0x81, Reg81Value, 0x82, Reg82Value, 0x83, Reg83Value });
 
-                /*Read back  PreSet Gain code */
-                BurstRead(0x80, 5, tempReadback);
+            //    /*Read back  PreSet Gain code */
+            //    BurstRead(0x80, 5, tempReadback);
 
-                /* Change Current to IP  */
-                dr = MessageBox.Show(String.Format("Please Change Current To {0}A", IP), "Change Current", MessageBoxButtons.OKCancel);
-                if (dr == DialogResult.Cancel)
-                {
-                    DisplayOperateMes("AutoTrim Canceled!", Color.Red);
-                    PowerOff();
-                    return;
-                }
+            //    /* Change Current to IP  */
+            //    dr = MessageBox.Show(String.Format("Please Change Current To {0}A", IP), "Change Current", MessageBoxButtons.OKCancel);
+            //    if (dr == DialogResult.Cancel)
+            //    {
+            //        DisplayOperateMes("AutoTrim Canceled!", Color.Red);
+            //        PowerOff();
+            //        return;
+            //    }
 
-                /* Get vout @ IP */
-                //oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_CONFIG_TO_VOUT);
-                //oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VOUT_WITHOUT_CAP);
+            //    /* Get vout @ IP */
+            //    //oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_CONFIG_TO_VOUT);
+            //    //oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VOUT_WITHOUT_CAP);
 
-                //EnterTestMode();  // ??? 多余的
+            //    //EnterTestMode();  // ??? 多余的
 
-                EnterNomalMode();
-                oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VOUT_WITH_CAP);
-                Delay(Delay_Operation);
-                Vout_IP = AverageVout();
-                DisplayOperateMes("Vout @ IP = " + Vout_IP.ToString("F3"));
+            //    EnterNomalMode();
+            //    oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VOUT_WITH_CAP);
+            //    Delay(Delay_Operation);
+            //    Vout_IP = AverageVout();
+            //    DisplayOperateMes("Vout @ IP = " + Vout_IP.ToString("F3"));
 
-                //if (Vout_IP > 4.95 || Vout_IP < 2)
-                //{
-                //    DisplayOperateMes("PreTrim Code is not suitable!", Color.Red);
-                //    return;
-                //}
+            //    //if (Vout_IP > 4.95 || Vout_IP < 2)
+            //    //{
+            //    //    DisplayOperateMes("PreTrim Code is not suitable!", Color.Red);
+            //    //    return;
+            //    //}
 
-                /* Change Current to 0A */
-                dr = MessageBox.Show(String.Format("Please Change Current To 0A"), "Change Current", MessageBoxButtons.OKCancel);
-                if (dr == DialogResult.Cancel)
-                {
-                    DisplayOperateMes("AutoTrim Canceled!", Color.Red);
-                    PowerOff();
-                    return;
-                }
-                Delay(Delay_Operation);
-                Vout_0A = AverageVout();
-                DisplayOperateMes("Vout @ 0A = " + Vout_0A.ToString("F3"));
-                DisplayOperateMes("Delta Vout = " + (Vout_IP - Vout_0A).ToString("F3"));
-                DisplayOperateMes("Target Delta Vout = " + TargetVoltage_customer.ToString("F3"));
-                DisplayOperateMes("Target Delta Vout*100/86.07 = " + (TargetVoltage_customer * 100 / 86.07).ToString("F3"));
+            //    /* Change Current to 0A */
+            //    dr = MessageBox.Show(String.Format("Please Change Current To 0A"), "Change Current", MessageBoxButtons.OKCancel);
+            //    if (dr == DialogResult.Cancel)
+            //    {
+            //        DisplayOperateMes("AutoTrim Canceled!", Color.Red);
+            //        PowerOff();
+            //        return;
+            //    }
+            //    Delay(Delay_Operation);
+            //    Vout_0A = AverageVout();
+            //    DisplayOperateMes("Vout @ 0A = " + Vout_0A.ToString("F3"));
+            //    DisplayOperateMes("Delta Vout = " + (Vout_IP - Vout_0A).ToString("F3"));
+            //    DisplayOperateMes("Target Delta Vout = " + TargetVoltage_customer.ToString("F3"));
+            //    DisplayOperateMes("Target Delta Vout*100/86.07 = " + (TargetVoltage_customer * 100 / 86.07).ToString("F3"));
 
-            }
+            //}
+            #endregion
 
-            else if ( ( (Vout_IP - Vout_0A) > TargetVoltage_customer * 100 / 86.07 )  )
-            {
-                Reg80Value = Convert.ToUInt32(RoughTable_Customer[1][Ix_ForRoughGainCtrl - 1]);
-                Reg81Value = Convert.ToUInt32(RoughTable_Customer[2][Ix_ForRoughGainCtrl - 1]);
-
-                RePower();
-
-                /*Enter test mode, write PreSet Gain code, and enter nomal mode*/
-                EnterTestMode();
-
-                /*Write  PreSet Gain code */
-                RegisterWrite(4, new uint[8] { 0x80, Reg80Value, 0x81, Reg81Value, 0x82, Reg82Value, 0x83, Reg83Value });
-
-                /*Read back  PreSet Gain code */
-                BurstRead(0x80, 5, tempReadback);
-
-                /* Change Current to IP  */
-                dr = MessageBox.Show(String.Format("Please Change Current To {0}A", IP), "Change Current", MessageBoxButtons.OKCancel);
-                if (dr == DialogResult.Cancel)
-                {
-                    DisplayOperateMes("AutoTrim Canceled!", Color.Red);
-                    PowerOff();
-                    return;
-                }
-
-                /* Get vout @ IP */
-                //oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_CONFIG_TO_VOUT);
-                //oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VOUT_WITHOUT_CAP);
-
-                //EnterTestMode();  // ??? 多余的
-
-                EnterNomalMode();
-                oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VOUT_WITH_CAP);
-                Delay(Delay_Operation);
-                Vout_IP = AverageVout();
-                DisplayOperateMes("Vout @ IP = " + Vout_IP.ToString("F3"));
-
-                //if (Vout_IP > 4.95 || Vout_IP < 2)
-                //{
-                //    DisplayOperateMes("PreTrim Code is not suitable!", Color.Red);
-                //    return;
-                //}
-
-                /* Change Current to 0A */
-                dr = MessageBox.Show(String.Format("Please Change Current To 0A"), "Change Current", MessageBoxButtons.OKCancel);
-                if (dr == DialogResult.Cancel)
-                {
-                    DisplayOperateMes("AutoTrim Canceled!", Color.Red);
-                    PowerOff();
-                    return;
-                }
-                Delay(Delay_Operation);
-                Vout_0A = AverageVout();
-                DisplayOperateMes("Vout @ 0A = " + Vout_0A.ToString("F3"));
-                DisplayOperateMes("Delta Vout = " + (Vout_IP - Vout_0A).ToString("F3"));
-                DisplayOperateMes("Target Delta Vout = " + TargetVoltage_customer.ToString("F3"));
-                DisplayOperateMes("Target Delta Vout*100/86.07 = " + (TargetVoltage_customer * 100 / 86.07).ToString("F3"));
-
-            }
 
             /*Judge PreSet gain; delta Vout target >= delta Vout test * 86.07% */
             if ((Vout_IP - Vout_0A) < TargetVoltage_customer || (Vout_IP - Vout_0A) >= TargetVoltage_customer * 100 / 86.07)
