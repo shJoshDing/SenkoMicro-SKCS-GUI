@@ -22,8 +22,8 @@ namespace CurrentSensorV3
 
         #region Param Definition
 
-        bool bAutoTrimTest = true;          //Debug mode, display engineer tab
-        //bool bAutoTrimTest = false;       //Release mode, bon't display engineer tab
+        //bool bAutoTrimTest = true;          //Debug mode, display engineer tab
+        bool bAutoTrimTest = false;       //Release mode, bon't display engineer tab
 
         //double IP15 = 0;
         //double IP10 = 0;
@@ -3062,10 +3062,15 @@ namespace CurrentSensorV3
             this.lbl_passOrFailed.Text = "START!";
 
             /* AutoTrim code */
+
+            #region Get module current
+
             /*  power on */
             RePower();
             
-            Delay(Delay_Operation); 
+            Delay(Delay_Operation);
+
+            this.lbl_passOrFailed.Text = "CONNECTION!";
 
             /* Get module current */
             if (oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VIN_TO_VCS))
@@ -3111,7 +3116,11 @@ namespace CurrentSensorV3
 
                 return;
             }
+            #endregion
 
+            this.lbl_passOrFailed.Text = "PROCESSING!";
+
+            #region Saturation judgement
             /*Enter test mode, write PreSet Gain code, and enter nomal mode*/
             EnterTestMode();
 
@@ -3171,17 +3180,71 @@ namespace CurrentSensorV3
                 return;
             }
 
+            #endregion
+
             #region autoAdaptingGoughGain algorithm
+
+            /* Change Current to 0A */
+            dr = MessageBox.Show(String.Format("Please Change Current To 0A"), "Change Current", MessageBoxButtons.OKCancel);
+            if (dr == DialogResult.Cancel)
+            {
+                DisplayOperateMes("AutoTrim Canceled!", Color.Red);
+                PowerOff();
+                return;
+            }
+            Delay(Delay_Operation);
+            Vout_0A = AverageVout();
+            DisplayOperateMes("Vout @ 0A = " + Vout_0A.ToString("F3"));
+
+
             /* autoAdaptingGoughGain algorithm*/
             double autoAdaptingGoughGain = 0;
+            double tempG1 = 0;
+            double tempG2 = 0;
             int Ix_forAutoAdaptingRoughGain = 0;
-            autoAdaptingGoughGain = (Vout_IP - Vout_0A)*1000d / IP * RoughTable_Customer[0][Ix_ForRoughGainCtrl]/100d;
-            Ix_forAutoAdaptingRoughGain = LookupRoughGain_Customer(autoAdaptingGoughGain, RoughTable_Customer);
-            Reg80Value = Convert.ToUInt32(RoughTable_Customer[1][Ix_forAutoAdaptingRoughGain]);
-            Reg81Value = Convert.ToUInt32(RoughTable_Customer[2][Ix_forAutoAdaptingRoughGain]);
+            tempG1 = RoughTable_Customer[0][Ix_ForRoughGainCtrl]/100d;
+            tempG2 = ( TargetGain_customer / ((Vout_IP - Vout_0A)/IP))/1000d;
+            autoAdaptingGoughGain = tempG1*tempG2*100d;
+            //autoAdaptingGoughGain = 100d * ( TargetGain_customer / ((Vout_IP - Vout_0A)/IP) * 1000d) * (RoughTable_Customer[0][Ix_ForRoughGainCtrl]/100d);
+            if (tempG2 >= 1)
+            {
+                Ix_forAutoAdaptingRoughGain = LookupRoughGain_Customer(autoAdaptingGoughGain, RoughTable_Customer);
+            }
+            else
+            {
+                Ix_forAutoAdaptingRoughGain = LookupRoughGain_Customer(autoAdaptingGoughGain, RoughTable_Customer);
+            }
+
+            DisplayOperateMes("IP = " + IP.ToString("F0"));
+            DisplayOperateMes("TargetGain_customer = " + TargetGain_customer.ToString("F3"));
+            DisplayOperateMes("(Vout_IP - Vout_0A)/IP = " + ((Vout_IP - Vout_0A) / IP).ToString("F3"));
+            DisplayOperateMes("tempG1 = " + tempG1.ToString("F3"));
+            DisplayOperateMes("tempG2 = " + tempG2.ToString("F3"));
+            DisplayOperateMes("Ix_forAutoAdaptingRoughGain = " + Ix_forAutoAdaptingRoughGain.ToString("F0"));
+            //DisplayOperateMes("RoughTable_Customer[0][Ix_ForRoughGainCtrl]/100d = " + (RoughTable_Customer[0][Ix_ForRoughGainCtrl] / 100d).ToString("F3"));
+            //DisplayOperateMes("( TargetGain_customer / (Vout_IP - Vout_0A)*1000d / IP) = " + ((TargetGain_customer / (Vout_IP - Vout_0A) * 1000d / IP)).ToString("F3"));
+            DisplayOperateMes("autoAdaptingGoughGain = " + autoAdaptingGoughGain.ToString("F3"));
+
+            bit_op_mask = bit5_Mask | bit6_Mask | bit7_Mask;
+            Reg80Value &= ~bit_op_mask;
+            Reg80Value |= Convert.ToUInt32(RoughTable_Customer[1][Ix_forAutoAdaptingRoughGain]);
+
+            /* bit0 of 0x81 */
+            bit_op_mask = bit0_Mask;
+            Reg81Value &= ~bit_op_mask;
+            Reg81Value |= Convert.ToUInt32(RoughTable_Customer[2][Ix_forAutoAdaptingRoughGain]);
 
             RePower();
             EnterTestMode();
+
+            /* Change Current to IP  */
+            dr = MessageBox.Show(String.Format("Please Change Current To {0}A", IP), "Change Current", MessageBoxButtons.OKCancel);
+            if (dr == DialogResult.Cancel)
+            {
+                DisplayOperateMes("AutoTrim Canceled!", Color.Red);
+                PowerOff();
+                return;
+            }
 
             /*Write  PreSet Gain code */
             RegisterWrite(4, new uint[8] { 0x80, Reg80Value, 0x81, Reg81Value, 0x82, Reg82Value, 0x83, Reg83Value });
@@ -3216,8 +3279,12 @@ namespace CurrentSensorV3
             #region pretrim algorithm
             //if (((Vout_IP - Vout_0A) < TargetVoltage_customer) && ((Vout_IP - Vout_0A) > 0))
             //{
-            //    Reg80Value = Convert.ToUInt32(RoughTable_Customer[1][Ix_ForRoughGainCtrl + 1]);
-            //    Reg81Value = Convert.ToUInt32(RoughTable_Customer[2][Ix_ForRoughGainCtrl + 1]);
+            //    bit_op_mask = bit5_Mask | bit6_Mask | bit7_Mask;
+            //    Reg80Value &= ~bit_op_mask;
+            //    Reg80Value |= Convert.ToUInt32(RoughTable_Customer[1][Ix_ForRoughGainCtrl + 1]);
+            //    bit_op_mask = ~bit0_Mask;
+            //    Reg81Value &= bit_op_mask;
+            //    Reg81Value |= Convert.ToUInt32(RoughTable_Customer[2][Ix_ForRoughGainCtrl + 1]);
 
             //    RePower();
 
@@ -3276,8 +3343,12 @@ namespace CurrentSensorV3
 
             //else if ( ( (Vout_IP - Vout_0A) > TargetVoltage_customer * 100 / 86.07 )  )
             //{
-            //    Reg80Value = Convert.ToUInt32(RoughTable_Customer[1][Ix_ForRoughGainCtrl - 1]);
-            //    Reg81Value = Convert.ToUInt32(RoughTable_Customer[2][Ix_ForRoughGainCtrl - 1]);
+            //    bit_op_mask = bit5_Mask | bit6_Mask | bit7_Mask;
+            //    Reg80Value &= ~bit_op_mask;
+            //    Reg80Value |= Convert.ToUInt32(RoughTable_Customer[1][Ix_ForRoughGainCtrl - 1]);
+            //    bit_op_mask = bit0_Mask;
+            //    Reg81Value &= ~bit_op_mask;
+            //    Reg81Value |= Convert.ToUInt32(RoughTable_Customer[2][Ix_ForRoughGainCtrl - 1]);
 
             //    RePower();
 

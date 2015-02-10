@@ -177,12 +177,15 @@
             this.groupBox6 = new System.Windows.Forms.GroupBox();
             this.label60 = new System.Windows.Forms.Label();
             this.label40 = new System.Windows.Forms.Label();
+            this.label66 = new System.Windows.Forms.Label();
             this.label39 = new System.Windows.Forms.Label();
             this.txt_IP_PreT = new System.Windows.Forms.TextBox();
             this.label34 = new System.Windows.Forms.Label();
             this.txt_targetvoltage_PreT = new System.Windows.Forms.TextBox();
             this.label59 = new System.Windows.Forms.Label();
+            this.txt_AdcOffset_PreT = new System.Windows.Forms.TextBox();
             this.txt_TargetGain_PreT = new System.Windows.Forms.TextBox();
+            this.label65 = new System.Windows.Forms.Label();
             this.label38 = new System.Windows.Forms.Label();
             this.cmb_IPRange_PreT = new System.Windows.Forms.ComboBox();
             this.label33 = new System.Windows.Forms.Label();
@@ -195,12 +198,12 @@
             this.cmb_Module_PreT = new System.Windows.Forms.ComboBox();
             this.btn_FlashLed_PreT = new System.Windows.Forms.Button();
             this.btn_Reset_PreT = new System.Windows.Forms.Button();
-            this.btn_PowerOff_PreT = new System.Windows.Forms.Button();
             this.label54 = new System.Windows.Forms.Label();
             this.btn_ModuleCurrent_PreT = new System.Windows.Forms.Button();
             this.txt_ModuleCurrent_PreT = new System.Windows.Forms.TextBox();
             this.label30 = new System.Windows.Forms.Label();
             this.txt_SerialNum_PreT = new System.Windows.Forms.TextBox();
+            this.btn_PowerOff_PreT = new System.Windows.Forms.Button();
             this.label31 = new System.Windows.Forms.Label();
             this.AutoTrimTab = new System.Windows.Forms.TabPage();
             this.btn_PowerOff_AutoT = new System.Windows.Forms.Button();
@@ -220,6 +223,7 @@
             this.label58 = new System.Windows.Forms.Label();
             this.txt_IP_AutoT = new System.Windows.Forms.TextBox();
             this.txt_TargertVoltage_AutoT = new System.Windows.Forms.TextBox();
+            this.txt_AdcOffset_AutoT = new System.Windows.Forms.TextBox();
             this.txt_TargetGain_AutoT = new System.Windows.Forms.TextBox();
             this.txt_IPRange_AutoT = new System.Windows.Forms.TextBox();
             this.txt_TempComp_AutoT = new System.Windows.Forms.TextBox();
@@ -227,8 +231,10 @@
             this.label50 = new System.Windows.Forms.Label();
             this.label51 = new System.Windows.Forms.Label();
             this.label52 = new System.Windows.Forms.Label();
+            this.label68 = new System.Windows.Forms.Label();
             this.label49 = new System.Windows.Forms.Label();
             this.label46 = new System.Windows.Forms.Label();
+            this.label67 = new System.Windows.Forms.Label();
             this.label47 = new System.Windows.Forms.Label();
             this.label62 = new System.Windows.Forms.Label();
             this.label48 = new System.Windows.Forms.Label();
@@ -241,12 +247,6 @@
             this.contextMenuStrip_Clear = new System.Windows.Forms.ToolStripMenuItem();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.txt_OutputLogInfo = new System.Windows.Forms.RichTextBox();
-            this.label65 = new System.Windows.Forms.Label();
-            this.txt_AdcOffset_PreT = new System.Windows.Forms.TextBox();
-            this.label66 = new System.Windows.Forms.Label();
-            this.txt_AdcOffset_AutoT = new System.Windows.Forms.TextBox();
-            this.label67 = new System.Windows.Forms.Label();
-            this.label68 = new System.Windows.Forms.Label();
             this.statusStrip.SuspendLayout();
             this.toolStrip.SuspendLayout();
             this.tabControl1.SuspendLayout();
@@ -445,6 +445,7 @@
             this.txt_AdcOut_EngT.Size = new System.Drawing.Size(56, 20);
             this.txt_AdcOut_EngT.TabIndex = 87;
             this.txt_AdcOut_EngT.Text = "0.000";
+            this.txt_AdcOut_EngT.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // numUD_OffsetB
             // 
@@ -2082,6 +2083,17 @@
             this.label40.TabIndex = 90;
             this.label40.Text = "A";
             // 
+            // label66
+            // 
+            this.label66.AutoSize = true;
+            this.label66.Font = new System.Drawing.Font("Times New Roman", 17F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.label66.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.label66.Location = new System.Drawing.Point(578, 130);
+            this.label66.Name = "label66";
+            this.label66.Size = new System.Drawing.Size(33, 19);
+            this.label66.TabIndex = 89;
+            this.label66.Text = "mV";
+            // 
             // label39
             // 
             this.label39.AutoSize = true;
@@ -2141,6 +2153,19 @@
             this.label59.TabIndex = 82;
             this.label59.Text = "VIP-Voffset";
             // 
+            // txt_AdcOffset_PreT
+            // 
+            this.txt_AdcOffset_PreT.BackColor = System.Drawing.Color.CadetBlue;
+            this.txt_AdcOffset_PreT.Font = new System.Drawing.Font("Microsoft Sans Serif", 17F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Pixel);
+            this.txt_AdcOffset_PreT.ForeColor = System.Drawing.Color.White;
+            this.txt_AdcOffset_PreT.Location = new System.Drawing.Point(494, 127);
+            this.txt_AdcOffset_PreT.Name = "txt_AdcOffset_PreT";
+            this.txt_AdcOffset_PreT.Size = new System.Drawing.Size(78, 27);
+            this.txt_AdcOffset_PreT.TabIndex = 83;
+            this.txt_AdcOffset_PreT.Text = "0";
+            this.txt_AdcOffset_PreT.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.txt_AdcOffset_PreT.TextChanged += new System.EventHandler(this.txt_AdcOffset_PreT_TextChanged);
+            // 
             // txt_TargetGain_PreT
             // 
             this.txt_TargetGain_PreT.BackColor = System.Drawing.SystemColors.ControlDarkDark;
@@ -2154,6 +2179,17 @@
             this.txt_TargetGain_PreT.Text = "100";
             this.txt_TargetGain_PreT.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.txt_TargetGain_PreT.TextChanged += new System.EventHandler(this.txt_TargetGain_TextChanged);
+            // 
+            // label65
+            // 
+            this.label65.AutoSize = true;
+            this.label65.Font = new System.Drawing.Font("Times New Roman", 17F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.label65.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.label65.Location = new System.Drawing.Point(394, 131);
+            this.label65.Name = "label65";
+            this.label65.Size = new System.Drawing.Size(95, 19);
+            this.label65.TabIndex = 82;
+            this.label65.Text = "ADC Offset ";
             // 
             // label38
             // 
@@ -2315,17 +2351,6 @@
             this.btn_Reset_PreT.UseVisualStyleBackColor = true;
             this.btn_Reset_PreT.Click += new System.EventHandler(this.btn_Reset_EngT_Click);
             // 
-            // btn_PowerOff_PreT
-            // 
-            this.btn_PowerOff_PreT.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.btn_PowerOff_PreT.Location = new System.Drawing.Point(542, 16);
-            this.btn_PowerOff_PreT.Name = "btn_PowerOff_PreT";
-            this.btn_PowerOff_PreT.Size = new System.Drawing.Size(85, 32);
-            this.btn_PowerOff_PreT.TabIndex = 92;
-            this.btn_PowerOff_PreT.Text = "Power Off";
-            this.btn_PowerOff_PreT.UseVisualStyleBackColor = true;
-            this.btn_PowerOff_PreT.Click += new System.EventHandler(this.btn_PowerOff_OWCI_ADC_Click);
-            // 
             // label54
             // 
             this.label54.AutoSize = true;
@@ -2384,6 +2409,17 @@
             this.txt_SerialNum_PreT.TabIndex = 83;
             this.txt_SerialNum_PreT.Text = "Null";
             this.txt_SerialNum_PreT.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // btn_PowerOff_PreT
+            // 
+            this.btn_PowerOff_PreT.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.btn_PowerOff_PreT.Location = new System.Drawing.Point(542, 16);
+            this.btn_PowerOff_PreT.Name = "btn_PowerOff_PreT";
+            this.btn_PowerOff_PreT.Size = new System.Drawing.Size(85, 32);
+            this.btn_PowerOff_PreT.TabIndex = 92;
+            this.btn_PowerOff_PreT.Text = "Power Off";
+            this.btn_PowerOff_PreT.UseVisualStyleBackColor = true;
+            this.btn_PowerOff_PreT.Click += new System.EventHandler(this.btn_PowerOff_OWCI_ADC_Click);
             // 
             // label31
             // 
@@ -2666,6 +2702,19 @@
             this.txt_TargertVoltage_AutoT.Text = "2";
             this.txt_TargertVoltage_AutoT.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
+            // txt_AdcOffset_AutoT
+            // 
+            this.txt_AdcOffset_AutoT.BackColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.txt_AdcOffset_AutoT.Font = new System.Drawing.Font("Microsoft Sans Serif", 17F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Pixel);
+            this.txt_AdcOffset_AutoT.ForeColor = System.Drawing.Color.White;
+            this.txt_AdcOffset_AutoT.Location = new System.Drawing.Point(445, 132);
+            this.txt_AdcOffset_AutoT.Name = "txt_AdcOffset_AutoT";
+            this.txt_AdcOffset_AutoT.ReadOnly = true;
+            this.txt_AdcOffset_AutoT.Size = new System.Drawing.Size(100, 27);
+            this.txt_AdcOffset_AutoT.TabIndex = 107;
+            this.txt_AdcOffset_AutoT.Text = "0";
+            this.txt_AdcOffset_AutoT.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
             // txt_TargetGain_AutoT
             // 
             this.txt_TargetGain_AutoT.BackColor = System.Drawing.SystemColors.ControlDarkDark;
@@ -2751,6 +2800,17 @@
             this.label52.TabIndex = 97;
             this.label52.Text = "Sensitivity Adapt";
             // 
+            // label68
+            // 
+            this.label68.AutoSize = true;
+            this.label68.Font = new System.Drawing.Font("Times New Roman", 17F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.label68.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.label68.Location = new System.Drawing.Point(349, 136);
+            this.label68.Name = "label68";
+            this.label68.Size = new System.Drawing.Size(91, 19);
+            this.label68.TabIndex = 91;
+            this.label68.Text = "ADC Offset";
+            // 
             // label49
             // 
             this.label49.AutoSize = true;
@@ -2772,6 +2832,17 @@
             this.label46.Size = new System.Drawing.Size(20, 19);
             this.label46.TabIndex = 96;
             this.label46.Text = "A";
+            // 
+            // label67
+            // 
+            this.label67.AutoSize = true;
+            this.label67.Font = new System.Drawing.Font("Times New Roman", 17F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.label67.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.label67.Location = new System.Drawing.Point(545, 136);
+            this.label67.Name = "label67";
+            this.label67.Size = new System.Drawing.Size(33, 19);
+            this.label67.TabIndex = 95;
+            this.label67.Text = "mV";
             // 
             // label47
             // 
@@ -2897,76 +2968,6 @@
             this.txt_OutputLogInfo.TabIndex = 88;
             this.txt_OutputLogInfo.Text = "";
             // 
-            // label65
-            // 
-            this.label65.AutoSize = true;
-            this.label65.Font = new System.Drawing.Font("Times New Roman", 17F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.label65.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.label65.Location = new System.Drawing.Point(394, 131);
-            this.label65.Name = "label65";
-            this.label65.Size = new System.Drawing.Size(95, 19);
-            this.label65.TabIndex = 82;
-            this.label65.Text = "ADC Offset ";
-            // 
-            // txt_AdcOffset_PreT
-            // 
-            this.txt_AdcOffset_PreT.BackColor = System.Drawing.Color.CadetBlue;
-            this.txt_AdcOffset_PreT.Font = new System.Drawing.Font("Microsoft Sans Serif", 17F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Pixel);
-            this.txt_AdcOffset_PreT.ForeColor = System.Drawing.Color.White;
-            this.txt_AdcOffset_PreT.Location = new System.Drawing.Point(494, 127);
-            this.txt_AdcOffset_PreT.Name = "txt_AdcOffset_PreT";
-            this.txt_AdcOffset_PreT.Size = new System.Drawing.Size(78, 27);
-            this.txt_AdcOffset_PreT.TabIndex = 83;
-            this.txt_AdcOffset_PreT.Text = "0";
-            this.txt_AdcOffset_PreT.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.txt_AdcOffset_PreT.TextChanged += new System.EventHandler(this.txt_AdcOffset_PreT_TextChanged);
-            // 
-            // label66
-            // 
-            this.label66.AutoSize = true;
-            this.label66.Font = new System.Drawing.Font("Times New Roman", 17F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.label66.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.label66.Location = new System.Drawing.Point(578, 130);
-            this.label66.Name = "label66";
-            this.label66.Size = new System.Drawing.Size(33, 19);
-            this.label66.TabIndex = 89;
-            this.label66.Text = "mV";
-            // 
-            // txt_AdcOffset_AutoT
-            // 
-            this.txt_AdcOffset_AutoT.BackColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.txt_AdcOffset_AutoT.Font = new System.Drawing.Font("Microsoft Sans Serif", 17F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Pixel);
-            this.txt_AdcOffset_AutoT.ForeColor = System.Drawing.Color.White;
-            this.txt_AdcOffset_AutoT.Location = new System.Drawing.Point(445, 132);
-            this.txt_AdcOffset_AutoT.Name = "txt_AdcOffset_AutoT";
-            this.txt_AdcOffset_AutoT.ReadOnly = true;
-            this.txt_AdcOffset_AutoT.Size = new System.Drawing.Size(100, 27);
-            this.txt_AdcOffset_AutoT.TabIndex = 107;
-            this.txt_AdcOffset_AutoT.Text = "0";
-            this.txt_AdcOffset_AutoT.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            // 
-            // label67
-            // 
-            this.label67.AutoSize = true;
-            this.label67.Font = new System.Drawing.Font("Times New Roman", 17F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.label67.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.label67.Location = new System.Drawing.Point(545, 136);
-            this.label67.Name = "label67";
-            this.label67.Size = new System.Drawing.Size(33, 19);
-            this.label67.TabIndex = 95;
-            this.label67.Text = "mV";
-            // 
-            // label68
-            // 
-            this.label68.AutoSize = true;
-            this.label68.Font = new System.Drawing.Font("Times New Roman", 17F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.label68.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.label68.Location = new System.Drawing.Point(349, 136);
-            this.label68.Name = "label68";
-            this.label68.Size = new System.Drawing.Size(91, 19);
-            this.label68.TabIndex = 91;
-            this.label68.Text = "ADC Offset";
-            // 
             // CurrentSensorConsole
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -2977,7 +2978,7 @@
             this.Controls.Add(this.statusStrip);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.Name = "CurrentSensorConsole";
-            this.Text = "Current Sensor Console v3.0.9.RC - CopyRight of SenkoMicro, Inc";
+            this.Text = "Current Sensor Console v3.1.0.RC - CopyRight of SenkoMicro, Inc";
             this.statusStrip.ResumeLayout(false);
             this.statusStrip.PerformLayout();
             this.toolStrip.ResumeLayout(false);
