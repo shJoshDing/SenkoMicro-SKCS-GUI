@@ -22,8 +22,8 @@ namespace CurrentSensorV3
 
         #region Param Definition
 
-        //bool bAutoTrimTest = true;          //Debug mode, display engineer tab
-        bool bAutoTrimTest = false;       //Release mode, bon't display engineer tab
+        bool bAutoTrimTest = true;          //Debug mode, display engineer tab
+        //bool bAutoTrimTest = false;       //Release mode, bon't display engineer tab
 
         //double IP15 = 0;
         //double IP10 = 0;
@@ -3070,7 +3070,7 @@ namespace CurrentSensorV3
             
             Delay(Delay_Operation);
 
-            this.lbl_passOrFailed.Text = "CONNECTION!";
+            this.lbl_passOrFailed.Text = "Checking!";
 
             /* Get module current */
             if (oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VIN_TO_VCS))
@@ -3118,7 +3118,7 @@ namespace CurrentSensorV3
             }
             #endregion
 
-            this.lbl_passOrFailed.Text = "PROCESSING!";
+            this.lbl_passOrFailed.Text = "Processing!";
 
             #region Saturation judgement
             /*Enter test mode, write PreSet Gain code, and enter nomal mode*/
@@ -3136,6 +3136,7 @@ namespace CurrentSensorV3
             {
                 DisplayOperateMes("AutoTrim Canceled!", Color.Red);
                 PowerOff();
+                RestoreReg80ToReg83Value();
                 return;
             }
 
@@ -3177,6 +3178,7 @@ namespace CurrentSensorV3
             {
                 DisplayOperateMes("Module Vout is SATURATION!", Color.Red);
                 PowerOff();
+                RestoreReg80ToReg83Value();
                 return;
             }
 
@@ -3190,6 +3192,7 @@ namespace CurrentSensorV3
             {
                 DisplayOperateMes("AutoTrim Canceled!", Color.Red);
                 PowerOff();
+                RestoreReg80ToReg83Value();
                 return;
             }
             Delay(Delay_Operation);
@@ -3206,24 +3209,21 @@ namespace CurrentSensorV3
             tempG2 = ( TargetGain_customer / ((Vout_IP - Vout_0A)/IP))/1000d;
             autoAdaptingGoughGain = tempG1*tempG2*100d;
             //autoAdaptingGoughGain = 100d * ( TargetGain_customer / ((Vout_IP - Vout_0A)/IP) * 1000d) * (RoughTable_Customer[0][Ix_ForRoughGainCtrl]/100d);
-            if (tempG2 >= 1)
-            {
-                Ix_forAutoAdaptingRoughGain = LookupRoughGain_Customer(autoAdaptingGoughGain, RoughTable_Customer);
-            }
-            else
-            {
-                Ix_forAutoAdaptingRoughGain = LookupRoughGain_Customer(autoAdaptingGoughGain, RoughTable_Customer);
-            }
+               
+            Ix_forAutoAdaptingRoughGain = LookupRoughGain_Customer(autoAdaptingGoughGain, RoughTable_Customer);
 
-            DisplayOperateMes("IP = " + IP.ToString("F0"));
-            DisplayOperateMes("TargetGain_customer = " + TargetGain_customer.ToString("F3"));
-            DisplayOperateMes("(Vout_IP - Vout_0A)/IP = " + ((Vout_IP - Vout_0A) / IP).ToString("F3"));
-            DisplayOperateMes("tempG1 = " + tempG1.ToString("F3"));
-            DisplayOperateMes("tempG2 = " + tempG2.ToString("F3"));
-            DisplayOperateMes("Ix_forAutoAdaptingRoughGain = " + Ix_forAutoAdaptingRoughGain.ToString("F0"));
-            //DisplayOperateMes("RoughTable_Customer[0][Ix_ForRoughGainCtrl]/100d = " + (RoughTable_Customer[0][Ix_ForRoughGainCtrl] / 100d).ToString("F3"));
-            //DisplayOperateMes("( TargetGain_customer / (Vout_IP - Vout_0A)*1000d / IP) = " + ((TargetGain_customer / (Vout_IP - Vout_0A) * 1000d / IP)).ToString("F3"));
-            DisplayOperateMes("autoAdaptingGoughGain = " + autoAdaptingGoughGain.ToString("F3"));
+            if(bAutoTrimTest)
+            {
+                DisplayOperateMes("IP = " + IP.ToString("F0"));
+                DisplayOperateMes("TargetGain_customer = " + TargetGain_customer.ToString("F3"));
+                DisplayOperateMes("(Vout_IP - Vout_0A)/IP = " + ((Vout_IP - Vout_0A) / IP).ToString("F3"));
+                DisplayOperateMes("tempG1 = " + tempG1.ToString("F3"));
+                DisplayOperateMes("tempG2 = " + tempG2.ToString("F3"));
+                DisplayOperateMes("Ix_forAutoAdaptingRoughGain = " + Ix_forAutoAdaptingRoughGain.ToString("F0"));
+                //DisplayOperateMes("RoughTable_Customer[0][Ix_ForRoughGainCtrl]/100d = " + (RoughTable_Customer[0][Ix_ForRoughGainCtrl] / 100d).ToString("F3"));
+                //DisplayOperateMes("( TargetGain_customer / (Vout_IP - Vout_0A)*1000d / IP) = " + ((TargetGain_customer / (Vout_IP - Vout_0A) * 1000d / IP)).ToString("F3"));
+                DisplayOperateMes("autoAdaptingGoughGain = " + autoAdaptingGoughGain.ToString("F3"));
+            }
 
             bit_op_mask = bit5_Mask | bit6_Mask | bit7_Mask;
             Reg80Value &= ~bit_op_mask;
@@ -3243,6 +3243,7 @@ namespace CurrentSensorV3
             {
                 DisplayOperateMes("AutoTrim Canceled!", Color.Red);
                 PowerOff();
+                RestoreReg80ToReg83Value();
                 return;
             }
 
@@ -3256,7 +3257,11 @@ namespace CurrentSensorV3
             oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VOUT_WITH_CAP);
             Delay(Delay_Operation);
             Vout_IP = AverageVout();
-            DisplayOperateMes("Vout @ IP = " + Vout_IP.ToString("F3"));
+
+            if (bAutoTrimTest)
+            {
+                DisplayOperateMes("Vout @ IP = " + Vout_IP.ToString("F3"));
+            }
 
 
             /* Change Current to 0A */
@@ -3265,14 +3270,19 @@ namespace CurrentSensorV3
             {
                 DisplayOperateMes("AutoTrim Canceled!", Color.Red);
                 PowerOff();
+                RestoreReg80ToReg83Value();
                 return;
             }
             Delay(Delay_Operation);
             Vout_0A = AverageVout();
-            DisplayOperateMes("Vout @ 0A = " + Vout_0A.ToString("F3"));
-            DisplayOperateMes("Delta Vout = " + (Vout_IP - Vout_0A).ToString("F3"));
-            DisplayOperateMes("Target Delta Vout = " + TargetVoltage_customer.ToString("F3"));
-            DisplayOperateMes("Target Delta Vout*100/86.07 = " + (TargetVoltage_customer * 100 / 86.07).ToString("F3"));
+
+            if (bAutoTrimTest)
+            {
+                DisplayOperateMes("Vout @ 0A = " + Vout_0A.ToString("F3"));
+                DisplayOperateMes("Delta Vout = " + (Vout_IP - Vout_0A).ToString("F3"));
+                DisplayOperateMes("Target Delta Vout = " + TargetVoltage_customer.ToString("F3"));
+                DisplayOperateMes("Target Delta Vout*100/86.07 = " + (TargetVoltage_customer * 100 / 86.07).ToString("F3"));
+            }
 
             #endregion
 
@@ -3412,6 +3422,7 @@ namespace CurrentSensorV3
             {
                 DisplayOperateMes("PreTrim Code is not suitable!", Color.Red);
                 PowerOff();
+                RestoreReg80ToReg83Value();
                 return;
             }
 
@@ -3565,6 +3576,7 @@ namespace CurrentSensorV3
             {
                 DisplayOperateMes("AutoTrim Canceled!", Color.Red);
                 PowerOff();
+                RestoreReg80ToReg83Value();
                 return;
             }
 
@@ -3662,8 +3674,8 @@ namespace CurrentSensorV3
             RestoreReg80ToReg83Value();
 
             DisplayOperateMes("Next...\r\n");
-            this.lbl_passOrFailed.ForeColor = Color.Black;
-            this.lbl_passOrFailed.Text = "Done!";
+            //this.lbl_passOrFailed.ForeColor = Color.Black;
+            //this.lbl_passOrFailed.Text = "Done!";
         }
 
         //sel_vr button
