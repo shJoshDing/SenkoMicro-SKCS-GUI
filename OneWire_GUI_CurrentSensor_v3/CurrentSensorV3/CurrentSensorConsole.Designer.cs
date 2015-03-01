@@ -247,6 +247,8 @@
             this.contextMenuStrip_Clear = new System.Windows.Forms.ToolStripMenuItem();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.txt_OutputLogInfo = new System.Windows.Forms.RichTextBox();
+            this.btn_AutomaticaTrim5V = new System.Windows.Forms.Button();
+            this.btn_AutomaticaTrim15V = new System.Windows.Forms.Button();
             this.statusStrip.SuspendLayout();
             this.toolStrip.SuspendLayout();
             this.tabControl1.SuspendLayout();
@@ -2443,6 +2445,8 @@
             this.AutoTrimTab.Controls.Add(this.autoTrimResultIndicator);
             this.AutoTrimTab.Controls.Add(this.label20);
             this.AutoTrimTab.Controls.Add(this.lbl_passOrFailed);
+            this.AutoTrimTab.Controls.Add(this.btn_AutomaticaTrim15V);
+            this.AutoTrimTab.Controls.Add(this.btn_AutomaticaTrim5V);
             this.AutoTrimTab.Controls.Add(this.btn_AutomaticaTrim);
             this.AutoTrimTab.Controls.Add(this.groupBox8);
             this.AutoTrimTab.Location = new System.Drawing.Point(4, 22);
@@ -2968,6 +2972,30 @@
             this.txt_OutputLogInfo.TabIndex = 88;
             this.txt_OutputLogInfo.Text = "";
             // 
+            // btn_AutomaticaTrim5V
+            // 
+            this.btn_AutomaticaTrim5V.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.btn_AutomaticaTrim5V.Location = new System.Drawing.Point(471, 283);
+            this.btn_AutomaticaTrim5V.Name = "btn_AutomaticaTrim5V";
+            this.btn_AutomaticaTrim5V.Size = new System.Drawing.Size(132, 31);
+            this.btn_AutomaticaTrim5V.TabIndex = 57;
+            this.btn_AutomaticaTrim5V.Text = "5V Auto-Trim";
+            this.btn_AutomaticaTrim5V.UseVisualStyleBackColor = true;
+            this.btn_AutomaticaTrim5V.Visible = false;
+            this.btn_AutomaticaTrim5V.Click += new System.EventHandler(this.btn_AutomaticaTrim5V_Click);
+            // 
+            // btn_AutomaticaTrim15V
+            // 
+            this.btn_AutomaticaTrim15V.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.btn_AutomaticaTrim15V.Location = new System.Drawing.Point(471, 320);
+            this.btn_AutomaticaTrim15V.Name = "btn_AutomaticaTrim15V";
+            this.btn_AutomaticaTrim15V.Size = new System.Drawing.Size(132, 31);
+            this.btn_AutomaticaTrim15V.TabIndex = 57;
+            this.btn_AutomaticaTrim15V.Text = "15V Auto-Trim";
+            this.btn_AutomaticaTrim15V.UseVisualStyleBackColor = true;
+            this.btn_AutomaticaTrim15V.Visible = false;
+            this.btn_AutomaticaTrim15V.Click += new System.EventHandler(this.btn_AutomaticaTrim15V_Click);
+            // 
             // CurrentSensorConsole
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -3259,5 +3287,7 @@
         private System.Windows.Forms.TextBox txt_AdcOffset_AutoT;
         private System.Windows.Forms.Label label68;
         private System.Windows.Forms.Label label67;
+        private System.Windows.Forms.Button btn_AutomaticaTrim15V;
+        private System.Windows.Forms.Button btn_AutomaticaTrim5V;
     }
 }
