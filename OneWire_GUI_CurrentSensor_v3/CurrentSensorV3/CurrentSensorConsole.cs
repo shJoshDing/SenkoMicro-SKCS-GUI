@@ -3968,7 +3968,7 @@ namespace CurrentSensorV3
             oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VIN_TO_MOUT);
             Delay(Delay_Operation);
             Mout_IP = AverageVout();
-            AMPout_IP = k_slope * Mout_IP + b_offset;
+            AMPout_IP = - k_slope * Mout_IP + b_offset;
             DisplayOperateMes("Mout @ IP = " + Mout_IP.ToString("F3") );
             DisplayOperateMes("AMPout @ IP = " + AMPout_IP.ToString("F3"));
 
@@ -3987,7 +3987,7 @@ namespace CurrentSensorV3
             }
             Delay(Delay_Operation);
             Mout_0A = AverageVout();
-            AMPout_0A = k_slope * Mout_0A + b_offset;
+            AMPout_0A = - k_slope * Mout_0A + b_offset;
             DisplayOperateMes("Mout @ 0A = " + Mout_0A.ToString("F3"));
             DisplayOperateMes("AMPout @ 0A = " + AMPout_0A.ToString("F3"));
 
@@ -4058,7 +4058,7 @@ namespace CurrentSensorV3
             oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VOUT_WITH_CAP);
             Delay(Delay_Operation);
             Mout_0A = AverageVout();
-            AMPout_0A = k_slope * Mout_0A + b_offset;
+            AMPout_0A = - k_slope * Mout_0A + b_offset;
 
             /* Offset trim code calculate */
             //btn_offset_Click(null, null);
@@ -4266,10 +4266,10 @@ namespace CurrentSensorV3
 
             #region Next
             DisplayOperateMes("Vout @ 0A = " + Vout_0A.ToString("F3"));
-            Mout_0A = k_slope * Vout_0A + b_offset;
+            Mout_0A = - k_slope * Vout_0A + b_offset;
             DisplayOperateMes("Mout @ 0A = " + Mout_0A.ToString("F3"));
             DisplayOperateMes("Vout @ IP = " + Vout_IP.ToString("F3"));
-            Mout_IP = k_slope * Vout_IP + b_offset;
+            Mout_IP = - k_slope * Vout_IP + b_offset;
             DisplayOperateMes("Mout @ IP = " + Mout_IP.ToString("F3"));
 
             //reset vout_0A, vout_IP and power off

@@ -3006,7 +3006,7 @@
             this.Controls.Add(this.statusStrip);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.Name = "CurrentSensorConsole";
-            this.Text = "Current Sensor Console v3.1.2.RC - CopyRight of SenkoMicro, Inc";
+            this.Text = "Current Sensor Console v3.1.3.RC - CopyRight of SenkoMicro, Inc";
             this.statusStrip.ResumeLayout(false);
             this.statusStrip.PerformLayout();
             this.toolStrip.ResumeLayout(false);
