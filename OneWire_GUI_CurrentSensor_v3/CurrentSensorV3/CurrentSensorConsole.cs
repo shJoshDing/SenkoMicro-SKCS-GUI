@@ -4000,7 +4000,7 @@ namespace CurrentSensorV3
             int Ix_forAutoAdaptingRoughGain = 0;
             int Ix_forAutoAdaptingPresionGain = 0;
             tempG1 = RoughTable_Customer[0][Ix_ForRoughGainCtrl] / 100d;
-            tempG2 = (TargetGain_customer*k_slope / (this.abs(Mout_IP - Mout_0A) / IP)) / 1000d;
+            tempG2 = (TargetGain_customer*k_slope / (Math.Abs(Mout_IP - Mout_0A) / IP)) / 1000d;
             autoAdaptingGoughGain = tempG1 * tempG2 * 100d;
             //autoAdaptingGoughGain = 100d * ( TargetGain_customer / ((Vout_IP - Vout_0A)/IP) * 1000d) * (RoughTable_Customer[0][Ix_ForRoughGainCtrl]/100d);
 
@@ -4014,7 +4014,7 @@ namespace CurrentSensorV3
             {
                 DisplayOperateMes("IP = " + IP.ToString("F0"));
                 DisplayOperateMes("TargetGain_customer * k_slope = " + (TargetGain_customer*k_slope).ToString("F3"));
-                DisplayOperateMes("abs(Mout_IP - Mout_0A)/IP = " + (this.abs(Mout_IP - Mout_0A) / IP).ToString("F3"));
+                DisplayOperateMes("abs(Mout_IP - Mout_0A)/IP = " + (Math.Abs(Mout_IP - Mout_0A) / IP).ToString("F3"));
                 DisplayOperateMes("tempG1 = " + tempG1.ToString("F3"));
                 DisplayOperateMes("tempG2 = " + tempG2.ToString("F3"));
                 DisplayOperateMes("Ix_forAutoAdaptingRoughGain = " + Ix_forAutoAdaptingRoughGain.ToString("F0"));
