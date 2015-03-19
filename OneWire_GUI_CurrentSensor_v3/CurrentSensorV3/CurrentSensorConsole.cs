@@ -82,6 +82,22 @@ namespace CurrentSensorV3
         string StrIPx_Auto = "15A";
         double selectedCurrent_Auto = 20;   //A
         double targetGain_customer = 100;    //mV/A
+
+        double targetOffset = 2.5;
+        double TargetOffset
+        {
+            get { return this.targetOffset; }
+            set 
+            {
+                this.targetOffset = value;
+                this.txt_VoutOffset_AutoT.Text = (string)this.cmb_Voffset_PreT.SelectedItem;
+
+                //Update GUI setting
+                //this.cmb_Voffset_PreT.SelectedItem = (object)(this.targetOffset + "V");
+            }
+        }
+        double saturationVout = 4.9;
+
         double targetVoltage_customer = 2;
         double TargetVoltage_customer
         {
@@ -177,6 +193,23 @@ namespace CurrentSensorV3
                 //Set both combobox on GUI
                 this.cmb_Module_EngT.SelectedIndex = this.moduleTypeindex;
                 this.cmb_Module_PreT.SelectedIndex = this.moduleTypeindex;
+                this.txt_ModuleType_AutoT.Text = (string)this.cmb_Module_EngT.SelectedItem;
+
+                //Set Voffset
+                if (this.moduleTypeindex == 2)
+                {
+                    this.cmb_Voffset_PreT.SelectedItem = (object)(this.targetOffset + "V");
+                    this.cmb_Voffset_PreT.Enabled = false;
+                }
+                else if (this.moduleTypeindex == 1)
+                {
+                    this.cmb_Voffset_PreT.SelectedItem = (object)(this.targetOffset + "V");
+                    this.cmb_Voffset_PreT.Enabled = false;
+                }
+                else
+                {
+                    this.cmb_Voffset_PreT.Enabled = true;
+                }
             }
             get { return this.moduleTypeindex; }
         }
@@ -389,6 +422,7 @@ namespace CurrentSensorV3
             this.cmb_TempCmp_PreT.SelectedIndex = 0;
             this.cmb_IPRange_PreT.SelectedIndex = 1;
             this.cmb_Module_PreT.SelectedIndex = 0;
+            this.cmb_Voffset_PreT.SelectedIndex = 0;
 
             //Serial Num
             this.txt_SerialNum_EngT.Text = SerialNum;
@@ -453,7 +487,8 @@ namespace CurrentSensorV3
         /// <returns>计算出的Offset供查表用</returns>
         private double OffsetTuningCalc_Customer()
         {
-            return 2.5 / Vout_0A;
+            //return 2.5 / Vout_0A;
+            return targetOffset / Vout_0A;
         }
 
         private double GainTuningCalc_Customer(double testValue, double targetValue)
@@ -3057,7 +3092,7 @@ namespace CurrentSensorV3
         //bool bAutoTrimTest = false;
         private void btn_AutomaticaTrim_Click(object sender, EventArgs e)
         {
-            if (this.cmb_Module_PreT.SelectedItem.ToString() == "5V")
+            if (this.cmb_Module_PreT.SelectedItem.ToString() == "5V" || this.cmb_Module_PreT.SelectedItem.ToString() == "3.3V")
                 btn_AutomaticaTrim5V_Click(null, null);
             else
                 btn_AutomaticaTrim15V_Click(null, null);
@@ -3070,13 +3105,16 @@ namespace CurrentSensorV3
             bool bMarginal = false;
             bool bSafety = false;
             uint[] tempReadback = new uint[5];
-            double dVip_Target = 2.5 + TargetVoltage_customer;
+            double dVip_Target = targetOffset + TargetVoltage_customer;
 
             DisplayOperateMes("Start...\r\n");
             this.lbl_passOrFailed.ForeColor = Color.Black;
             this.lbl_passOrFailed.Text = "START!";
 
             /* AutoTrim code */
+
+            //if (TargetOffset == 1.65)
+            //    Reg82Value = 0x18;
 
             #region Get module current
 
@@ -3163,7 +3201,7 @@ namespace CurrentSensorV3
             DisplayOperateMes("Vout @ IP = " + Vout_IP.ToString("F3"));
 
             /*Judge PreSet gain; delta Vout target >= delta Vout test * 86.07% */
-            if (Vout_IP > 4.9)
+            if (Vout_IP > saturationVout)
             {
                 DisplayOperateMes("Module Vout is SATURATION!", Color.Red);
                 PowerOff();
@@ -3596,16 +3634,16 @@ namespace CurrentSensorV3
             if (bAutoTrimTest)
             {
                 DisplayOperateMes("IP = " + IP.ToString("F0"));
-                DisplayOperateMes("TargetGain_customer = " + TargetGain_customer.ToString("F3"));
-                DisplayOperateMes("(Vout_IP - Vout_0A)/IP = " + ((Vout_IP - Vout_0A) / IP).ToString("F3"));
-                DisplayOperateMes("tempG1 = " + tempG1.ToString("F3"));
-                DisplayOperateMes("tempG2 = " + tempG2.ToString("F3"));
+                DisplayOperateMes("TargetGain_customer = " + TargetGain_customer.ToString("F4"));
+                DisplayOperateMes("(Vout_IP - Vout_0A)/IP = " + ((Vout_IP - Vout_0A) / IP).ToString("F4"));
+                DisplayOperateMes("tempG1 = " + tempG1.ToString("F4"));
+                DisplayOperateMes("tempG2 = " + tempG2.ToString("F4"));
                 DisplayOperateMes("Ix_forAutoAdaptingRoughGain = " + Ix_forAutoAdaptingRoughGain.ToString("F0"));
                 DisplayOperateMes("Ix_forAutoAdaptingPresionGain = " + Ix_forAutoAdaptingPresionGain.ToString("F0"));
                 //DisplayOperateMes("RoughTable_Customer[0][Ix_ForRoughGainCtrl]/100d = " + (RoughTable_Customer[0][Ix_ForRoughGainCtrl] / 100d).ToString("F3"));
                 //DisplayOperateMes("( TargetGain_customer / (Vout_IP - Vout_0A)*1000d / IP) = " + ((TargetGain_customer / (Vout_IP - Vout_0A) * 1000d / IP)).ToString("F3"));
-                DisplayOperateMes("autoAdaptingGoughGain = " + autoAdaptingGoughGain.ToString("F3"));
-                DisplayOperateMes("autoAdaptingPresionGain = " + autoAdaptingPresionGain.ToString("F3"));
+                DisplayOperateMes("autoAdaptingGoughGain = " + RoughTable_Customer[0][Ix_forAutoAdaptingRoughGain].ToString("F4"));
+                DisplayOperateMes("autoAdaptingPresionGain = " + PreciseTable_Customer[0][Ix_forAutoAdaptingPresionGain].ToString("F4"));
             }
 
             /* Rough Gain Code*/
@@ -3774,19 +3812,19 @@ namespace CurrentSensorV3
             /* bin1,2,3 */
             if ((!bMarginal) && (!bSafety))
             {
-                if (2.5 * (1 - 0.01) <= Vout_0A && Vout_0A <= 2.5 * (1 + 0.01) && Vout_IP <= dVip_Target * (1 + 0.01) && Vout_IP >= dVip_Target * (1 - 0.01))
+                if (targetOffset * (1 - 0.01) <= Vout_0A && Vout_0A <= targetOffset * (1 + 0.01) && Vout_IP <= dVip_Target * (1 + 0.01) && Vout_IP >= dVip_Target * (1 - 0.01))
                 {
                     DisplayOperateMes("Pass! Bin1");
                     this.lbl_passOrFailed.ForeColor = Color.Green;
                     this.lbl_passOrFailed.Text = "Pass!";
                 }
-                else if (2.5 * (1 - 0.31) <= Vout_0A && Vout_0A <= 2.5 * (1 + 0.02) && Vout_IP <= dVip_Target * (1 + 0.03) && Vout_IP >= dVip_Target * (1 - 0.02))
+                else if (targetOffset * (1 - 0.31) <= Vout_0A && Vout_0A <= targetOffset * (1 + 0.02) && Vout_IP <= dVip_Target * (1 + 0.03) && Vout_IP >= dVip_Target * (1 - 0.02))
                 {
                     DisplayOperateMes("Pass! Bin2");
                     this.lbl_passOrFailed.ForeColor = Color.Green;
                     this.lbl_passOrFailed.Text = "Pass!";
                 }
-                else if (2.5 * (1 - 0.06) <= Vout_0A && Vout_0A <= 2.5 * (1 + 0.03) && Vout_IP <= dVip_Target * (1 + 0.06) && Vout_IP >= dVip_Target * (1 - 0.03))
+                else if (targetOffset * (1 - 0.06) <= Vout_0A && Vout_0A <= targetOffset * (1 + 0.03) && Vout_IP <= dVip_Target * (1 + 0.06) && Vout_IP >= dVip_Target * (1 - 0.03))
                 {
                     DisplayOperateMes("Pass! Bin3");
                     this.lbl_passOrFailed.ForeColor = Color.Green;
@@ -3803,19 +3841,19 @@ namespace CurrentSensorV3
             else if (bMarginal == true)
             //else
             {
-                if (2.5 * (1 - 0.01) <= Vout_0A && Vout_0A <= 2.5 * (1 + 0.01) && Vout_IP <= dVip_Target * (1 + 0.01) && Vout_IP >= dVip_Target * (1 - 0.01))
+                if (targetOffset * (1 - 0.01) <= Vout_0A && Vout_0A <= targetOffset * (1 + 0.01) && Vout_IP <= dVip_Target * (1 + 0.01) && Vout_IP >= dVip_Target * (1 - 0.01))
                 {
                     DisplayOperateMes("M.R.E! Bin4");
                     this.lbl_passOrFailed.ForeColor = Color.Red;
                     this.lbl_passOrFailed.Text = "M.R.E!";
                 }
-                else if (2.5 * (1 - 0.31) <= Vout_0A && Vout_0A <= 2.5 * (1 + 0.03) && Vout_IP <= dVip_Target * (1 + 0.03) && Vout_IP >= dVip_Target * (1 - 0.03))
+                else if (targetOffset * (1 - 0.31) <= Vout_0A && Vout_0A <= targetOffset * (1 + 0.03) && Vout_IP <= dVip_Target * (1 + 0.03) && Vout_IP >= dVip_Target * (1 - 0.03))
                 {
                     DisplayOperateMes("M.R.E! Bin5");
                     this.lbl_passOrFailed.ForeColor = Color.Red;
                     this.lbl_passOrFailed.Text = "M.R.E!";
                 }
-                else if (2.5 * (1 - 0.06) <= Vout_0A && Vout_0A <= 2.5 * (1 + 0.06) && Vout_IP <= dVip_Target * (1 + 0.06) && Vout_IP >= dVip_Target * (1 - 0.06))
+                else if (targetOffset * (1 - 0.06) <= Vout_0A && Vout_0A <= targetOffset * (1 + 0.06) && Vout_IP <= dVip_Target * (1 + 0.06) && Vout_IP >= dVip_Target * (1 - 0.06))
                 {
                     DisplayOperateMes("M.R.E! Bin6");
                     this.lbl_passOrFailed.ForeColor = Color.Red;
@@ -3831,15 +3869,15 @@ namespace CurrentSensorV3
             /* bin7,8,9 */
             else
             {
-                if (2.5 * (1 - 0.01) <= Vout_0A && Vout_0A <= 2.5 * (1 + 0.01) && Vout_IP <= dVip_Target * (1 + 0.01) && Vout_IP >= dVip_Target * (1 - 0.01))
+                if (targetOffset * (1 - 0.01) <= Vout_0A && Vout_0A <= targetOffset * (1 + 0.01) && Vout_IP <= dVip_Target * (1 + 0.01) && Vout_IP >= dVip_Target * (1 - 0.01))
                 {
                     DisplayOperateMes("Pass! Bin7");
                 }
-                else if (2.5 * (1 - 0.31) <= Vout_0A && Vout_0A <= 2.5 * (1 + 0.03) && Vout_IP <= dVip_Target * (1 + 0.03) && Vout_IP >= dVip_Target * (1 - 0.03))
+                else if (targetOffset * (1 - 0.31) <= Vout_0A && Vout_0A <= targetOffset * (1 + 0.03) && Vout_IP <= dVip_Target * (1 + 0.03) && Vout_IP >= dVip_Target * (1 - 0.03))
                 {
                     DisplayOperateMes("Pass! Bin8");
                 }
-                else if (2.5 * (1 - 0.06) <= Vout_0A && Vout_0A <= 2.5 * (1 + 0.06) && Vout_IP <= dVip_Target * (1 + 0.06) && Vout_IP >= dVip_Target * (1 - 0.06))
+                else if (targetOffset * (1 - 0.06) <= Vout_0A && Vout_0A <= targetOffset * (1 + 0.06) && Vout_IP <= dVip_Target * (1 + 0.06) && Vout_IP >= dVip_Target * (1 - 0.06))
                 {
                     DisplayOperateMes("Pass! Bin9");
                 }
@@ -3869,7 +3907,7 @@ namespace CurrentSensorV3
             bool bMarginal = false;
             bool bSafety = false;
             uint[] tempReadback = new uint[5];
-            double dVip_Target = 2.5 + TargetVoltage_customer;
+            double dVip_Target = targetOffset + TargetVoltage_customer;
 
             DisplayOperateMes("Start...\r\n");
             this.lbl_passOrFailed.ForeColor = Color.Black;
@@ -3956,7 +3994,7 @@ namespace CurrentSensorV3
             DisplayOperateMes("Vout @ IP = " + Vout_IP.ToString("F3"));
 
             /*Judge PreSet gain; delta Vout target >= delta Vout test * 86.07% */
-            if (Vout_IP > 4.9)
+            if (Vout_IP > saturationVout)
             {
                 DisplayOperateMes("Module Vout is SATURATION!", Color.Red);
                 PowerOff();
@@ -4188,19 +4226,19 @@ namespace CurrentSensorV3
             /* bin1,2,3 */
             if ((!bMarginal) && (!bSafety))
             {
-                if (2.5 * (1 - 0.01) <= Vout_0A && Vout_0A <= 2.5 * (1 + 0.01) && Vout_IP <= dVip_Target * (1 + 0.01) && Vout_IP >= dVip_Target * (1 - 0.01))
+                if (targetOffset * (1 - 0.01) <= Vout_0A && Vout_0A <= targetOffset * (1 + 0.01) && Vout_IP <= dVip_Target * (1 + 0.01) && Vout_IP >= dVip_Target * (1 - 0.01))
                 {
                     DisplayOperateMes("Pass! Bin1");
                     this.lbl_passOrFailed.ForeColor = Color.Green;
                     this.lbl_passOrFailed.Text = "Pass!";
                 }
-                else if (2.5 * (1 - 0.31) <= Vout_0A && Vout_0A <= 2.5 * (1 + 0.02) && Vout_IP <= dVip_Target * (1 + 0.03) && Vout_IP >= dVip_Target * (1 - 0.02))
+                else if (targetOffset * (1 - 0.31) <= Vout_0A && Vout_0A <= targetOffset * (1 + 0.02) && Vout_IP <= dVip_Target * (1 + 0.03) && Vout_IP >= dVip_Target * (1 - 0.02))
                 {
                     DisplayOperateMes("Pass! Bin2");
                     this.lbl_passOrFailed.ForeColor = Color.Green;
                     this.lbl_passOrFailed.Text = "Pass!";
                 }
-                else if (2.5 * (1 - 0.06) <= Vout_0A && Vout_0A <= 2.5 * (1 + 0.03) && Vout_IP <= dVip_Target * (1 + 0.06) && Vout_IP >= dVip_Target * (1 - 0.03))
+                else if (targetOffset * (1 - 0.06) <= Vout_0A && Vout_0A <= targetOffset * (1 + 0.03) && Vout_IP <= dVip_Target * (1 + 0.06) && Vout_IP >= dVip_Target * (1 - 0.03))
                 {
                     DisplayOperateMes("Pass! Bin3");
                     this.lbl_passOrFailed.ForeColor = Color.Green;
@@ -4217,19 +4255,19 @@ namespace CurrentSensorV3
             else if (bMarginal == true)
             //else
             {
-                if (2.5 * (1 - 0.01) <= Vout_0A && Vout_0A <= 2.5 * (1 + 0.01) && Vout_IP <= dVip_Target * (1 + 0.01) && Vout_IP >= dVip_Target * (1 - 0.01))
+                if (targetOffset * (1 - 0.01) <= Vout_0A && Vout_0A <= targetOffset * (1 + 0.01) && Vout_IP <= dVip_Target * (1 + 0.01) && Vout_IP >= dVip_Target * (1 - 0.01))
                 {
                     DisplayOperateMes("M.R.E! Bin4");
                     this.lbl_passOrFailed.ForeColor = Color.Red;
                     this.lbl_passOrFailed.Text = "M.R.E!";
                 }
-                else if (2.5 * (1 - 0.31) <= Vout_0A && Vout_0A <= 2.5 * (1 + 0.03) && Vout_IP <= dVip_Target * (1 + 0.03) && Vout_IP >= dVip_Target * (1 - 0.03))
+                else if (targetOffset * (1 - 0.31) <= Vout_0A && Vout_0A <= targetOffset * (1 + 0.03) && Vout_IP <= dVip_Target * (1 + 0.03) && Vout_IP >= dVip_Target * (1 - 0.03))
                 {
                     DisplayOperateMes("M.R.E! Bin5");
                     this.lbl_passOrFailed.ForeColor = Color.Red;
                     this.lbl_passOrFailed.Text = "M.R.E!";
                 }
-                else if (2.5 * (1 - 0.06) <= Vout_0A && Vout_0A <= 2.5 * (1 + 0.06) && Vout_IP <= dVip_Target * (1 + 0.06) && Vout_IP >= dVip_Target * (1 - 0.06))
+                else if (targetOffset * (1 - 0.06) <= Vout_0A && Vout_0A <= targetOffset * (1 + 0.06) && Vout_IP <= dVip_Target * (1 + 0.06) && Vout_IP >= dVip_Target * (1 - 0.06))
                 {
                     DisplayOperateMes("M.R.E! Bin6");
                     this.lbl_passOrFailed.ForeColor = Color.Red;
@@ -4245,15 +4283,15 @@ namespace CurrentSensorV3
             /* bin7,8,9 */
             else
             {
-                if (2.5 * (1 - 0.01) <= Vout_0A && Vout_0A <= 2.5 * (1 + 0.01) && Vout_IP <= dVip_Target * (1 + 0.01) && Vout_IP >= dVip_Target * (1 - 0.01))
+                if (targetOffset * (1 - 0.01) <= Vout_0A && Vout_0A <= targetOffset * (1 + 0.01) && Vout_IP <= dVip_Target * (1 + 0.01) && Vout_IP >= dVip_Target * (1 - 0.01))
                 {
                     DisplayOperateMes("Pass! Bin7");
                 }
-                else if (2.5 * (1 - 0.31) <= Vout_0A && Vout_0A <= 2.5 * (1 + 0.03) && Vout_IP <= dVip_Target * (1 + 0.03) && Vout_IP >= dVip_Target * (1 - 0.03))
+                else if (targetOffset * (1 - 0.31) <= Vout_0A && Vout_0A <= targetOffset * (1 + 0.03) && Vout_IP <= dVip_Target * (1 + 0.03) && Vout_IP >= dVip_Target * (1 - 0.03))
                 {
                     DisplayOperateMes("Pass! Bin8");
                 }
-                else if (2.5 * (1 - 0.06) <= Vout_0A && Vout_0A <= 2.5 * (1 + 0.06) && Vout_IP <= dVip_Target * (1 + 0.06) && Vout_IP >= dVip_Target * (1 - 0.06))
+                else if (targetOffset * (1 - 0.06) <= Vout_0A && Vout_0A <= targetOffset * (1 + 0.06) && Vout_IP <= dVip_Target * (1 + 0.06) && Vout_IP >= dVip_Target * (1 - 0.06))
                 {
                     DisplayOperateMes("Pass! Bin9");
                 }
@@ -4631,6 +4669,22 @@ namespace CurrentSensorV3
         private void cmb_Module_EngT_SelectedIndexChanged(object sender, EventArgs e)
         {
             ModuleTypeIndex = (sender as ComboBox).SelectedIndex;
+
+            if (ModuleTypeIndex == 2)
+            {
+                TargetOffset = 1.65;
+                saturationVout = 3.2;
+            }
+            else if (ModuleTypeIndex == 1 )
+            {
+                TargetOffset = 2.5;
+                saturationVout = 4.9;
+            }
+            else 
+            {
+                //TargetOffset = 2.5;
+                saturationVout = 4.9;
+            }
         }
 
         private void numUD_SlopeK_ValueChanged(object sender, EventArgs e)
@@ -4871,6 +4925,11 @@ namespace CurrentSensorV3
                     this.txt_AdcOffset_PreT.Text);
                 sw.WriteLine(msg);
 
+                // Vout @ 0A
+                msg = string.Format("Voffset|{0}|{1}",
+                    this.cmb_Voffset_PreT.SelectedIndex.ToString(), this.cmb_Voffset_PreT.SelectedItem.ToString());
+                sw.WriteLine(msg);
+
                 sw.Close();
             }
             catch
@@ -4908,6 +4967,7 @@ namespace CurrentSensorV3
                 msg = sr.ReadLine().Split("|".ToCharArray());
                 ix = int.Parse(msg[1]);
                 this.cmb_Module_PreT.SelectedIndex = ix;
+                this.txt_ModuleType_AutoT.Text = msg[2];
 
                 // IP Range
                 msg = sr.ReadLine().Split("|".ToCharArray());
@@ -4942,6 +5002,12 @@ namespace CurrentSensorV3
                 msg = sr.ReadLine().Split("|".ToCharArray());
                 //ix = int.Parse(msg[1]);
                 this.txt_AdcOffset_AutoT.Text = msg[1];
+
+                // Vout @ 0A
+                msg = sr.ReadLine().Split("|".ToCharArray());
+                ix = int.Parse(msg[1]);
+                this.cmb_Voffset_PreT.SelectedIndex = ix;
+                this.txt_VoutOffset_AutoT.Text = msg[2];
 
                 sr.Close();
 
@@ -5037,7 +5103,34 @@ namespace CurrentSensorV3
             //AadcOffset = AadcOffset;
         }
 
+        private void cmb_Voffset_PreT_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            int ix = 0;
+            ix = this.cmb_Voffset_PreT.SelectedIndex;
+            if( ix == 1 )
+            {
+                TargetOffset = 1.65;
+                bit_op_mask = bit3_Mask | bit4_Mask;
+                Reg82Value &= ~bit_op_mask;
+                Reg82Value |= 0x18;        //Reg0x82
+                //Reg82Value = 0x18;
+                this.cmb_OffsetOption_EngT.SelectedIndex = 3;
+            }
+            else
+            {
+                TargetOffset = 2.5;
+                bit_op_mask = bit3_Mask | bit4_Mask;
+                Reg82Value &= ~bit_op_mask;
+                Reg82Value |= 0x00;        //Reg0x82
+                //Reg82Value = 0x00;
+                this.cmb_OffsetOption_EngT.SelectedIndex = 0;
+            }
+        }
+
+
         #endregion Events
+
+       
 
 
 
