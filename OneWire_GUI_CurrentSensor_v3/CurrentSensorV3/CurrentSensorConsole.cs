@@ -323,15 +323,14 @@ namespace CurrentSensorV3
 
         private void num_UD_pulsewidth_ow_ValueChanged(object sender, EventArgs e)
         {
-            this.num_UD_pulsewidth_ow_EngT.Value = (decimal)((int)Math.Round((double)this.num_UD_pulsewidth_ow_EngT.Value / 5d) * 5);
+            //this.num_UD_pulsewidth_ow_EngT.Value = (decimal)((int)Math.Round((double)this.num_UD_pulsewidth_ow_EngT.Value / 5d) * 5);
+            //this.num_UD_pulsewidth_ow_EngT.Value = (double)this.num_UD_pulsewidth_ow_EngT.Value;
         }
 
         private void btn_fuse_action_ow_Click(object sender, EventArgs e)
         {
             //bool fuseMasterBit = false;
-            DialogResult dr = MessageBox.Show("Please Change Power To 6V", "Change Power", MessageBoxButtons.OKCancel);
-            if (dr == DialogResult.Cancel)
-                return;
+            
 
             oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_CONFIG_TO_VOUT);
             rbt_signalPathSeting_Config_EngT.Checked = true;
@@ -351,6 +350,15 @@ namespace CurrentSensorV3
             _reg_data = 0xAA;
             oneWrie_device.I2CWrite_Single(this.DeviceAddress, _reg_addr, _reg_data);
             
+            //Console.WriteLine("Fuse write result->{0}", oneWrie_device.FuseClockSwitch((double)this.num_UD_pulsewidth_ow_EngT.Value, (double)this.numUD_pulsedurationtime_ow_EngT.Value));
+        }
+
+        private void btn_fuse_clock_ow_EngT_Click(object sender, EventArgs e)
+        {
+            DialogResult dr = MessageBox.Show("Please Change Power To 6V", "Change Power", MessageBoxButtons.OKCancel);
+            if (dr == DialogResult.Cancel)
+                return;
+
             Console.WriteLine("Fuse write result->{0}", oneWrie_device.FuseClockSwitch((double)this.num_UD_pulsewidth_ow_EngT.Value, (double)this.numUD_pulsedurationtime_ow_EngT.Value));
         }
 
@@ -1613,7 +1621,7 @@ namespace CurrentSensorV3
                 return false;
             }
 
-            Delay(Delay_Operation);
+            //Delay(Delay_Operation);
 
             //0xAA->0x44
             _reg_Addr = 0x44;
@@ -1630,7 +1638,7 @@ namespace CurrentSensorV3
                 return false; ;
             }
 
-            Delay(Delay_Operation);
+            Delay(Delay_Power);
 
             //Fuse 
             if (oneWrie_device.FuseClockSwitch(fusePulseWidth, fuseDurationTime))
@@ -3701,6 +3709,8 @@ namespace CurrentSensorV3
             /* Todo: write trim code to regsiters */
             RegisterWrite(4, new uint[8] { 0x80, Reg80Value, 0x81, Reg81Value, 0x82, Reg82Value, 0x83, Reg83Value });
 
+            BurstRead(0x80, 5, tempReadback);
+
             /* fuse */
             FuseClockOn(DeviceAddress, (double)num_UD_pulsewidth_ow_EngT.Value, (double)numUD_pulsedurationtime_ow_EngT.Value);
 
@@ -3709,7 +3719,7 @@ namespace CurrentSensorV3
             Delay(Delay_Fuse);
 
             /* Repower on 5V */
-            oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VDD_FROM_5V);
+            //oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VDD_FROM_5V);
             RePower();
 
             //oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_CONFIG_TO_VOUT);
@@ -3722,6 +3732,7 @@ namespace CurrentSensorV3
              * if ( = ), go on
              * else bMarginal = true; */
             MarginalReadPreset();
+            Delay(Delay_Fuse);
             //uint[] tempReadback = new uint[5];
             BurstRead(0x80, 5, tempReadback);
             bMarginal = false;
@@ -3736,6 +3747,7 @@ namespace CurrentSensorV3
              * if ( = ), go on 
              * else bSafety = true; */
             SafetyReadPreset();
+            Delay(Delay_Fuse);
             tempReadback = new uint[5];
             BurstRead(0x80, 5, tempReadback);
             bSafety = false;
@@ -3765,6 +3777,7 @@ namespace CurrentSensorV3
             /* Margianl Read master bits*/
             MarginalReadPreset();
             tempReadback = new uint[5];
+            Delay(Delay_Fuse);
             BurstRead(0x80, 5, tempReadback);
             //bSafety = false;
             if (tempReadback[4] < 3)
@@ -3775,6 +3788,7 @@ namespace CurrentSensorV3
             /* Safety Read master bits*/
             SafetyReadPreset();
             tempReadback = new uint[5];
+            Delay(Delay_Fuse);
             BurstRead(0x80, 5, tempReadback);
             //bSafety = false;
             if (tempReadback[4] < 3)
@@ -3818,7 +3832,7 @@ namespace CurrentSensorV3
                     this.lbl_passOrFailed.ForeColor = Color.Green;
                     this.lbl_passOrFailed.Text = "Pass!";
                 }
-                else if (targetOffset * (1 - 0.31) <= Vout_0A && Vout_0A <= targetOffset * (1 + 0.02) && Vout_IP <= dVip_Target * (1 + 0.03) && Vout_IP >= dVip_Target * (1 - 0.02))
+                else if (targetOffset * (1 - 0.03) <= Vout_0A && Vout_0A <= targetOffset * (1 + 0.02) && Vout_IP <= dVip_Target * (1 + 0.03) && Vout_IP >= dVip_Target * (1 - 0.02))
                 {
                     DisplayOperateMes("Pass! Bin2");
                     this.lbl_passOrFailed.ForeColor = Color.Green;
@@ -3847,7 +3861,7 @@ namespace CurrentSensorV3
                     this.lbl_passOrFailed.ForeColor = Color.Red;
                     this.lbl_passOrFailed.Text = "M.R.E!";
                 }
-                else if (targetOffset * (1 - 0.31) <= Vout_0A && Vout_0A <= targetOffset * (1 + 0.03) && Vout_IP <= dVip_Target * (1 + 0.03) && Vout_IP >= dVip_Target * (1 - 0.03))
+                else if (targetOffset * (1 - 0.03) <= Vout_0A && Vout_0A <= targetOffset * (1 + 0.03) && Vout_IP <= dVip_Target * (1 + 0.03) && Vout_IP >= dVip_Target * (1 - 0.03))
                 {
                     DisplayOperateMes("M.R.E! Bin5");
                     this.lbl_passOrFailed.ForeColor = Color.Red;
@@ -3873,7 +3887,7 @@ namespace CurrentSensorV3
                 {
                     DisplayOperateMes("Pass! Bin7");
                 }
-                else if (targetOffset * (1 - 0.31) <= Vout_0A && Vout_0A <= targetOffset * (1 + 0.03) && Vout_IP <= dVip_Target * (1 + 0.03) && Vout_IP >= dVip_Target * (1 - 0.03))
+                else if (targetOffset * (1 - 0.03) <= Vout_0A && Vout_0A <= targetOffset * (1 + 0.03) && Vout_IP <= dVip_Target * (1 + 0.03) && Vout_IP >= dVip_Target * (1 - 0.03))
                 {
                     DisplayOperateMes("Pass! Bin8");
                 }
@@ -4232,7 +4246,7 @@ namespace CurrentSensorV3
                     this.lbl_passOrFailed.ForeColor = Color.Green;
                     this.lbl_passOrFailed.Text = "Pass!";
                 }
-                else if (targetOffset * (1 - 0.31) <= Vout_0A && Vout_0A <= targetOffset * (1 + 0.02) && Vout_IP <= dVip_Target * (1 + 0.03) && Vout_IP >= dVip_Target * (1 - 0.02))
+                else if (targetOffset * (1 - 0.03) <= Vout_0A && Vout_0A <= targetOffset * (1 + 0.02) && Vout_IP <= dVip_Target * (1 + 0.03) && Vout_IP >= dVip_Target * (1 - 0.02))
                 {
                     DisplayOperateMes("Pass! Bin2");
                     this.lbl_passOrFailed.ForeColor = Color.Green;
@@ -4261,7 +4275,7 @@ namespace CurrentSensorV3
                     this.lbl_passOrFailed.ForeColor = Color.Red;
                     this.lbl_passOrFailed.Text = "M.R.E!";
                 }
-                else if (targetOffset * (1 - 0.31) <= Vout_0A && Vout_0A <= targetOffset * (1 + 0.03) && Vout_IP <= dVip_Target * (1 + 0.03) && Vout_IP >= dVip_Target * (1 - 0.03))
+                else if (targetOffset * (1 - 0.03) <= Vout_0A && Vout_0A <= targetOffset * (1 + 0.03) && Vout_IP <= dVip_Target * (1 + 0.03) && Vout_IP >= dVip_Target * (1 - 0.03))
                 {
                     DisplayOperateMes("M.R.E! Bin5");
                     this.lbl_passOrFailed.ForeColor = Color.Red;
@@ -4287,7 +4301,7 @@ namespace CurrentSensorV3
                 {
                     DisplayOperateMes("Pass! Bin7");
                 }
-                else if (targetOffset * (1 - 0.31) <= Vout_0A && Vout_0A <= targetOffset * (1 + 0.03) && Vout_IP <= dVip_Target * (1 + 0.03) && Vout_IP >= dVip_Target * (1 - 0.03))
+                else if (targetOffset * (1 - 0.03) <= Vout_0A && Vout_0A <= targetOffset * (1 + 0.03) && Vout_IP <= dVip_Target * (1 + 0.03) && Vout_IP >= dVip_Target * (1 - 0.03))
                 {
                     DisplayOperateMes("Pass! Bin8");
                 }
@@ -5129,6 +5143,8 @@ namespace CurrentSensorV3
 
 
         #endregion Events
+
+        
 
        
 

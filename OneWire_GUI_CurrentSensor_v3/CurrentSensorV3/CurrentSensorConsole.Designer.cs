@@ -118,6 +118,7 @@
             this.txt_reg81_EngT = new System.Windows.Forms.TextBox();
             this.txt_reg80_EngT = new System.Windows.Forms.TextBox();
             this.btn_writeFuseCode_EngT = new System.Windows.Forms.Button();
+            this.btn_fuse_clock_ow_EngT = new System.Windows.Forms.Button();
             this.btn_fuse_action_ow_EngT = new System.Windows.Forms.Button();
             this.btn_enterNomalMode_EngT = new System.Windows.Forms.Button();
             this.btn_offset_EngT = new System.Windows.Forms.Button();
@@ -221,11 +222,13 @@
             this.btn_AutomaticaTrim5V = new System.Windows.Forms.Button();
             this.btn_AutomaticaTrim = new System.Windows.Forms.Button();
             this.groupBox8 = new System.Windows.Forms.GroupBox();
+            this.txt_ModuleType_AutoT = new System.Windows.Forms.TextBox();
             this.btn_loadconfig_AutoT = new System.Windows.Forms.Button();
             this.label57 = new System.Windows.Forms.Label();
             this.txt_ChosenGain_AutoT = new System.Windows.Forms.TextBox();
             this.label58 = new System.Windows.Forms.Label();
             this.txt_IP_AutoT = new System.Windows.Forms.TextBox();
+            this.txt_VoutOffset_AutoT = new System.Windows.Forms.TextBox();
             this.txt_TargertVoltage_AutoT = new System.Windows.Forms.TextBox();
             this.txt_AdcOffset_AutoT = new System.Windows.Forms.TextBox();
             this.txt_TargetGain_AutoT = new System.Windows.Forms.TextBox();
@@ -234,12 +237,15 @@
             this.txt_SensitivityAdapt_AutoT = new System.Windows.Forms.TextBox();
             this.label50 = new System.Windows.Forms.Label();
             this.label51 = new System.Windows.Forms.Label();
+            this.label71 = new System.Windows.Forms.Label();
+            this.label70 = new System.Windows.Forms.Label();
             this.label52 = new System.Windows.Forms.Label();
             this.label68 = new System.Windows.Forms.Label();
             this.label49 = new System.Windows.Forms.Label();
             this.label46 = new System.Windows.Forms.Label();
             this.label67 = new System.Windows.Forms.Label();
             this.label47 = new System.Windows.Forms.Label();
+            this.label72 = new System.Windows.Forms.Label();
             this.label62 = new System.Windows.Forms.Label();
             this.label48 = new System.Windows.Forms.Label();
             this.label61 = new System.Windows.Forms.Label();
@@ -251,11 +257,6 @@
             this.contextMenuStrip_Clear = new System.Windows.Forms.ToolStripMenuItem();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.txt_OutputLogInfo = new System.Windows.Forms.RichTextBox();
-            this.label70 = new System.Windows.Forms.Label();
-            this.txt_ModuleType_AutoT = new System.Windows.Forms.TextBox();
-            this.label71 = new System.Windows.Forms.Label();
-            this.txt_VoutOffset_AutoT = new System.Windows.Forms.TextBox();
-            this.label72 = new System.Windows.Forms.Label();
             this.statusStrip.SuspendLayout();
             this.toolStrip.SuspendLayout();
             this.tabControl1.SuspendLayout();
@@ -1153,6 +1154,7 @@
             this.groupBox1.Controls.Add(this.txt_reg81_EngT);
             this.groupBox1.Controls.Add(this.txt_reg80_EngT);
             this.groupBox1.Controls.Add(this.btn_writeFuseCode_EngT);
+            this.groupBox1.Controls.Add(this.btn_fuse_clock_ow_EngT);
             this.groupBox1.Controls.Add(this.btn_fuse_action_ow_EngT);
             this.groupBox1.Controls.Add(this.btn_enterNomalMode_EngT);
             this.groupBox1.Controls.Add(this.btn_offset_EngT);
@@ -1332,13 +1334,23 @@
             this.btn_writeFuseCode_EngT.UseVisualStyleBackColor = true;
             this.btn_writeFuseCode_EngT.Click += new System.EventHandler(this.btn_writeFuseCode_Click);
             // 
+            // btn_fuse_clock_ow_EngT
+            // 
+            this.btn_fuse_clock_ow_EngT.Location = new System.Drawing.Point(257, 143);
+            this.btn_fuse_clock_ow_EngT.Name = "btn_fuse_clock_ow_EngT";
+            this.btn_fuse_clock_ow_EngT.Size = new System.Drawing.Size(65, 23);
+            this.btn_fuse_clock_ow_EngT.TabIndex = 54;
+            this.btn_fuse_clock_ow_EngT.Text = "Fuse";
+            this.btn_fuse_clock_ow_EngT.UseVisualStyleBackColor = true;
+            this.btn_fuse_clock_ow_EngT.Click += new System.EventHandler(this.btn_fuse_clock_ow_EngT_Click);
+            // 
             // btn_fuse_action_ow_EngT
             // 
             this.btn_fuse_action_ow_EngT.Location = new System.Drawing.Point(187, 143);
             this.btn_fuse_action_ow_EngT.Name = "btn_fuse_action_ow_EngT";
-            this.btn_fuse_action_ow_EngT.Size = new System.Drawing.Size(135, 23);
+            this.btn_fuse_action_ow_EngT.Size = new System.Drawing.Size(65, 23);
             this.btn_fuse_action_ow_EngT.TabIndex = 54;
-            this.btn_fuse_action_ow_EngT.Text = "Fuse";
+            this.btn_fuse_action_ow_EngT.Text = "FuseKey";
             this.btn_fuse_action_ow_EngT.UseVisualStyleBackColor = true;
             this.btn_fuse_action_ow_EngT.Click += new System.EventHandler(this.btn_fuse_action_ow_Click);
             // 
@@ -1603,21 +1615,21 @@
             0});
             this.num_UD_pulsewidth_ow_EngT.Location = new System.Drawing.Point(252, 43);
             this.num_UD_pulsewidth_ow_EngT.Maximum = new decimal(new int[] {
-            400,
+            1000,
             0,
             0,
             0});
             this.num_UD_pulsewidth_ow_EngT.Minimum = new decimal(new int[] {
-            100,
+            1,
             0,
             0,
-            0});
+            65536});
             this.num_UD_pulsewidth_ow_EngT.Name = "num_UD_pulsewidth_ow_EngT";
             this.num_UD_pulsewidth_ow_EngT.Size = new System.Drawing.Size(56, 20);
             this.num_UD_pulsewidth_ow_EngT.TabIndex = 48;
             this.num_UD_pulsewidth_ow_EngT.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.num_UD_pulsewidth_ow_EngT.Value = new decimal(new int[] {
-            200,
+            800,
             0,
             0,
             0});
@@ -2699,6 +2711,19 @@
             this.groupBox8.TabStop = false;
             this.groupBox8.Text = "Preset";
             // 
+            // txt_ModuleType_AutoT
+            // 
+            this.txt_ModuleType_AutoT.BackColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.txt_ModuleType_AutoT.Font = new System.Drawing.Font("Microsoft Sans Serif", 17F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Pixel);
+            this.txt_ModuleType_AutoT.ForeColor = System.Drawing.Color.White;
+            this.txt_ModuleType_AutoT.Location = new System.Drawing.Point(181, 22);
+            this.txt_ModuleType_AutoT.Name = "txt_ModuleType_AutoT";
+            this.txt_ModuleType_AutoT.ReadOnly = true;
+            this.txt_ModuleType_AutoT.Size = new System.Drawing.Size(118, 27);
+            this.txt_ModuleType_AutoT.TabIndex = 113;
+            this.txt_ModuleType_AutoT.Text = "5V";
+            this.txt_ModuleType_AutoT.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
             // btn_loadconfig_AutoT
             // 
             this.btn_loadconfig_AutoT.Font = new System.Drawing.Font("Microsoft Sans Serif", 17F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
@@ -2757,6 +2782,19 @@
             this.txt_IP_AutoT.TabIndex = 108;
             this.txt_IP_AutoT.Text = "20";
             this.txt_IP_AutoT.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // txt_VoutOffset_AutoT
+            // 
+            this.txt_VoutOffset_AutoT.BackColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.txt_VoutOffset_AutoT.Font = new System.Drawing.Font("Microsoft Sans Serif", 17F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Pixel);
+            this.txt_VoutOffset_AutoT.ForeColor = System.Drawing.Color.White;
+            this.txt_VoutOffset_AutoT.Location = new System.Drawing.Point(445, 21);
+            this.txt_VoutOffset_AutoT.Name = "txt_VoutOffset_AutoT";
+            this.txt_VoutOffset_AutoT.ReadOnly = true;
+            this.txt_VoutOffset_AutoT.Size = new System.Drawing.Size(100, 27);
+            this.txt_VoutOffset_AutoT.TabIndex = 107;
+            this.txt_VoutOffset_AutoT.Text = "2.5";
+            this.txt_VoutOffset_AutoT.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // txt_TargertVoltage_AutoT
             // 
@@ -2858,6 +2896,28 @@
             this.label51.TabIndex = 98;
             this.label51.Text = "Tem Compesation";
             // 
+            // label71
+            // 
+            this.label71.AutoSize = true;
+            this.label71.Font = new System.Drawing.Font("Times New Roman", 17F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.label71.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.label71.Location = new System.Drawing.Point(363, 25);
+            this.label71.Name = "label71";
+            this.label71.Size = new System.Drawing.Size(59, 19);
+            this.label71.TabIndex = 97;
+            this.label71.Text = "Voffset";
+            // 
+            // label70
+            // 
+            this.label70.AutoSize = true;
+            this.label70.Font = new System.Drawing.Font("Times New Roman", 17F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.label70.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.label70.Location = new System.Drawing.Point(63, 25);
+            this.label70.Name = "label70";
+            this.label70.Size = new System.Drawing.Size(98, 19);
+            this.label70.TabIndex = 97;
+            this.label70.Text = "Module Type";
+            // 
             // label52
             // 
             this.label52.AutoSize = true;
@@ -2923,6 +2983,17 @@
             this.label47.Size = new System.Drawing.Size(49, 19);
             this.label47.TabIndex = 95;
             this.label47.Text = "mV/A";
+            // 
+            // label72
+            // 
+            this.label72.AutoSize = true;
+            this.label72.Font = new System.Drawing.Font("Times New Roman", 17F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.label72.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.label72.Location = new System.Drawing.Point(551, 25);
+            this.label72.Name = "label72";
+            this.label72.Size = new System.Drawing.Size(20, 19);
+            this.label72.TabIndex = 95;
+            this.label72.Text = "V";
             // 
             // label62
             // 
@@ -3037,65 +3108,6 @@
             this.txt_OutputLogInfo.TabIndex = 88;
             this.txt_OutputLogInfo.Text = "";
             // 
-            // label70
-            // 
-            this.label70.AutoSize = true;
-            this.label70.Font = new System.Drawing.Font("Times New Roman", 17F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.label70.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.label70.Location = new System.Drawing.Point(63, 25);
-            this.label70.Name = "label70";
-            this.label70.Size = new System.Drawing.Size(98, 19);
-            this.label70.TabIndex = 97;
-            this.label70.Text = "Module Type";
-            // 
-            // txt_ModuleType_AutoT
-            // 
-            this.txt_ModuleType_AutoT.BackColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.txt_ModuleType_AutoT.Font = new System.Drawing.Font("Microsoft Sans Serif", 17F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Pixel);
-            this.txt_ModuleType_AutoT.ForeColor = System.Drawing.Color.White;
-            this.txt_ModuleType_AutoT.Location = new System.Drawing.Point(181, 22);
-            this.txt_ModuleType_AutoT.Name = "txt_ModuleType_AutoT";
-            this.txt_ModuleType_AutoT.ReadOnly = true;
-            this.txt_ModuleType_AutoT.Size = new System.Drawing.Size(118, 27);
-            this.txt_ModuleType_AutoT.TabIndex = 113;
-            this.txt_ModuleType_AutoT.Text = "5V";
-            this.txt_ModuleType_AutoT.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            // 
-            // label71
-            // 
-            this.label71.AutoSize = true;
-            this.label71.Font = new System.Drawing.Font("Times New Roman", 17F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.label71.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.label71.Location = new System.Drawing.Point(363, 25);
-            this.label71.Name = "label71";
-            this.label71.Size = new System.Drawing.Size(59, 19);
-            this.label71.TabIndex = 97;
-            this.label71.Text = "Voffset";
-            // 
-            // txt_VoutOffset_AutoT
-            // 
-            this.txt_VoutOffset_AutoT.BackColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.txt_VoutOffset_AutoT.Font = new System.Drawing.Font("Microsoft Sans Serif", 17F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Pixel);
-            this.txt_VoutOffset_AutoT.ForeColor = System.Drawing.Color.White;
-            this.txt_VoutOffset_AutoT.Location = new System.Drawing.Point(445, 21);
-            this.txt_VoutOffset_AutoT.Name = "txt_VoutOffset_AutoT";
-            this.txt_VoutOffset_AutoT.ReadOnly = true;
-            this.txt_VoutOffset_AutoT.Size = new System.Drawing.Size(100, 27);
-            this.txt_VoutOffset_AutoT.TabIndex = 107;
-            this.txt_VoutOffset_AutoT.Text = "2.5";
-            this.txt_VoutOffset_AutoT.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            // 
-            // label72
-            // 
-            this.label72.AutoSize = true;
-            this.label72.Font = new System.Drawing.Font("Times New Roman", 17F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.label72.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.label72.Location = new System.Drawing.Point(551, 25);
-            this.label72.Name = "label72";
-            this.label72.Size = new System.Drawing.Size(20, 19);
-            this.label72.TabIndex = 95;
-            this.label72.Text = "V";
-            // 
             // CurrentSensorConsole
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -3106,7 +3118,7 @@
             this.Controls.Add(this.statusStrip);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.Name = "CurrentSensorConsole";
-            this.Text = "Current Sensor Console v3.1.4.RC - CopyRight of SenkoMicro, Inc";
+            this.Text = "Current Sensor Console v3.1.6.RC - CopyRight of SenkoMicro, Inc";
             this.statusStrip.ResumeLayout(false);
             this.statusStrip.PerformLayout();
             this.toolStrip.ResumeLayout(false);
@@ -3396,5 +3408,6 @@
         private System.Windows.Forms.Label label71;
         private System.Windows.Forms.Label label70;
         private System.Windows.Forms.Label label72;
+        private System.Windows.Forms.Button btn_fuse_clock_ow_EngT;
     }
 }
