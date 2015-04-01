@@ -3440,6 +3440,20 @@ namespace ADI.DMY2
             return myDevice.UsbReportWrite(buffer_uint);
         }
 
+        public bool UARTInitilize()
+        {
+            buffer_uint[0] = (uint)OneWire_USB_COMMAND.ADI_SDP_CMD_UART_INIT;
+            return myDevice.UsbReportWrite(buffer_uint);
+        }
+
+        public bool UARTWrite(UARTControlCommand cmd, UInt32 uParameter)
+        {
+            buffer_uint[0] = (uint)OneWire_USB_COMMAND.ADI_SDP_CMD_UART_WRITE;
+            buffer_uint[1] = (uint)cmd;
+            buffer_uint[1] = (uint)uParameter;
+            return myDevice.UsbReportWrite(buffer_uint);
+        }
+
         public bool GeneralBoolSet(OneWire_USB_COMMAND cmd, bool setValue)
         {
             uint realValue = setValue ? 1u : 0u;
@@ -3505,6 +3519,16 @@ namespace ADI.DMY2
             width_150ns = 180,
             width_175ns = 225,
             width_200ns = 270
+        }
+
+        public enum UARTControlCommand
+        { 
+            ADI_SDP_CMD_UART_REMOTE		=0x71,
+            ADI_SDP_CMD_UART_LOCAL		=0x72,
+            ADI_SDP_CMD_UART_OUTPUTON	=0x73,
+            ADI_SDP_CMD_UART_OUTPUTOFF  =0x74,
+            ADI_SDP_CMD_UART_SETVOLT	=0x75,
+            ADI_SDP_CMD_UART_SETCURR	=0x76
         }
 
         public enum ADCControlCommand

@@ -41,6 +41,7 @@ namespace CurrentSensorV3
         int Delay_Power = 1000;  //ms
         int Delay_Operation = 300;  //ms
         int Delay_Fuse = 1000;    //ms
+        int Delay_CurrentReady = 5000;
 
         double ADCOffset = 0;
         double AadcOffset
@@ -3123,6 +3124,43 @@ namespace CurrentSensorV3
 
             //if (TargetOffset == 1.65)
             //    Reg82Value = 0x18;
+            #region UART Initialize
+            //UART Initialization
+            if ( !oneWrie_device.UARTInitilize( ))
+            {
+                if (bAutoTrimTest)
+                {
+                    DisplayOperateMes("UART Initilize failed!");
+                }
+            }
+
+            Delay(Delay_Operation);
+
+            if (bAutoTrimTest)
+                DisplayOperateMes(string.Format("Delay {0}ms", Delay_Operation));
+
+            // Set Voltage
+            if ( !oneWrie_device.UARTWrite(OneWireInterface.UARTControlCommand.ADI_SDP_CMD_UART_SETVOLT, 2u))
+            {
+                if (bAutoTrimTest)
+                    DisplayOperateMes(string.Format("Set Voltage to {0}V failed!", 2));              
+            }
+
+            Delay(Delay_Operation);
+
+            if (bAutoTrimTest)
+                DisplayOperateMes(string.Format("Delay {0}ms", Delay_Operation));
+
+            // Set Current
+            Set_Power_Current_On();
+            Delay(Delay_CurrentReady);
+            //if (!oneWrie_device.UARTWrite(OneWireInterface.UARTControlCommand.ADI_SDP_CMD_UART_SETCURR, (UInt32)IP))
+            //{
+            //    if (bAutoTrimTest)
+            //        DisplayOperateMes(string.Format("Set Current to {0}A failed!", IP));
+            //}
+
+            #endregion UART Initialize
 
             #region Get module current
 
@@ -3192,14 +3230,15 @@ namespace CurrentSensorV3
             BurstRead(0x80, 5, tempReadback);
 
             /* Change Current to IP  */
-            dr = MessageBox.Show(String.Format("Please Change Current To {0}A", IP), "Change Current", MessageBoxButtons.OKCancel);
-            if (dr == DialogResult.Cancel)
-            {
-                DisplayOperateMes("AutoTrim Canceled!", Color.Red);
-                PowerOff();
-                RestoreReg80ToReg83Value();
-                return;
-            }
+            //dr = MessageBox.Show(String.Format("Please Change Current To {0}A", IP), "Change Current", MessageBoxButtons.OKCancel);
+            //if (dr == DialogResult.Cancel)
+            //{
+            //    DisplayOperateMes("AutoTrim Canceled!", Color.Red);
+            //    PowerOff();
+            //    RestoreReg80ToReg83Value();
+            //    return;
+            //}
+            //Set_Power_Current_On();
 
             /* Get vout @ IP */
             EnterNomalMode();
@@ -3222,14 +3261,17 @@ namespace CurrentSensorV3
             #region Get Vout@0A
 
             /* Change Current to 0A */
-            dr = MessageBox.Show(String.Format("Please Change Current To 0A"), "Change Current", MessageBoxButtons.OKCancel);
-            if (dr == DialogResult.Cancel)
-            {
-                DisplayOperateMes("AutoTrim Canceled!", Color.Red);
-                PowerOff();
-                RestoreReg80ToReg83Value();
-                return;
-            }
+            Set_Power_Current_Off();
+            Delay(Delay_CurrentReady);
+            //dr = MessageBox.Show(String.Format("Please Change Current To 0A"), "Change Current", MessageBoxButtons.OKCancel);
+            //if (dr == DialogResult.Cancel)
+            //{
+            //    DisplayOperateMes("AutoTrim Canceled!", Color.Red);
+            //    PowerOff();
+            //    RestoreReg80ToReg83Value();
+            //    return;
+            //}
+
             Delay(Delay_Operation);
             Vout_0A = AverageVout();
             DisplayOperateMes("Vout @ 0A = " + Vout_0A.ToString("F3"));
@@ -3323,14 +3365,16 @@ namespace CurrentSensorV3
                     BurstRead(0x80, 5, tempReadback);
 
                     /* Change Current to IP  */
-                    dr = MessageBox.Show(String.Format("Please Change Current To {0}A", IP), "Change Current", MessageBoxButtons.OKCancel);
-                    if (dr == DialogResult.Cancel)
-                    {
-                        DisplayOperateMes("AutoTrim Canceled!", Color.Red);
-                        PowerOff();
-                        RestoreReg80ToReg83Value();
-                        return;
-                    }
+                    Set_Power_Current_On();
+                    Delay(Delay_CurrentReady);
+                    //dr = MessageBox.Show(String.Format("Please Change Current To {0}A", IP), "Change Current", MessageBoxButtons.OKCancel);
+                    //if (dr == DialogResult.Cancel)
+                    //{
+                    //    DisplayOperateMes("AutoTrim Canceled!", Color.Red);
+                    //    PowerOff();
+                    //    RestoreReg80ToReg83Value();
+                    //    return;
+                    //}
 
                     /* Get vout @ IP */
                     EnterNomalMode();
@@ -3353,14 +3397,16 @@ namespace CurrentSensorV3
                     //#region autoAdaptingGoughGain algorithm
 
                     /* Change Current to 0A */
-                    dr = MessageBox.Show(String.Format("Please Change Current To 0A"), "Change Current", MessageBoxButtons.OKCancel);
-                    if (dr == DialogResult.Cancel)
-                    {
-                        DisplayOperateMes("AutoTrim Canceled!", Color.Red);
-                        PowerOff();
-                        RestoreReg80ToReg83Value();
-                        return;
-                    }
+                    Set_Power_Current_Off();
+                    Delay(Delay_CurrentReady);
+                    //dr = MessageBox.Show(String.Format("Please Change Current To 0A"), "Change Current", MessageBoxButtons.OKCancel);
+                    //if (dr == DialogResult.Cancel)
+                    //{
+                    //    DisplayOperateMes("AutoTrim Canceled!", Color.Red);
+                    //    PowerOff();
+                    //    RestoreReg80ToReg83Value();
+                    //    return;
+                    //}
                     Delay(Delay_Operation);
                     Vout_0A = AverageVout();
                     DisplayOperateMes("Vout @ 0A = " + Vout_0A.ToString("F3"));
@@ -3449,14 +3495,16 @@ namespace CurrentSensorV3
                         BurstRead(0x80, 5, tempReadback);
 
                         /* Change Current to IP  */
-                        dr = MessageBox.Show(String.Format("Please Change Current To {0}A", IP), "Change Current", MessageBoxButtons.OKCancel);
-                        if (dr == DialogResult.Cancel)
-                        {
-                            DisplayOperateMes("AutoTrim Canceled!", Color.Red);
-                            PowerOff();
-                            RestoreReg80ToReg83Value();
-                            return;
-                        }
+                        Set_Power_Current_On();
+                        Delay(Delay_CurrentReady);
+                        //dr = MessageBox.Show(String.Format("Please Change Current To {0}A", IP), "Change Current", MessageBoxButtons.OKCancel);
+                        //if (dr == DialogResult.Cancel)
+                        //{
+                        //    DisplayOperateMes("AutoTrim Canceled!", Color.Red);
+                        //    PowerOff();
+                        //    RestoreReg80ToReg83Value();
+                        //    return;
+                        //}
 
                         /* Get vout @ IP */
                         EnterNomalMode();
@@ -3479,14 +3527,16 @@ namespace CurrentSensorV3
                         //#region autoAdaptingGoughGain algorithm
 
                         /* Change Current to 0A */
-                        dr = MessageBox.Show(String.Format("Please Change Current To 0A"), "Change Current", MessageBoxButtons.OKCancel);
-                        if (dr == DialogResult.Cancel)
-                        {
-                            DisplayOperateMes("AutoTrim Canceled!", Color.Red);
-                            PowerOff();
-                            RestoreReg80ToReg83Value();
-                            return;
-                        }
+                        Set_Power_Current_Off();
+                        Delay(Delay_CurrentReady);
+                        //dr = MessageBox.Show(String.Format("Please Change Current To 0A"), "Change Current", MessageBoxButtons.OKCancel);
+                        //if (dr == DialogResult.Cancel)
+                        //{
+                        //    DisplayOperateMes("AutoTrim Canceled!", Color.Red);
+                        //    PowerOff();
+                        //    RestoreReg80ToReg83Value();
+                        //    return;
+                        //}
                         Delay(Delay_Operation);
                         Vout_0A = AverageVout();
                         DisplayOperateMes("Vout @ 0A = " + Vout_0A.ToString("F3"));
@@ -3572,14 +3622,16 @@ namespace CurrentSensorV3
                         BurstRead(0x80, 5, tempReadback);
 
                         /* Change Current to IP  */
-                        dr = MessageBox.Show(String.Format("Please Change Current To {0}A", IP), "Change Current", MessageBoxButtons.OKCancel);
-                        if (dr == DialogResult.Cancel)
-                        {
-                            DisplayOperateMes("AutoTrim Canceled!", Color.Red);
-                            PowerOff();
-                            RestoreReg80ToReg83Value();
-                            return;
-                        }
+                        Set_Power_Current_On();
+                        Delay(Delay_CurrentReady);
+                        //dr = MessageBox.Show(String.Format("Please Change Current To {0}A", IP), "Change Current", MessageBoxButtons.OKCancel);
+                        //if (dr == DialogResult.Cancel)
+                        //{
+                        //    DisplayOperateMes("AutoTrim Canceled!", Color.Red);
+                        //    PowerOff();
+                        //    RestoreReg80ToReg83Value();
+                        //    return;
+                        //}
 
                         /* Get vout @ IP */
                         EnterNomalMode();
@@ -3602,14 +3654,16 @@ namespace CurrentSensorV3
                         //#region autoAdaptingGoughGain algorithm
 
                         /* Change Current to 0A */
-                        dr = MessageBox.Show(String.Format("Please Change Current To 0A"), "Change Current", MessageBoxButtons.OKCancel);
-                        if (dr == DialogResult.Cancel)
-                        {
-                            DisplayOperateMes("AutoTrim Canceled!", Color.Red);
-                            PowerOff();
-                            RestoreReg80ToReg83Value();
-                            return;
-                        }
+                        Set_Power_Current_Off();
+                        Delay(Delay_CurrentReady);
+                        //dr = MessageBox.Show(String.Format("Please Change Current To 0A"), "Change Current", MessageBoxButtons.OKCancel);
+                        //if (dr == DialogResult.Cancel)
+                        //{
+                        //    DisplayOperateMes("AutoTrim Canceled!", Color.Red);
+                        //    PowerOff();
+                        //    RestoreReg80ToReg83Value();
+                        //    return;
+                        //}
                         Delay(Delay_Operation);
                         Vout_0A = AverageVout();
                         DisplayOperateMes("Vout @ 0A = " + Vout_0A.ToString("F3"));
@@ -3810,14 +3864,16 @@ namespace CurrentSensorV3
             Vout_0A = AverageVout();
 
             /* Change Current to IP  */
-            dr = MessageBox.Show(String.Format("Please Change Current To {0}A", IP), "Change Current", MessageBoxButtons.OKCancel);
-            if (dr == DialogResult.Cancel)
-            {
-                DisplayOperateMes("AutoTrim Canceled!", Color.Red);
-                PowerOff();
-                RestoreReg80ToReg83Value();
-                return;
-            }
+            Set_Power_Current_On();
+            Delay(Delay_CurrentReady);
+            //dr = MessageBox.Show(String.Format("Please Change Current To {0}A", IP), "Change Current", MessageBoxButtons.OKCancel);
+            //if (dr == DialogResult.Cancel)
+            //{
+            //    DisplayOperateMes("AutoTrim Canceled!", Color.Red);
+            //    PowerOff();
+            //    RestoreReg80ToReg83Value();
+            //    return;
+            //}
 
             Vout_IP = AverageVout();
 
@@ -3910,6 +3966,8 @@ namespace CurrentSensorV3
             Vout_0A = 0;
             Vout_IP = 0;
             oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VDD_POWER_OFF);
+            Set_Power_Current_Off();
+            //Delay(Delay_CurrentReady);
             /* Restore register value to preset */
             RestoreReg80ToReg83Value();
             DisplayOperateMes("Next...\r\n");
@@ -5138,6 +5196,26 @@ namespace CurrentSensorV3
                 Reg82Value |= 0x00;        //Reg0x82
                 //Reg82Value = 0x00;
                 this.cmb_OffsetOption_EngT.SelectedIndex = 0;
+            }
+        }
+
+        private void Set_Power_Current_On()
+        {
+            // Set Current
+            if (!oneWrie_device.UARTWrite(OneWireInterface.UARTControlCommand.ADI_SDP_CMD_UART_SETCURR, (UInt32)IP))
+            {
+                if (bAutoTrimTest)
+                    DisplayOperateMes(string.Format("Set Current to {0}A failed!", IP));
+            }
+        }
+
+        private void Set_Power_Current_Off()
+        {
+            // Set Current
+            if (!oneWrie_device.UARTWrite(OneWireInterface.UARTControlCommand.ADI_SDP_CMD_UART_SETCURR, 0u))
+            {
+                if (bAutoTrimTest)
+                    DisplayOperateMes("Set Current to 0A failed!");
             }
         }
 
