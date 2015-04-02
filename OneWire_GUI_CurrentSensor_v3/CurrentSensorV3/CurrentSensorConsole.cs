@@ -22,8 +22,8 @@ namespace CurrentSensorV3
 
         #region Param Definition
 
-        bool bAutoTrimTest = true;          //Debug mode, display engineer tab
-        //bool bAutoTrimTest = false;       //Release mode, bon't display engineer tab
+        //bool bAutoTrimTest = true;          //Debug mode, display engineer tab
+        bool bAutoTrimTest = false;       //Release mode, bon't display engineer tab
 
         //double IP15 = 0;
         //double IP10 = 0;
@@ -3832,13 +3832,13 @@ namespace CurrentSensorV3
                     this.lbl_passOrFailed.ForeColor = Color.Green;
                     this.lbl_passOrFailed.Text = "Pass!";
                 }
-                else if (targetOffset * (1 - 0.03) <= Vout_0A && Vout_0A <= targetOffset * (1 + 0.02) && Vout_IP <= dVip_Target * (1 + 0.03) && Vout_IP >= dVip_Target * (1 - 0.02))
+                else if (targetOffset * (1 - 0.02) <= Vout_0A && Vout_0A <= targetOffset * (1 + 0.02) && Vout_IP <= dVip_Target * (1 + 0.02) && Vout_IP >= dVip_Target * (1 - 0.02))
                 {
                     DisplayOperateMes("Pass! Bin2");
                     this.lbl_passOrFailed.ForeColor = Color.Green;
                     this.lbl_passOrFailed.Text = "Pass!";
                 }
-                else if (targetOffset * (1 - 0.06) <= Vout_0A && Vout_0A <= targetOffset * (1 + 0.03) && Vout_IP <= dVip_Target * (1 + 0.06) && Vout_IP >= dVip_Target * (1 - 0.03))
+                else if (targetOffset * (1 - 0.03) <= Vout_0A && Vout_0A <= targetOffset * (1 + 0.03) && Vout_IP <= dVip_Target * (1 + 0.03) && Vout_IP >= dVip_Target * (1 - 0.03))
                 {
                     DisplayOperateMes("Pass! Bin3");
                     this.lbl_passOrFailed.ForeColor = Color.Green;
@@ -3861,13 +3861,13 @@ namespace CurrentSensorV3
                     this.lbl_passOrFailed.ForeColor = Color.Red;
                     this.lbl_passOrFailed.Text = "M.R.E!";
                 }
-                else if (targetOffset * (1 - 0.03) <= Vout_0A && Vout_0A <= targetOffset * (1 + 0.03) && Vout_IP <= dVip_Target * (1 + 0.03) && Vout_IP >= dVip_Target * (1 - 0.03))
+                else if (targetOffset * (1 - 0.02) <= Vout_0A && Vout_0A <= targetOffset * (1 + 0.02) && Vout_IP <= dVip_Target * (1 + 0.02) && Vout_IP >= dVip_Target * (1 - 0.02))
                 {
                     DisplayOperateMes("M.R.E! Bin5");
                     this.lbl_passOrFailed.ForeColor = Color.Red;
                     this.lbl_passOrFailed.Text = "M.R.E!";
                 }
-                else if (targetOffset * (1 - 0.06) <= Vout_0A && Vout_0A <= targetOffset * (1 + 0.06) && Vout_IP <= dVip_Target * (1 + 0.06) && Vout_IP >= dVip_Target * (1 - 0.06))
+                else if (targetOffset * (1 - 0.03) <= Vout_0A && Vout_0A <= targetOffset * (1 + 0.03) && Vout_IP <= dVip_Target * (1 + 0.06) && Vout_IP >= dVip_Target * (1 - 0.03))
                 {
                     DisplayOperateMes("M.R.E! Bin6");
                     this.lbl_passOrFailed.ForeColor = Color.Red;
@@ -3880,26 +3880,26 @@ namespace CurrentSensorV3
                     this.lbl_passOrFailed.Text = "Fail!";
                 }
             }
-            /* bin7,8,9 */
-            else
-            {
-                if (targetOffset * (1 - 0.01) <= Vout_0A && Vout_0A <= targetOffset * (1 + 0.01) && Vout_IP <= dVip_Target * (1 + 0.01) && Vout_IP >= dVip_Target * (1 - 0.01))
-                {
-                    DisplayOperateMes("Pass! Bin7");
-                }
-                else if (targetOffset * (1 - 0.03) <= Vout_0A && Vout_0A <= targetOffset * (1 + 0.03) && Vout_IP <= dVip_Target * (1 + 0.03) && Vout_IP >= dVip_Target * (1 - 0.03))
-                {
-                    DisplayOperateMes("Pass! Bin8");
-                }
-                else if (targetOffset * (1 - 0.06) <= Vout_0A && Vout_0A <= targetOffset * (1 + 0.06) && Vout_IP <= dVip_Target * (1 + 0.06) && Vout_IP >= dVip_Target * (1 - 0.06))
-                {
-                    DisplayOperateMes("Pass! Bin9");
-                }
-                else
-                {
-                    DisplayOperateMes("Fail!");
-                }
-            }
+            ///* bin7,8,9 */
+            //else
+            //{
+            //    if (targetOffset * (1 - 0.01) <= Vout_0A && Vout_0A <= targetOffset * (1 + 0.01) && Vout_IP <= dVip_Target * (1 + 0.01) && Vout_IP >= dVip_Target * (1 - 0.01))
+            //    {
+            //        DisplayOperateMes("Pass! Bin7");
+            //    }
+            //    else if (targetOffset * (1 - 0.03) <= Vout_0A && Vout_0A <= targetOffset * (1 + 0.03) && Vout_IP <= dVip_Target * (1 + 0.03) && Vout_IP >= dVip_Target * (1 - 0.03))
+            //    {
+            //        DisplayOperateMes("Pass! Bin8");
+            //    }
+            //    else if (targetOffset * (1 - 0.06) <= Vout_0A && Vout_0A <= targetOffset * (1 + 0.06) && Vout_IP <= dVip_Target * (1 + 0.06) && Vout_IP >= dVip_Target * (1 - 0.06))
+            //    {
+            //        DisplayOperateMes("Pass! Bin9");
+            //    }
+            //    else
+            //    {
+            //        DisplayOperateMes("Fail!");
+            //    }
+            //}
 
             DisplayOperateMes("Vout @ 0A = " + Vout_0A.ToString("F3"));
             DisplayOperateMes("Vout @ IP = " + Vout_IP.ToString("F3"));
