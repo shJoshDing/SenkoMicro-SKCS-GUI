@@ -257,6 +257,7 @@
             this.contextMenuStrip_Clear = new System.Windows.Forms.ToolStripMenuItem();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.txt_OutputLogInfo = new System.Windows.Forms.RichTextBox();
+            this.btn_test_autoT = new System.Windows.Forms.Button();
             this.statusStrip.SuspendLayout();
             this.toolStrip.SuspendLayout();
             this.tabControl1.SuspendLayout();
@@ -2493,6 +2494,7 @@
             this.AutoTrimTab.Controls.Add(this.autoTrimResultIndicator);
             this.AutoTrimTab.Controls.Add(this.label20);
             this.AutoTrimTab.Controls.Add(this.lbl_passOrFailed);
+            this.AutoTrimTab.Controls.Add(this.btn_test_autoT);
             this.AutoTrimTab.Controls.Add(this.btn_AutomaticaTrim15V);
             this.AutoTrimTab.Controls.Add(this.btn_AutomaticaTrim5V);
             this.AutoTrimTab.Controls.Add(this.btn_AutomaticaTrim);
@@ -3108,6 +3110,17 @@
             this.txt_OutputLogInfo.TabIndex = 88;
             this.txt_OutputLogInfo.Text = "";
             // 
+            // btn_test_autoT
+            // 
+            this.btn_test_autoT.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.btn_test_autoT.Location = new System.Drawing.Point(548, 295);
+            this.btn_test_autoT.Name = "btn_test_autoT";
+            this.btn_test_autoT.Size = new System.Drawing.Size(114, 31);
+            this.btn_test_autoT.TabIndex = 57;
+            this.btn_test_autoT.Text = "test";
+            this.btn_test_autoT.UseVisualStyleBackColor = true;
+            this.btn_test_autoT.Click += new System.EventHandler(this.btn_test_autoT_Click);
+            // 
             // CurrentSensorConsole
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -3409,5 +3422,6 @@
         private System.Windows.Forms.Label label70;
         private System.Windows.Forms.Label label72;
         private System.Windows.Forms.Button btn_fuse_clock_ow_EngT;
+        private System.Windows.Forms.Button btn_test_autoT;
     }
 }

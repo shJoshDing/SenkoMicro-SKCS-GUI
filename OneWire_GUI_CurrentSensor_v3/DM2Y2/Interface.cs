@@ -3450,7 +3450,7 @@ namespace ADI.DMY2
         {
             buffer_uint[0] = (uint)OneWire_USB_COMMAND.ADI_SDP_CMD_UART_WRITE;
             buffer_uint[1] = (uint)cmd;
-            buffer_uint[1] = (uint)uParameter;
+            buffer_uint[2] = (uint)uParameter;
             return myDevice.UsbReportWrite(buffer_uint);
         }
 

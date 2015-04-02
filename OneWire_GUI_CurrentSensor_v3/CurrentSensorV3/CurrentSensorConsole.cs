@@ -3140,7 +3140,7 @@ namespace CurrentSensorV3
                 DisplayOperateMes(string.Format("Delay {0}ms", Delay_Operation));
 
             // Set Voltage
-            if ( !oneWrie_device.UARTWrite(OneWireInterface.UARTControlCommand.ADI_SDP_CMD_UART_SETVOLT, 2u))
+            if ( !oneWrie_device.UARTWrite(OneWireInterface.UARTControlCommand.ADI_SDP_CMD_UART_SETVOLT, 1u))
             {
                 if (bAutoTrimTest)
                     DisplayOperateMes(string.Format("Set Voltage to {0}V failed!", 2));              
@@ -3248,9 +3248,16 @@ namespace CurrentSensorV3
             DisplayOperateMes("Vout @ IP = " + Vout_IP.ToString("F3"));
 
             /*Judge PreSet gain; delta Vout target >= delta Vout test * 86.07% */
-            if (Vout_IP > saturationVout)
+            if (Vout_IP > saturationVout )
             {
                 DisplayOperateMes("Module Vout is SATURATION!", Color.Red);
+                PowerOff();
+                RestoreReg80ToReg83Value();
+                return;
+            }
+            else if( Vout_IP < 2.5 )
+            {
+                DisplayOperateMes("Please Check CURRENT!", Color.Red);
                 PowerOff();
                 RestoreReg80ToReg83Value();
                 return;
@@ -5221,6 +5228,11 @@ namespace CurrentSensorV3
 
 
         #endregion Events
+
+        private void btn_test_autoT_Click(object sender, EventArgs e)
+        {
+            oneWrie_device.UARTWrite(OneWireInterface.UARTControlCommand.ADI_SDP_CMD_UART_SETVOLT, 8);
+        }
 
         
 
