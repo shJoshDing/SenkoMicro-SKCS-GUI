@@ -22,8 +22,8 @@ namespace CurrentSensorV3
 
         #region Param Definition
 
-        //bool bAutoTrimTest = true;          //Debug mode, display engineer tab
-        bool bAutoTrimTest = false;       //Release mode, bon't display engineer tab
+        bool bAutoTrimTest = true;          //Debug mode, display engineer tab
+        //bool bAutoTrimTest = false;       //Release mode, bon't display engineer tab
 
         //double IP15 = 0;
         //double IP10 = 0;
@@ -3823,8 +3823,37 @@ namespace CurrentSensorV3
 
             DisplayOperateMes("Done...\r\n");
 
+            if(bMarginal == true)
+            {
+                if (targetOffset * (1 - 0.01) <= Vout_0A && Vout_0A <= targetOffset * (1 + 0.01) && Vout_IP <= dVip_Target * (1 + 0.01) && Vout_IP >= dVip_Target * (1 - 0.01))
+                {
+                    DisplayOperateMes("M.R.E! Bin4");
+                    this.lbl_passOrFailed.ForeColor = Color.Red;
+                    this.lbl_passOrFailed.Text = "M.R.E!";
+                }
+                else if (targetOffset * (1 - 0.02) <= Vout_0A && Vout_0A <= targetOffset * (1 + 0.02) && Vout_IP <= dVip_Target * (1 + 0.02) && Vout_IP >= dVip_Target * (1 - 0.02))
+                {
+                    DisplayOperateMes("M.R.E! Bin5");
+                    this.lbl_passOrFailed.ForeColor = Color.Red;
+                    this.lbl_passOrFailed.Text = "M.R.E!";
+                }
+                else if (targetOffset * (1 - 0.03) <= Vout_0A && Vout_0A <= targetOffset * (1 + 0.03) && Vout_IP <= dVip_Target * (1 + 0.06) && Vout_IP >= dVip_Target * (1 - 0.03))
+                {
+                    DisplayOperateMes("M.R.E! Bin6");
+                    this.lbl_passOrFailed.ForeColor = Color.Red;
+                    this.lbl_passOrFailed.Text = "M.R.E!";
+                }
+                else
+                {
+                    DisplayOperateMes("Fail!");
+                    this.lbl_passOrFailed.ForeColor = Color.Red;
+                    this.lbl_passOrFailed.Text = "Fail!";
+                }
+            }
+
             /* bin1,2,3 */
-            if ((!bMarginal) && (!bSafety))
+            //if ((!bMarginal) && (!bSafety))
+            else
             {
                 if (targetOffset * (1 - 0.01) <= Vout_0A && Vout_0A <= targetOffset * (1 + 0.01) && Vout_IP <= dVip_Target * (1 + 0.01) && Vout_IP >= dVip_Target * (1 - 0.01))
                 {
@@ -3852,34 +3881,7 @@ namespace CurrentSensorV3
                 }
             }
             /* bin4,5,6 */
-            else if (bMarginal == true)
-            //else
-            {
-                if (targetOffset * (1 - 0.01) <= Vout_0A && Vout_0A <= targetOffset * (1 + 0.01) && Vout_IP <= dVip_Target * (1 + 0.01) && Vout_IP >= dVip_Target * (1 - 0.01))
-                {
-                    DisplayOperateMes("M.R.E! Bin4");
-                    this.lbl_passOrFailed.ForeColor = Color.Red;
-                    this.lbl_passOrFailed.Text = "M.R.E!";
-                }
-                else if (targetOffset * (1 - 0.02) <= Vout_0A && Vout_0A <= targetOffset * (1 + 0.02) && Vout_IP <= dVip_Target * (1 + 0.02) && Vout_IP >= dVip_Target * (1 - 0.02))
-                {
-                    DisplayOperateMes("M.R.E! Bin5");
-                    this.lbl_passOrFailed.ForeColor = Color.Red;
-                    this.lbl_passOrFailed.Text = "M.R.E!";
-                }
-                else if (targetOffset * (1 - 0.03) <= Vout_0A && Vout_0A <= targetOffset * (1 + 0.03) && Vout_IP <= dVip_Target * (1 + 0.06) && Vout_IP >= dVip_Target * (1 - 0.03))
-                {
-                    DisplayOperateMes("M.R.E! Bin6");
-                    this.lbl_passOrFailed.ForeColor = Color.Red;
-                    this.lbl_passOrFailed.Text = "M.R.E!";
-                }
-                else
-                {
-                    DisplayOperateMes("Fail!");
-                    this.lbl_passOrFailed.ForeColor = Color.Red;
-                    this.lbl_passOrFailed.Text = "Fail!";
-                }
-            }
+            
             ///* bin7,8,9 */
             //else
             //{
