@@ -99,6 +99,8 @@ namespace CurrentSensorV3
             }
         }
         double saturationVout = 4.95;
+        uint bin2accuracy = 2;
+        uint bin3accuracy = 3;
 
         double targetVoltage_customer = 2;
         double TargetVoltage_customer
@@ -3257,6 +3259,18 @@ namespace CurrentSensorV3
             dGainTest = 1000d * (Vout_IP - Vout_0A) / IP;
             #endregion  Get Vout@0A
 
+            #region No need Trim case
+            if (targetOffset * (1 - 0.01) <= Vout_0A && Vout_0A <= targetOffset * (1 + 0.01) && Vout_IP <= dVip_Target * (1 + 0.01) && Vout_IP >= dVip_Target * (1 - 0.01))
+            {
+                DisplayOperateMes("Pass! Bin1");
+                this.lbl_passOrFailed.ForeColor = Color.Green;
+                this.lbl_passOrFailed.Text = "Pass!";
+                PowerOff();
+                RestoreReg80ToReg83Value();
+                return;
+            }
+            #endregion No need Trim case
+
             /* To the low sensitivity case, process below squence*/
             #region For low sensitivity case
             if (dGainTest < TargetGain_customer)
@@ -3599,8 +3613,8 @@ namespace CurrentSensorV3
             //uint[] tempReadback = new uint[5];
             BurstRead(0x80, 5, tempReadback);
             bMarginal = false;
-            if ((tempReadback[0] != Reg80Value) | tempReadback[1] != Reg81Value |
-                tempReadback[2] != Reg82Value | tempReadback[3] != Reg83Value)
+            if (((tempReadback[0]&0xE0) != (Reg80Value&0xE0)) | tempReadback[1] != Reg81Value |
+                tempReadback[2] != Reg82Value | (tempReadback[3]&0xC3) != (Reg83Value&0xC3))
                 bMarginal = true;
 
             oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_CONFIG_TO_VOUT);
@@ -3690,19 +3704,19 @@ namespace CurrentSensorV3
             {
                 if (targetOffset * (1 - 0.01) <= Vout_0A && Vout_0A <= targetOffset * (1 + 0.01) && Vout_IP <= dVip_Target * (1 + 0.01) && Vout_IP >= dVip_Target * (1 - 0.01))
                 {
-                    DisplayOperateMes("M.R.E! Bin4");
+                    DisplayOperateMes("Fail! Bin4");
                     this.lbl_passOrFailed.ForeColor = Color.Red;
                     this.lbl_passOrFailed.Text = "M.R.E!";
                 }
-                else if (targetOffset * (1 - 0.02) <= Vout_0A && Vout_0A <= targetOffset * (1 + 0.02) && Vout_IP <= dVip_Target * (1 + 0.02) && Vout_IP >= dVip_Target * (1 - 0.02))
+                else if (targetOffset * (1 - bin2accuracy / 100) <= Vout_0A && Vout_0A <= targetOffset * (1 + bin2accuracy / 100) && Vout_IP <= dVip_Target * (1 + bin2accuracy / 100) && Vout_IP >= dVip_Target * (1 - bin2accuracy / 100))
                 {
-                    DisplayOperateMes("M.R.E! Bin5");
+                    DisplayOperateMes("Fail! Bin5");
                     this.lbl_passOrFailed.ForeColor = Color.Red;
                     this.lbl_passOrFailed.Text = "M.R.E!";
                 }
-                else if (targetOffset * (1 - 0.03) <= Vout_0A && Vout_0A <= targetOffset * (1 + 0.03) && Vout_IP <= dVip_Target * (1 + 0.06) && Vout_IP >= dVip_Target * (1 - 0.03))
+                else if (targetOffset * (1 - bin3accuracy / 100) <= Vout_0A && Vout_0A <= targetOffset * (1 + bin3accuracy / 100) && Vout_IP <= dVip_Target * (1 + bin3accuracy / 100) && Vout_IP >= dVip_Target * (1 - bin3accuracy / 100))
                 {
-                    DisplayOperateMes("M.R.E! Bin6");
+                    DisplayOperateMes("Fail! Bin6");
                     this.lbl_passOrFailed.ForeColor = Color.Red;
                     this.lbl_passOrFailed.Text = "M.R.E!";
                 }
@@ -3724,13 +3738,13 @@ namespace CurrentSensorV3
                     this.lbl_passOrFailed.ForeColor = Color.Green;
                     this.lbl_passOrFailed.Text = "Pass!";
                 }
-                else if (targetOffset * (1 - 0.02) <= Vout_0A && Vout_0A <= targetOffset * (1 + 0.02) && Vout_IP <= dVip_Target * (1 + 0.02) && Vout_IP >= dVip_Target * (1 - 0.02))
+                else if (targetOffset * (1 - bin2accuracy / 100) <= Vout_0A && Vout_0A <= targetOffset * (1 + bin2accuracy / 100) && Vout_IP <= dVip_Target * (1 + bin2accuracy / 100) && Vout_IP >= dVip_Target * (1 - bin2accuracy / 100))
                 {
                     DisplayOperateMes("Pass! Bin2");
                     this.lbl_passOrFailed.ForeColor = Color.Green;
                     this.lbl_passOrFailed.Text = "Pass!";
                 }
-                else if (targetOffset * (1 - 0.03) <= Vout_0A && Vout_0A <= targetOffset * (1 + 0.03) && Vout_IP <= dVip_Target * (1 + 0.03) && Vout_IP >= dVip_Target * (1 - 0.03))
+                else if (targetOffset * (1 - bin3accuracy / 100) <= Vout_0A && Vout_0A <= targetOffset * (1 + bin3accuracy / 100) && Vout_IP <= dVip_Target * (1 + bin3accuracy / 100) && Vout_IP >= dVip_Target * (1 - bin3accuracy / 100))
                 {
                     DisplayOperateMes("Pass! Bin3");
                     this.lbl_passOrFailed.ForeColor = Color.Green;
@@ -4809,6 +4823,16 @@ namespace CurrentSensorV3
                     this.cmb_Voffset_PreT.SelectedIndex.ToString(), this.cmb_Voffset_PreT.SelectedItem.ToString());
                 sw.WriteLine(msg);
 
+                // bin2 accuracy
+                msg = string.Format("bin2 accuracy|{0}",
+                    this.txt_bin2accuracy_PreT.Text);
+                sw.WriteLine(msg);
+
+                // bin3 accuracy
+                msg = string.Format("bin3 accuracy|{0}",
+                    this.txt_bin3accuracy_PreT.Text);
+                sw.WriteLine(msg);
+
                 sw.Close();
             }
             catch
@@ -4887,6 +4911,16 @@ namespace CurrentSensorV3
                 ix = int.Parse(msg[1]);
                 this.cmb_Voffset_PreT.SelectedIndex = ix;
                 this.txt_VoutOffset_AutoT.Text = msg[2];
+
+                // bin2 accuracy
+                msg = sr.ReadLine().Split("|".ToCharArray());
+                //ix = int.Parse(msg[1]);
+                bin2accuracy = uint.Parse(msg[1]);
+
+                // bin3 accuracy
+                msg = sr.ReadLine().Split("|".ToCharArray());
+                //ix = int.Parse(msg[1]);
+                bin3accuracy = uint.Parse(msg[1]);
 
                 sr.Close();
 

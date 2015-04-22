@@ -257,6 +257,12 @@
             this.contextMenuStrip_Clear = new System.Windows.Forms.ToolStripMenuItem();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.txt_OutputLogInfo = new System.Windows.Forms.RichTextBox();
+            this.label73 = new System.Windows.Forms.Label();
+            this.txt_bin2accuracy_PreT = new System.Windows.Forms.TextBox();
+            this.label74 = new System.Windows.Forms.Label();
+            this.label75 = new System.Windows.Forms.Label();
+            this.label76 = new System.Windows.Forms.Label();
+            this.txt_bin3accuracy_PreT = new System.Windows.Forms.TextBox();
             this.statusStrip.SuspendLayout();
             this.toolStrip.SuspendLayout();
             this.tabControl1.SuspendLayout();
@@ -300,10 +306,10 @@
             this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripStatusLabel_Connection,
             this.toolStripStatusLabel_FWInfo});
-            this.statusStrip.Location = new System.Drawing.Point(0, 525);
+            this.statusStrip.Location = new System.Drawing.Point(0, 530);
             this.statusStrip.Name = "statusStrip";
             this.statusStrip.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-            this.statusStrip.Size = new System.Drawing.Size(978, 22);
+            this.statusStrip.Size = new System.Drawing.Size(985, 22);
             this.statusStrip.TabIndex = 3;
             this.statusStrip.Text = "StatusStrip";
             // 
@@ -336,7 +342,7 @@
             this.toolStripSeparator2});
             this.toolStrip.Location = new System.Drawing.Point(0, 0);
             this.toolStrip.Name = "toolStrip";
-            this.toolStrip.Size = new System.Drawing.Size(978, 25);
+            this.toolStrip.Size = new System.Drawing.Size(985, 25);
             this.toolStrip.TabIndex = 4;
             this.toolStrip.Text = "ToolStrip";
             // 
@@ -1831,9 +1837,9 @@
             this.groupBox7.Controls.Add(this.txt_Reg82_PreT);
             this.groupBox7.Controls.Add(this.txt_Reg81_PreT);
             this.groupBox7.Controls.Add(this.txt_Reg80_PreT);
-            this.groupBox7.Location = new System.Drawing.Point(21, 329);
+            this.groupBox7.Location = new System.Drawing.Point(21, 335);
             this.groupBox7.Name = "groupBox7";
-            this.groupBox7.Size = new System.Drawing.Size(633, 123);
+            this.groupBox7.Size = new System.Drawing.Size(633, 117);
             this.groupBox7.TabIndex = 85;
             this.groupBox7.TabStop = false;
             this.groupBox7.Text = "Customization";
@@ -2058,6 +2064,12 @@
             // 
             // groupBox6
             // 
+            this.groupBox6.Controls.Add(this.txt_bin3accuracy_PreT);
+            this.groupBox6.Controls.Add(this.label76);
+            this.groupBox6.Controls.Add(this.label75);
+            this.groupBox6.Controls.Add(this.label74);
+            this.groupBox6.Controls.Add(this.txt_bin2accuracy_PreT);
+            this.groupBox6.Controls.Add(this.label73);
             this.groupBox6.Controls.Add(this.cmb_Voffset_PreT);
             this.groupBox6.Controls.Add(this.label60);
             this.groupBox6.Controls.Add(this.label40);
@@ -2078,9 +2090,9 @@
             this.groupBox6.Controls.Add(this.label32);
             this.groupBox6.Controls.Add(this.cmb_SensitivityAdapt_PreT);
             this.groupBox6.Controls.Add(this.label35);
-            this.groupBox6.Location = new System.Drawing.Point(21, 137);
+            this.groupBox6.Location = new System.Drawing.Point(21, 127);
             this.groupBox6.Name = "groupBox6";
-            this.groupBox6.Size = new System.Drawing.Size(633, 167);
+            this.groupBox6.Size = new System.Drawing.Size(633, 191);
             this.groupBox6.TabIndex = 84;
             this.groupBox6.TabStop = false;
             this.groupBox6.Text = "Sensor Options";
@@ -2088,69 +2100,69 @@
             // cmb_Voffset_PreT
             // 
             this.cmb_Voffset_PreT.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmb_Voffset_PreT.Font = new System.Drawing.Font("Microsoft Sans Serif", 17F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.cmb_Voffset_PreT.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.cmb_Voffset_PreT.FormattingEnabled = true;
             this.cmb_Voffset_PreT.Items.AddRange(new object[] {
             "2.5V",
             "1.65V"});
             this.cmb_Voffset_PreT.Location = new System.Drawing.Point(159, 126);
             this.cmb_Voffset_PreT.Name = "cmb_Voffset_PreT";
-            this.cmb_Voffset_PreT.Size = new System.Drawing.Size(137, 28);
+            this.cmb_Voffset_PreT.Size = new System.Drawing.Size(137, 24);
             this.cmb_Voffset_PreT.TabIndex = 91;
             this.cmb_Voffset_PreT.SelectedIndexChanged += new System.EventHandler(this.cmb_Voffset_PreT_SelectedIndexChanged);
             // 
             // label60
             // 
             this.label60.AutoSize = true;
-            this.label60.Font = new System.Drawing.Font("Times New Roman", 17F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.label60.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label60.ForeColor = System.Drawing.SystemColors.ControlText;
             this.label60.Location = new System.Drawing.Point(578, 23);
             this.label60.Name = "label60";
-            this.label60.Size = new System.Drawing.Size(20, 19);
+            this.label60.Size = new System.Drawing.Size(17, 16);
             this.label60.TabIndex = 90;
             this.label60.Text = "V";
             // 
             // label40
             // 
             this.label40.AutoSize = true;
-            this.label40.Font = new System.Drawing.Font("Times New Roman", 17F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.label40.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label40.ForeColor = System.Drawing.SystemColors.ControlText;
             this.label40.Location = new System.Drawing.Point(578, 59);
             this.label40.Name = "label40";
-            this.label40.Size = new System.Drawing.Size(20, 19);
+            this.label40.Size = new System.Drawing.Size(17, 16);
             this.label40.TabIndex = 90;
             this.label40.Text = "A";
             // 
             // label66
             // 
             this.label66.AutoSize = true;
-            this.label66.Font = new System.Drawing.Font("Times New Roman", 17F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.label66.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label66.ForeColor = System.Drawing.SystemColors.ControlText;
             this.label66.Location = new System.Drawing.Point(578, 130);
             this.label66.Name = "label66";
-            this.label66.Size = new System.Drawing.Size(33, 19);
+            this.label66.Size = new System.Drawing.Size(28, 16);
             this.label66.TabIndex = 89;
             this.label66.Text = "mV";
             // 
             // label39
             // 
             this.label39.AutoSize = true;
-            this.label39.Font = new System.Drawing.Font("Times New Roman", 17F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.label39.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label39.ForeColor = System.Drawing.SystemColors.ControlText;
             this.label39.Location = new System.Drawing.Point(577, 94);
             this.label39.Name = "label39";
-            this.label39.Size = new System.Drawing.Size(49, 19);
+            this.label39.Size = new System.Drawing.Size(41, 16);
             this.label39.TabIndex = 89;
             this.label39.Text = "mV/A";
             // 
             // txt_IP_PreT
             // 
             this.txt_IP_PreT.BackColor = System.Drawing.Color.CadetBlue;
-            this.txt_IP_PreT.Font = new System.Drawing.Font("Microsoft Sans Serif", 17F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Pixel);
+            this.txt_IP_PreT.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txt_IP_PreT.ForeColor = System.Drawing.Color.White;
             this.txt_IP_PreT.Location = new System.Drawing.Point(494, 55);
             this.txt_IP_PreT.Name = "txt_IP_PreT";
-            this.txt_IP_PreT.Size = new System.Drawing.Size(78, 27);
+            this.txt_IP_PreT.Size = new System.Drawing.Size(78, 22);
             this.txt_IP_PreT.TabIndex = 88;
             this.txt_IP_PreT.Text = "20";
             this.txt_IP_PreT.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
@@ -2159,22 +2171,22 @@
             // label34
             // 
             this.label34.AutoSize = true;
-            this.label34.Font = new System.Drawing.Font("Times New Roman", 17F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.label34.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label34.ForeColor = System.Drawing.SystemColors.ControlText;
             this.label34.Location = new System.Drawing.Point(432, 58);
             this.label34.Name = "label34";
-            this.label34.Size = new System.Drawing.Size(24, 19);
+            this.label34.Size = new System.Drawing.Size(20, 16);
             this.label34.TabIndex = 87;
             this.label34.Text = "IP";
             // 
             // txt_targetvoltage_PreT
             // 
             this.txt_targetvoltage_PreT.BackColor = System.Drawing.Color.CadetBlue;
-            this.txt_targetvoltage_PreT.Font = new System.Drawing.Font("Microsoft Sans Serif", 17F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Pixel);
+            this.txt_targetvoltage_PreT.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txt_targetvoltage_PreT.ForeColor = System.Drawing.Color.White;
             this.txt_targetvoltage_PreT.Location = new System.Drawing.Point(494, 19);
             this.txt_targetvoltage_PreT.Name = "txt_targetvoltage_PreT";
-            this.txt_targetvoltage_PreT.Size = new System.Drawing.Size(78, 27);
+            this.txt_targetvoltage_PreT.Size = new System.Drawing.Size(78, 22);
             this.txt_targetvoltage_PreT.TabIndex = 83;
             this.txt_targetvoltage_PreT.Text = "2";
             this.txt_targetvoltage_PreT.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
@@ -2183,22 +2195,22 @@
             // label59
             // 
             this.label59.AutoSize = true;
-            this.label59.Font = new System.Drawing.Font("Times New Roman", 17F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.label59.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label59.ForeColor = System.Drawing.SystemColors.ControlText;
             this.label59.Location = new System.Drawing.Point(392, 23);
             this.label59.Name = "label59";
-            this.label59.Size = new System.Drawing.Size(91, 19);
+            this.label59.Size = new System.Drawing.Size(74, 16);
             this.label59.TabIndex = 82;
             this.label59.Text = "VIP-Voffset";
             // 
             // txt_AdcOffset_PreT
             // 
             this.txt_AdcOffset_PreT.BackColor = System.Drawing.Color.CadetBlue;
-            this.txt_AdcOffset_PreT.Font = new System.Drawing.Font("Microsoft Sans Serif", 17F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Pixel);
+            this.txt_AdcOffset_PreT.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txt_AdcOffset_PreT.ForeColor = System.Drawing.Color.White;
             this.txt_AdcOffset_PreT.Location = new System.Drawing.Point(494, 127);
             this.txt_AdcOffset_PreT.Name = "txt_AdcOffset_PreT";
-            this.txt_AdcOffset_PreT.Size = new System.Drawing.Size(78, 27);
+            this.txt_AdcOffset_PreT.Size = new System.Drawing.Size(78, 22);
             this.txt_AdcOffset_PreT.TabIndex = 83;
             this.txt_AdcOffset_PreT.Text = "0";
             this.txt_AdcOffset_PreT.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
@@ -2207,12 +2219,12 @@
             // txt_TargetGain_PreT
             // 
             this.txt_TargetGain_PreT.BackColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.txt_TargetGain_PreT.Font = new System.Drawing.Font("Microsoft Sans Serif", 17F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Pixel);
+            this.txt_TargetGain_PreT.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txt_TargetGain_PreT.ForeColor = System.Drawing.Color.White;
             this.txt_TargetGain_PreT.Location = new System.Drawing.Point(494, 91);
             this.txt_TargetGain_PreT.Name = "txt_TargetGain_PreT";
             this.txt_TargetGain_PreT.ReadOnly = true;
-            this.txt_TargetGain_PreT.Size = new System.Drawing.Size(78, 27);
+            this.txt_TargetGain_PreT.Size = new System.Drawing.Size(78, 22);
             this.txt_TargetGain_PreT.TabIndex = 83;
             this.txt_TargetGain_PreT.Text = "100";
             this.txt_TargetGain_PreT.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
@@ -2221,29 +2233,29 @@
             // label65
             // 
             this.label65.AutoSize = true;
-            this.label65.Font = new System.Drawing.Font("Times New Roman", 17F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.label65.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label65.ForeColor = System.Drawing.SystemColors.ControlText;
             this.label65.Location = new System.Drawing.Point(394, 131);
             this.label65.Name = "label65";
-            this.label65.Size = new System.Drawing.Size(95, 19);
+            this.label65.Size = new System.Drawing.Size(76, 16);
             this.label65.TabIndex = 82;
             this.label65.Text = "ADC Offset ";
             // 
             // label38
             // 
             this.label38.AutoSize = true;
-            this.label38.Font = new System.Drawing.Font("Times New Roman", 17F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.label38.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label38.ForeColor = System.Drawing.SystemColors.ControlText;
             this.label38.Location = new System.Drawing.Point(394, 96);
             this.label38.Name = "label38";
-            this.label38.Size = new System.Drawing.Size(87, 19);
+            this.label38.Size = new System.Drawing.Size(79, 16);
             this.label38.TabIndex = 82;
             this.label38.Text = "Target Gain";
             // 
             // cmb_IPRange_PreT
             // 
             this.cmb_IPRange_PreT.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmb_IPRange_PreT.Font = new System.Drawing.Font("Microsoft Sans Serif", 17F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.cmb_IPRange_PreT.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.cmb_IPRange_PreT.FormattingEnabled = true;
             this.cmb_IPRange_PreT.Items.AddRange(new object[] {
             "Small",
@@ -2251,36 +2263,36 @@
             "Large"});
             this.cmb_IPRange_PreT.Location = new System.Drawing.Point(159, 90);
             this.cmb_IPRange_PreT.Name = "cmb_IPRange_PreT";
-            this.cmb_IPRange_PreT.Size = new System.Drawing.Size(137, 28);
+            this.cmb_IPRange_PreT.Size = new System.Drawing.Size(137, 24);
             this.cmb_IPRange_PreT.TabIndex = 9;
             this.cmb_IPRange_PreT.SelectedIndexChanged += new System.EventHandler(this.cmb_IPRange_PreT_SelectedIndexChanged);
             // 
             // label69
             // 
             this.label69.AutoSize = true;
-            this.label69.Font = new System.Drawing.Font("Times New Roman", 17F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.label69.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label69.ForeColor = System.Drawing.SystemColors.ControlText;
             this.label69.Location = new System.Drawing.Point(59, 129);
             this.label69.Name = "label69";
-            this.label69.Size = new System.Drawing.Size(59, 19);
+            this.label69.Size = new System.Drawing.Size(49, 16);
             this.label69.TabIndex = 8;
             this.label69.Text = "Voffset";
             // 
             // label33
             // 
             this.label33.AutoSize = true;
-            this.label33.Font = new System.Drawing.Font("Times New Roman", 17F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.label33.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label33.ForeColor = System.Drawing.SystemColors.ControlText;
             this.label33.Location = new System.Drawing.Point(57, 94);
             this.label33.Name = "label33";
-            this.label33.Size = new System.Drawing.Size(69, 19);
+            this.label33.Size = new System.Drawing.Size(64, 16);
             this.label33.TabIndex = 8;
             this.label33.Text = "IP Range";
             // 
             // cmb_TempCmp_PreT
             // 
             this.cmb_TempCmp_PreT.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmb_TempCmp_PreT.Font = new System.Drawing.Font("Microsoft Sans Serif", 17F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.cmb_TempCmp_PreT.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.cmb_TempCmp_PreT.FormattingEnabled = true;
             this.cmb_TempCmp_PreT.Items.AddRange(new object[] {
             "Default",
@@ -2292,25 +2304,25 @@
             "+0350ppm"});
             this.cmb_TempCmp_PreT.Location = new System.Drawing.Point(159, 54);
             this.cmb_TempCmp_PreT.Name = "cmb_TempCmp_PreT";
-            this.cmb_TempCmp_PreT.Size = new System.Drawing.Size(137, 28);
+            this.cmb_TempCmp_PreT.Size = new System.Drawing.Size(137, 24);
             this.cmb_TempCmp_PreT.TabIndex = 7;
             this.cmb_TempCmp_PreT.SelectedIndexChanged += new System.EventHandler(this.cmb_TempCmp_PreT_SelectedIndexChanged);
             // 
             // label32
             // 
             this.label32.AutoSize = true;
-            this.label32.Font = new System.Drawing.Font("Times New Roman", 17F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.label32.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label32.ForeColor = System.Drawing.SystemColors.ControlText;
             this.label32.Location = new System.Drawing.Point(19, 57);
             this.label32.Name = "label32";
-            this.label32.Size = new System.Drawing.Size(132, 19);
+            this.label32.Size = new System.Drawing.Size(119, 16);
             this.label32.TabIndex = 6;
             this.label32.Text = "Tem Compesation";
             // 
             // cmb_SensitivityAdapt_PreT
             // 
             this.cmb_SensitivityAdapt_PreT.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmb_SensitivityAdapt_PreT.Font = new System.Drawing.Font("Microsoft Sans Serif", 17F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.cmb_SensitivityAdapt_PreT.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.cmb_SensitivityAdapt_PreT.FormattingEnabled = true;
             this.cmb_SensitivityAdapt_PreT.Items.AddRange(new object[] {
             "Default",
@@ -2318,18 +2330,18 @@
             "Grade B"});
             this.cmb_SensitivityAdapt_PreT.Location = new System.Drawing.Point(159, 19);
             this.cmb_SensitivityAdapt_PreT.Name = "cmb_SensitivityAdapt_PreT";
-            this.cmb_SensitivityAdapt_PreT.Size = new System.Drawing.Size(137, 28);
+            this.cmb_SensitivityAdapt_PreT.Size = new System.Drawing.Size(137, 24);
             this.cmb_SensitivityAdapt_PreT.TabIndex = 1;
             this.cmb_SensitivityAdapt_PreT.SelectedIndexChanged += new System.EventHandler(this.cmb_SensitivityAdapt_PreT_SelectedIndexChanged);
             // 
             // label35
             // 
             this.label35.AutoSize = true;
-            this.label35.Font = new System.Drawing.Font("Times New Roman", 17F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.label35.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label35.ForeColor = System.Drawing.SystemColors.ControlText;
             this.label35.Location = new System.Drawing.Point(24, 23);
             this.label35.Name = "label35";
-            this.label35.Size = new System.Drawing.Size(123, 19);
+            this.label35.Size = new System.Drawing.Size(107, 16);
             this.label35.TabIndex = 0;
             this.label35.Text = "Sensitivity Adapt";
             // 
@@ -2346,7 +2358,7 @@
             this.groupBox4.Controls.Add(this.txt_SerialNum_PreT);
             this.groupBox4.Controls.Add(this.btn_PowerOff_PreT);
             this.groupBox4.Controls.Add(this.label31);
-            this.groupBox4.Location = new System.Drawing.Point(21, 20);
+            this.groupBox4.Location = new System.Drawing.Point(21, 14);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Size = new System.Drawing.Size(633, 98);
             this.groupBox4.TabIndex = 83;
@@ -3109,8 +3121,8 @@
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.txt_OutputLogInfo);
-            this.splitContainer1.Size = new System.Drawing.Size(978, 500);
-            this.splitContainer1.SplitterDistance = 683;
+            this.splitContainer1.Size = new System.Drawing.Size(985, 505);
+            this.splitContainer1.SplitterDistance = 687;
             this.splitContainer1.TabIndex = 88;
             // 
             // txt_OutputLogInfo
@@ -3122,21 +3134,89 @@
             this.txt_OutputLogInfo.ForeColor = System.Drawing.Color.White;
             this.txt_OutputLogInfo.Location = new System.Drawing.Point(0, 0);
             this.txt_OutputLogInfo.Name = "txt_OutputLogInfo";
-            this.txt_OutputLogInfo.Size = new System.Drawing.Size(291, 500);
+            this.txt_OutputLogInfo.Size = new System.Drawing.Size(294, 505);
             this.txt_OutputLogInfo.TabIndex = 88;
             this.txt_OutputLogInfo.Text = "";
+            // 
+            // label73
+            // 
+            this.label73.AutoSize = true;
+            this.label73.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label73.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.label73.Location = new System.Drawing.Point(40, 161);
+            this.label73.Name = "label73";
+            this.label73.Size = new System.Drawing.Size(93, 16);
+            this.label73.TabIndex = 92;
+            this.label73.Text = "Bin2 Accuracy";
+            // 
+            // txt_bin2accuracy_PreT
+            // 
+            this.txt_bin2accuracy_PreT.BackColor = System.Drawing.Color.CadetBlue;
+            this.txt_bin2accuracy_PreT.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txt_bin2accuracy_PreT.ForeColor = System.Drawing.Color.White;
+            this.txt_bin2accuracy_PreT.Location = new System.Drawing.Point(159, 159);
+            this.txt_bin2accuracy_PreT.Name = "txt_bin2accuracy_PreT";
+            this.txt_bin2accuracy_PreT.Size = new System.Drawing.Size(72, 22);
+            this.txt_bin2accuracy_PreT.TabIndex = 93;
+            this.txt_bin2accuracy_PreT.Text = "2";
+            this.txt_bin2accuracy_PreT.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // label74
+            // 
+            this.label74.AutoSize = true;
+            this.label74.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label74.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.label74.Location = new System.Drawing.Point(237, 162);
+            this.label74.Name = "label74";
+            this.label74.Size = new System.Drawing.Size(20, 16);
+            this.label74.TabIndex = 94;
+            this.label74.Text = "%";
+            // 
+            // label75
+            // 
+            this.label75.AutoSize = true;
+            this.label75.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label75.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.label75.Location = new System.Drawing.Point(380, 159);
+            this.label75.Name = "label75";
+            this.label75.Size = new System.Drawing.Size(93, 16);
+            this.label75.TabIndex = 95;
+            this.label75.Text = "Bin3 Accuracy";
+            // 
+            // label76
+            // 
+            this.label76.AutoSize = true;
+            this.label76.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label76.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.label76.Location = new System.Drawing.Point(578, 162);
+            this.label76.Name = "label76";
+            this.label76.Size = new System.Drawing.Size(20, 16);
+            this.label76.TabIndex = 96;
+            this.label76.Text = "%";
+            // 
+            // txt_bin3accuracy_PreT
+            // 
+            this.txt_bin3accuracy_PreT.BackColor = System.Drawing.Color.CadetBlue;
+            this.txt_bin3accuracy_PreT.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txt_bin3accuracy_PreT.ForeColor = System.Drawing.Color.White;
+            this.txt_bin3accuracy_PreT.Location = new System.Drawing.Point(494, 158);
+            this.txt_bin3accuracy_PreT.Name = "txt_bin3accuracy_PreT";
+            this.txt_bin3accuracy_PreT.Size = new System.Drawing.Size(78, 22);
+            this.txt_bin3accuracy_PreT.TabIndex = 97;
+            this.txt_bin3accuracy_PreT.Text = "3";
+            this.txt_bin3accuracy_PreT.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // CurrentSensorConsole
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(978, 547);
+            this.ClientSize = new System.Drawing.Size(985, 552);
             this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.toolStrip);
             this.Controls.Add(this.statusStrip);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.Name = "CurrentSensorConsole";
-            this.Text = "Current Sensor Console v3.1.6.RC - CopyRight of SenkoMicro, Inc";
+            this.Text = "Current Sensor Console v3.1.7.RC - CopyRight of SenkoMicro, Inc";
             this.statusStrip.ResumeLayout(false);
             this.statusStrip.PerformLayout();
             this.toolStrip.ResumeLayout(false);
@@ -3427,5 +3507,11 @@
         private System.Windows.Forms.Label label70;
         private System.Windows.Forms.Label label72;
         private System.Windows.Forms.Button btn_fuse_clock_ow_EngT;
+        private System.Windows.Forms.TextBox txt_bin3accuracy_PreT;
+        private System.Windows.Forms.Label label76;
+        private System.Windows.Forms.Label label75;
+        private System.Windows.Forms.Label label74;
+        private System.Windows.Forms.TextBox txt_bin2accuracy_PreT;
+        private System.Windows.Forms.Label label73;
     }
 }
