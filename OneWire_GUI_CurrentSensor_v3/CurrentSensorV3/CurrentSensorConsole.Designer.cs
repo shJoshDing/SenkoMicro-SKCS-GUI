@@ -176,6 +176,12 @@
             this.txt_Reg81_PreT = new System.Windows.Forms.TextBox();
             this.txt_Reg80_PreT = new System.Windows.Forms.TextBox();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
+            this.txt_bin3accuracy_PreT = new System.Windows.Forms.TextBox();
+            this.label76 = new System.Windows.Forms.Label();
+            this.label75 = new System.Windows.Forms.Label();
+            this.label74 = new System.Windows.Forms.Label();
+            this.txt_bin2accuracy_PreT = new System.Windows.Forms.TextBox();
+            this.label73 = new System.Windows.Forms.Label();
             this.cmb_Voffset_PreT = new System.Windows.Forms.ComboBox();
             this.label60 = new System.Windows.Forms.Label();
             this.label40 = new System.Windows.Forms.Label();
@@ -257,12 +263,6 @@
             this.contextMenuStrip_Clear = new System.Windows.Forms.ToolStripMenuItem();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.txt_OutputLogInfo = new System.Windows.Forms.RichTextBox();
-            this.label73 = new System.Windows.Forms.Label();
-            this.txt_bin2accuracy_PreT = new System.Windows.Forms.TextBox();
-            this.label74 = new System.Windows.Forms.Label();
-            this.label75 = new System.Windows.Forms.Label();
-            this.label76 = new System.Windows.Forms.Label();
-            this.txt_bin3accuracy_PreT = new System.Windows.Forms.TextBox();
             this.statusStrip.SuspendLayout();
             this.toolStrip.SuspendLayout();
             this.tabControl1.SuspendLayout();
@@ -2097,6 +2097,74 @@
             this.groupBox6.TabStop = false;
             this.groupBox6.Text = "Sensor Options";
             // 
+            // txt_bin3accuracy_PreT
+            // 
+            this.txt_bin3accuracy_PreT.BackColor = System.Drawing.Color.CadetBlue;
+            this.txt_bin3accuracy_PreT.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txt_bin3accuracy_PreT.ForeColor = System.Drawing.Color.White;
+            this.txt_bin3accuracy_PreT.Location = new System.Drawing.Point(494, 158);
+            this.txt_bin3accuracy_PreT.Name = "txt_bin3accuracy_PreT";
+            this.txt_bin3accuracy_PreT.Size = new System.Drawing.Size(78, 22);
+            this.txt_bin3accuracy_PreT.TabIndex = 97;
+            this.txt_bin3accuracy_PreT.Text = "3";
+            this.txt_bin3accuracy_PreT.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // label76
+            // 
+            this.label76.AutoSize = true;
+            this.label76.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label76.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.label76.Location = new System.Drawing.Point(578, 162);
+            this.label76.Name = "label76";
+            this.label76.Size = new System.Drawing.Size(20, 16);
+            this.label76.TabIndex = 96;
+            this.label76.Text = "%";
+            // 
+            // label75
+            // 
+            this.label75.AutoSize = true;
+            this.label75.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label75.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.label75.Location = new System.Drawing.Point(380, 159);
+            this.label75.Name = "label75";
+            this.label75.Size = new System.Drawing.Size(93, 16);
+            this.label75.TabIndex = 95;
+            this.label75.Text = "Bin3 Accuracy";
+            // 
+            // label74
+            // 
+            this.label74.AutoSize = true;
+            this.label74.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label74.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.label74.Location = new System.Drawing.Point(237, 162);
+            this.label74.Name = "label74";
+            this.label74.Size = new System.Drawing.Size(20, 16);
+            this.label74.TabIndex = 94;
+            this.label74.Text = "%";
+            // 
+            // txt_bin2accuracy_PreT
+            // 
+            this.txt_bin2accuracy_PreT.BackColor = System.Drawing.Color.CadetBlue;
+            this.txt_bin2accuracy_PreT.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txt_bin2accuracy_PreT.ForeColor = System.Drawing.Color.White;
+            this.txt_bin2accuracy_PreT.Location = new System.Drawing.Point(159, 159);
+            this.txt_bin2accuracy_PreT.Name = "txt_bin2accuracy_PreT";
+            this.txt_bin2accuracy_PreT.Size = new System.Drawing.Size(72, 22);
+            this.txt_bin2accuracy_PreT.TabIndex = 93;
+            this.txt_bin2accuracy_PreT.Text = "2";
+            this.txt_bin2accuracy_PreT.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // label73
+            // 
+            this.label73.AutoSize = true;
+            this.label73.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label73.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.label73.Location = new System.Drawing.Point(40, 161);
+            this.label73.Name = "label73";
+            this.label73.Size = new System.Drawing.Size(93, 16);
+            this.label73.TabIndex = 92;
+            this.label73.Text = "Bin2 Accuracy";
+            // 
             // cmb_Voffset_PreT
             // 
             this.cmb_Voffset_PreT.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
@@ -3137,74 +3205,6 @@
             this.txt_OutputLogInfo.Size = new System.Drawing.Size(294, 505);
             this.txt_OutputLogInfo.TabIndex = 88;
             this.txt_OutputLogInfo.Text = "";
-            // 
-            // label73
-            // 
-            this.label73.AutoSize = true;
-            this.label73.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label73.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.label73.Location = new System.Drawing.Point(40, 161);
-            this.label73.Name = "label73";
-            this.label73.Size = new System.Drawing.Size(93, 16);
-            this.label73.TabIndex = 92;
-            this.label73.Text = "Bin2 Accuracy";
-            // 
-            // txt_bin2accuracy_PreT
-            // 
-            this.txt_bin2accuracy_PreT.BackColor = System.Drawing.Color.CadetBlue;
-            this.txt_bin2accuracy_PreT.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txt_bin2accuracy_PreT.ForeColor = System.Drawing.Color.White;
-            this.txt_bin2accuracy_PreT.Location = new System.Drawing.Point(159, 159);
-            this.txt_bin2accuracy_PreT.Name = "txt_bin2accuracy_PreT";
-            this.txt_bin2accuracy_PreT.Size = new System.Drawing.Size(72, 22);
-            this.txt_bin2accuracy_PreT.TabIndex = 93;
-            this.txt_bin2accuracy_PreT.Text = "2";
-            this.txt_bin2accuracy_PreT.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            // 
-            // label74
-            // 
-            this.label74.AutoSize = true;
-            this.label74.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label74.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.label74.Location = new System.Drawing.Point(237, 162);
-            this.label74.Name = "label74";
-            this.label74.Size = new System.Drawing.Size(20, 16);
-            this.label74.TabIndex = 94;
-            this.label74.Text = "%";
-            // 
-            // label75
-            // 
-            this.label75.AutoSize = true;
-            this.label75.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label75.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.label75.Location = new System.Drawing.Point(380, 159);
-            this.label75.Name = "label75";
-            this.label75.Size = new System.Drawing.Size(93, 16);
-            this.label75.TabIndex = 95;
-            this.label75.Text = "Bin3 Accuracy";
-            // 
-            // label76
-            // 
-            this.label76.AutoSize = true;
-            this.label76.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label76.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.label76.Location = new System.Drawing.Point(578, 162);
-            this.label76.Name = "label76";
-            this.label76.Size = new System.Drawing.Size(20, 16);
-            this.label76.TabIndex = 96;
-            this.label76.Text = "%";
-            // 
-            // txt_bin3accuracy_PreT
-            // 
-            this.txt_bin3accuracy_PreT.BackColor = System.Drawing.Color.CadetBlue;
-            this.txt_bin3accuracy_PreT.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txt_bin3accuracy_PreT.ForeColor = System.Drawing.Color.White;
-            this.txt_bin3accuracy_PreT.Location = new System.Drawing.Point(494, 158);
-            this.txt_bin3accuracy_PreT.Name = "txt_bin3accuracy_PreT";
-            this.txt_bin3accuracy_PreT.Size = new System.Drawing.Size(78, 22);
-            this.txt_bin3accuracy_PreT.TabIndex = 97;
-            this.txt_bin3accuracy_PreT.Text = "3";
-            this.txt_bin3accuracy_PreT.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // CurrentSensorConsole
             // 

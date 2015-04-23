@@ -58,7 +58,7 @@ namespace CurrentSensorV3
             get { return this.ADCOffset; }
         }
 
-
+        double ThresholdOfGain = 1;
         double RefVoltOffset = -0.007;
 
         double Vout_0A = 0;
@@ -219,6 +219,7 @@ namespace CurrentSensorV3
         }
 
         uint ix_forRoughGainCtrl = 15;
+        uint Ix_ForRoughGainCtrlBackup = 15;
         uint Ix_ForRoughGainCtrl
         {
             get { return this.ix_forRoughGainCtrl; }
@@ -2249,6 +2250,7 @@ namespace CurrentSensorV3
             Reg80ToReg83Backup[1] = Reg81Value;
             Reg80ToReg83Backup[2] = Reg82Value;
             Reg80ToReg83Backup[3] = reg83Value;
+            Ix_ForRoughGainCtrlBackup = Ix_ForRoughGainCtrl;
         }
 
         private void RestoreReg80ToReg83Value()
@@ -2257,6 +2259,7 @@ namespace CurrentSensorV3
             Reg81Value = Reg80ToReg83Backup[1];
             Reg82Value = Reg80ToReg83Backup[2];
             Reg83Value = Reg80ToReg83Backup[3];
+            Ix_ForRoughGainCtrl = Ix_ForRoughGainCtrlBackup;
         }
 
         private void MarginalReadPreset()
@@ -3126,7 +3129,17 @@ namespace CurrentSensorV3
             bool bSafety = false;
             uint[] tempReadback = new uint[5];
             double dVip_Target = targetOffset + TargetVoltage_customer;
+            double dGainTestMinusTarget = 1;
 
+            /* autoAdaptingGoughGain algorithm*/
+            double autoAdaptingGoughGain = 0;
+            double autoAdaptingPresionGain = 0;
+            double tempG1 = 0;
+            double tempG2 = 0;
+            double dGainPreset = 0;
+            int Ix_forAutoAdaptingRoughGain = 0;
+            int Ix_forAutoAdaptingPresionGain = 0;
+                 
             DisplayOperateMes("Start...\r\n");
             this.lbl_passOrFailed.ForeColor = Color.Black;
             this.lbl_passOrFailed.Text = "START!";
@@ -3272,239 +3285,288 @@ namespace CurrentSensorV3
             #endregion No need Trim case
 
             /* To the low sensitivity case, process below squence*/
-            #region For low sensitivity case
-            if (dGainTest < TargetGain_customer)
+            #region For low sensitivity case, with IP
+            //if (dGainTest < (TargetGain_customer - ThresholdOfGain))
+            //{
+            //    if (this.cmb_IPRange_PreT.SelectedItem.ToString() == "Small")
+            //    {
+            //        //set NC_1X
+            //        /*  power on */
+            //        RePower();
+
+            //        Delay(Delay_Operation);
+             
+            //        this.lbl_passOrFailed.Text = "Processing!";
+
+            //        //#region Saturation judgement
+            //        /*Enter test mode, write PreSet Gain code, and enter nomal mode*/
+            //        EnterTestMode();
+
+            //        /*Write  PreSet Gain code */
+            //        Reg83Value |= 0x01;
+            //        RegisterWrite(4, new uint[8] { 0x80, Reg80Value, 0x81, Reg81Value, 0x82, Reg82Value, 0x83, Reg83Value });
+
+            //        /*Read back  PreSet Gain code */
+            //        BurstRead(0x80, 5, tempReadback);
+
+            //        /* Change Current to IP  */
+            //        dr = MessageBox.Show(String.Format("Please Change Current To {0}A", IP), "Change Current", MessageBoxButtons.OKCancel);
+            //        if (dr == DialogResult.Cancel)
+            //        {
+            //            DisplayOperateMes("AutoTrim Canceled!", Color.Red);
+            //            PowerOff();
+            //            RestoreReg80ToReg83Value();
+            //            return;
+            //        }
+
+            //        /* Get vout @ IP */
+            //        EnterNomalMode();
+            //        oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VOUT_WITH_CAP);
+            //        Delay(Delay_Operation);
+            //        Vout_IP = AverageVout();
+            //        DisplayOperateMes("Vout @ IP = " + Vout_IP.ToString("F3"));
+
+            //        /*Judge PreSet gain; delta Vout target >= delta Vout test * 86.07% */
+            //        if (Vout_IP > saturationVout)
+            //        {
+            //            DisplayOperateMes("Module Vout is SATURATION!", Color.Red);
+            //            PowerOff();
+            //            RestoreReg80ToReg83Value();
+            //            return;
+            //        }
+
+            //        /* Change Current to 0A */
+            //        dr = MessageBox.Show(String.Format("Please Change Current To 0A"), "Change Current", MessageBoxButtons.OKCancel);
+            //        if (dr == DialogResult.Cancel)
+            //        {
+            //            DisplayOperateMes("AutoTrim Canceled!", Color.Red);
+            //            PowerOff();
+            //            RestoreReg80ToReg83Value();
+            //            return;
+            //        }
+            //        Delay(Delay_Operation);
+            //        Vout_0A = AverageVout();
+            //        DisplayOperateMes("Vout @ 0A = " + Vout_0A.ToString("F3"));
+
+            //    }
+            //    else
+            //    {
+            //        if (dGainTest * 1.5 < TargetGain_customer)
+            //        {
+            //            //set NC_1X and Small
+            //            /*  power on */
+            //            RePower();
+
+            //            Delay(Delay_Operation);
+                     
+            //            this.lbl_passOrFailed.Text = "Processing!";
+
+            //            //#region Saturation judgement
+            //            /*Enter test mode, write PreSet Gain code, and enter nomal mode*/
+            //            EnterTestMode();
+
+            //            /*Write  PreSet Gain code */
+            //            Reg83Value |= 0x81;
+            //            RegisterWrite(4, new uint[8] { 0x80, Reg80Value, 0x81, Reg81Value, 0x82, Reg82Value, 0x83, Reg83Value });
+
+            //            /*Read back  PreSet Gain code */
+            //            BurstRead(0x80, 5, tempReadback);
+
+            //            /* Change Current to IP  */
+            //            dr = MessageBox.Show(String.Format("Please Change Current To {0}A", IP), "Change Current", MessageBoxButtons.OKCancel);
+            //            if (dr == DialogResult.Cancel)
+            //            {
+            //                DisplayOperateMes("AutoTrim Canceled!", Color.Red);
+            //                PowerOff();
+            //                RestoreReg80ToReg83Value();
+            //                return;
+            //            }
+
+            //            /* Get vout @ IP */
+            //            EnterNomalMode();
+            //            oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VOUT_WITH_CAP);
+            //            Delay(Delay_Operation);
+            //            Vout_IP = AverageVout();
+            //            DisplayOperateMes("Vout @ IP = " + Vout_IP.ToString("F3"));
+
+            //            /*Judge PreSet gain; delta Vout target >= delta Vout test * 86.07% */
+            //            if (Vout_IP > saturationVout)
+            //            {
+            //                DisplayOperateMes("Module Vout is SATURATION!", Color.Red);
+            //                PowerOff();
+            //                RestoreReg80ToReg83Value();
+            //                return;
+            //            }
+
+            //            /* Change Current to 0A */
+            //            dr = MessageBox.Show(String.Format("Please Change Current To 0A"), "Change Current", MessageBoxButtons.OKCancel);
+            //            if (dr == DialogResult.Cancel)
+            //            {
+            //                DisplayOperateMes("AutoTrim Canceled!", Color.Red);
+            //                PowerOff();
+            //                RestoreReg80ToReg83Value();
+            //                return;
+            //            }
+            //            Delay(Delay_Operation);
+            //            Vout_0A = AverageVout();
+            //            DisplayOperateMes("Vout @ 0A = " + Vout_0A.ToString("F3"));
+            //        }
+            //        else
+            //        {
+            //            //set Small
+            //            /*  power on */
+            //            RePower();
+
+            //            Delay(Delay_Operation);
+                   
+            //            this.lbl_passOrFailed.Text = "Processing!";
+
+            //            //#region Saturation judgement
+            //            /*Enter test mode, write PreSet Gain code, and enter nomal mode*/
+            //            EnterTestMode();
+
+            //            /*Write  PreSet Gain code */
+            //            Reg83Value |= 0x80;
+            //            RegisterWrite(4, new uint[8] { 0x80, Reg80Value, 0x81, Reg81Value, 0x82, Reg82Value, 0x83, Reg83Value });
+
+            //            /*Read back  PreSet Gain code */
+            //            BurstRead(0x80, 5, tempReadback);
+
+            //            /* Change Current to IP  */
+            //            dr = MessageBox.Show(String.Format("Please Change Current To {0}A", IP), "Change Current", MessageBoxButtons.OKCancel);
+            //            if (dr == DialogResult.Cancel)
+            //            {
+            //                DisplayOperateMes("AutoTrim Canceled!", Color.Red);
+            //                PowerOff();
+            //                RestoreReg80ToReg83Value();
+            //                return;
+            //            }
+
+            //            /* Get vout @ IP */
+            //            EnterNomalMode();
+            //            oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VOUT_WITH_CAP);
+            //            Delay(Delay_Operation);
+            //            Vout_IP = AverageVout();
+            //            DisplayOperateMes("Vout @ IP = " + Vout_IP.ToString("F3"));
+
+            //            /*Judge PreSet gain; delta Vout target >= delta Vout test * 86.07% */
+            //            if (Vout_IP > saturationVout)
+            //            {
+            //                DisplayOperateMes("Module Vout is SATURATION!", Color.Red);
+            //                PowerOff();
+            //                RestoreReg80ToReg83Value();
+            //                return;
+            //            }
+
+            //            /* Change Current to 0A */
+            //            dr = MessageBox.Show(String.Format("Please Change Current To 0A"), "Change Current", MessageBoxButtons.OKCancel);
+            //            if (dr == DialogResult.Cancel)
+            //            {
+            //                DisplayOperateMes("AutoTrim Canceled!", Color.Red);
+            //                PowerOff();
+            //                RestoreReg80ToReg83Value();
+            //                return;
+            //            }
+            //            Delay(Delay_Operation);
+            //            Vout_0A = AverageVout();
+            //            DisplayOperateMes("Vout @ 0A = " + Vout_0A.ToString("F3"));
+            //        }
+
+            //    }
+
+            //}
+            #endregion For low sensitivity case
+
+            #region For low sensitivity case, without IP
+            if (dGainTest < (TargetGain_customer - ThresholdOfGain))
             {
+                dGainTestMinusTarget = dGainTest/TargetGain_customer;
+                dGainPreset = RoughTable_Customer[0][Ix_ForRoughGainCtrl] / 100d;
+
                 if (this.cmb_IPRange_PreT.SelectedItem.ToString() == "Small")
                 {
-                    //set NC_1X
-                    /* Repower on 6V */
-                    //oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VDD_FROM_EXT);
-                    //RePower();
-                    //EnterTestMode();
-                    //RegisterWrite(1, new uint[2] { 0x83, 0x01 });
-                    //FuseClockOn(DeviceAddress, (double)num_UD_pulsewidth_ow_EngT.Value, (double)numUD_pulsedurationtime_ow_EngT.Value);
-                    //Delay(Delay_Fuse);
-
-                    //oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VDD_FROM_5V);
-                    //#region Get module current
-
-                    /*  power on */
-                    RePower();
-
-                    Delay(Delay_Operation);
-             
-                    this.lbl_passOrFailed.Text = "Processing!";
-
-                    //#region Saturation judgement
-                    /*Enter test mode, write PreSet Gain code, and enter nomal mode*/
-                    EnterTestMode();
-
-                    /*Write  PreSet Gain code */
-                    Reg83Value |= 0x01;
-                    RegisterWrite(4, new uint[8] { 0x80, Reg80Value, 0x81, Reg81Value, 0x82, Reg82Value, 0x83, Reg83Value });
-
-                    /*Read back  PreSet Gain code */
-                    BurstRead(0x80, 5, tempReadback);
-
-                    /* Change Current to IP  */
-                    dr = MessageBox.Show(String.Format("Please Change Current To {0}A", IP), "Change Current", MessageBoxButtons.OKCancel);
-                    if (dr == DialogResult.Cancel)
+                    if (dGainTestMinusTarget >= dGainPreset)
                     {
-                        DisplayOperateMes("AutoTrim Canceled!", Color.Red);
+                        //Vout_0A = ;
+                        Vout_IP = Vout_0A + dGainTest/dGainPreset*IP/1000d;
+
+                        Ix_ForRoughGainCtrl = 15;
+
+                        /* Rough Gain Code*/
+                        bit_op_mask = bit5_Mask | bit6_Mask | bit7_Mask;
+                        Reg80Value &= ~bit_op_mask;
+                        Reg80Value |= Convert.ToUInt32(RoughTable_Customer[1][Ix_ForRoughGainCtrl]);
+
+                        bit_op_mask = bit0_Mask;
+                        Reg81Value &= ~bit_op_mask;
+                        Reg81Value |= Convert.ToUInt32(RoughTable_Customer[2][Ix_ForRoughGainCtrl]);
+                    }
+                    else
+                    {
+                        DisplayOperateMes("Sensitivity is NOT enough!", Color.Red);
                         PowerOff();
                         RestoreReg80ToReg83Value();
                         return;
                     }
-
-                    /* Get vout @ IP */
-                    EnterNomalMode();
-                    oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VOUT_WITH_CAP);
-                    Delay(Delay_Operation);
-                    Vout_IP = AverageVout();
-                    DisplayOperateMes("Vout @ IP = " + Vout_IP.ToString("F3"));
-
-                    /*Judge PreSet gain; delta Vout target >= delta Vout test * 86.07% */
-                    if (Vout_IP > saturationVout)
-                    {
-                        DisplayOperateMes("Module Vout is SATURATION!", Color.Red);
-                        PowerOff();
-                        RestoreReg80ToReg83Value();
-                        return;
-                    }
-
-                    /* Change Current to 0A */
-                    dr = MessageBox.Show(String.Format("Please Change Current To 0A"), "Change Current", MessageBoxButtons.OKCancel);
-                    if (dr == DialogResult.Cancel)
-                    {
-                        DisplayOperateMes("AutoTrim Canceled!", Color.Red);
-                        PowerOff();
-                        RestoreReg80ToReg83Value();
-                        return;
-                    }
-                    Delay(Delay_Operation);
-                    Vout_0A = AverageVout();
-                    DisplayOperateMes("Vout @ 0A = " + Vout_0A.ToString("F3"));
 
                 }
                 else
                 {
-                    if (dGainTest * 1.5 < TargetGain_customer)
+                    if (dGainTestMinusTarget >= dGainPreset)
                     {
-                        //set NC_1X and Small
-                        /* Repower on 6V */
-                        //oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VDD_FROM_EXT);
-                        //RePower();
-                        //EnterTestMode();
-                        //RegisterWrite(1, new uint[2] { 0x83, 0x81 });
-                        //FuseClockOn(DeviceAddress, (double)num_UD_pulsewidth_ow_EngT.Value, (double)numUD_pulsedurationtime_ow_EngT.Value);
-                        //Delay(Delay_Fuse);
+                        //Vout_0A = ;
+                        Vout_IP = Vout_0A + dGainTest / dGainPreset * IP / 1000d;
 
-                        //oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VDD_FROM_5V);
-                        //#region Get module current
+                        Ix_ForRoughGainCtrl = 15;
 
-                        /*  power on */
-                        RePower();
+                        /* Rough Gain Code*/
+                        bit_op_mask = bit5_Mask | bit6_Mask | bit7_Mask;
+                        Reg80Value &= ~bit_op_mask;
+                        Reg80Value |= Convert.ToUInt32(RoughTable_Customer[1][Ix_ForRoughGainCtrl]);
 
-                        Delay(Delay_Operation);
-                     
-                        this.lbl_passOrFailed.Text = "Processing!";
-
-                        //#region Saturation judgement
-                        /*Enter test mode, write PreSet Gain code, and enter nomal mode*/
-                        EnterTestMode();
-
-                        /*Write  PreSet Gain code */
-                        Reg83Value |= 0x81;
-                        RegisterWrite(4, new uint[8] { 0x80, Reg80Value, 0x81, Reg81Value, 0x82, Reg82Value, 0x83, Reg83Value });
-
-                        /*Read back  PreSet Gain code */
-                        BurstRead(0x80, 5, tempReadback);
-
-                        /* Change Current to IP  */
-                        dr = MessageBox.Show(String.Format("Please Change Current To {0}A", IP), "Change Current", MessageBoxButtons.OKCancel);
-                        if (dr == DialogResult.Cancel)
-                        {
-                            DisplayOperateMes("AutoTrim Canceled!", Color.Red);
-                            PowerOff();
-                            RestoreReg80ToReg83Value();
-                            return;
-                        }
-
-                        /* Get vout @ IP */
-                        EnterNomalMode();
-                        oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VOUT_WITH_CAP);
-                        Delay(Delay_Operation);
-                        Vout_IP = AverageVout();
-                        DisplayOperateMes("Vout @ IP = " + Vout_IP.ToString("F3"));
-
-                        /*Judge PreSet gain; delta Vout target >= delta Vout test * 86.07% */
-                        if (Vout_IP > saturationVout)
-                        {
-                            DisplayOperateMes("Module Vout is SATURATION!", Color.Red);
-                            PowerOff();
-                            RestoreReg80ToReg83Value();
-                            return;
-                        }
-
-                        /* Change Current to 0A */
-                        dr = MessageBox.Show(String.Format("Please Change Current To 0A"), "Change Current", MessageBoxButtons.OKCancel);
-                        if (dr == DialogResult.Cancel)
-                        {
-                            DisplayOperateMes("AutoTrim Canceled!", Color.Red);
-                            PowerOff();
-                            RestoreReg80ToReg83Value();
-                            return;
-                        }
-                        Delay(Delay_Operation);
-                        Vout_0A = AverageVout();
-                        DisplayOperateMes("Vout @ 0A = " + Vout_0A.ToString("F3"));
+                        bit_op_mask = bit0_Mask;
+                        Reg81Value &= ~bit_op_mask;
+                        Reg81Value |= Convert.ToUInt32(RoughTable_Customer[2][Ix_ForRoughGainCtrl]);
                     }
                     else
                     {
-                        //set Small
-                        /* Repower on 6V */
-                        //oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VDD_FROM_EXT);
-                        //RePower();
-                        //EnterTestMode();
-                        //RegisterWrite(1, new uint[2] { 0x83, 0x80 });
-                        //FuseClockOn(DeviceAddress, (double)num_UD_pulsewidth_ow_EngT.Value, (double)numUD_pulsedurationtime_ow_EngT.Value);
-                        //Delay(Delay_Fuse);
+                        if (dGainTest * 1.5 >= (TargetGain_customer - ThresholdOfGain))
+                         {
+                             Reg83Value |= 0x80;
+                             Vout_IP = Vout_0A + dGainTest *1.5 * IP / 1000d;
+                         }
+                         else
+                         {
+                             Reg83Value |= 0x80;
+                             Vout_IP = Vout_0A + dGainTest * 1.5 * IP/dGainPreset / 1000d;
 
-                        //oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VDD_FROM_5V);
-                        //#region Get module current
+                             Ix_ForRoughGainCtrl = 15;
 
-                        /*  power on */
-                        RePower();
+                             /* Rough Gain Code*/
+                             bit_op_mask = bit5_Mask | bit6_Mask | bit7_Mask;
+                             Reg80Value &= ~bit_op_mask;
+                             Reg80Value |= Convert.ToUInt32(RoughTable_Customer[1][Ix_ForRoughGainCtrl]);
 
-                        Delay(Delay_Operation);
-                   
-                        this.lbl_passOrFailed.Text = "Processing!";
-
-                        //#region Saturation judgement
-                        /*Enter test mode, write PreSet Gain code, and enter nomal mode*/
-                        EnterTestMode();
-
-                        /*Write  PreSet Gain code */
-                        Reg83Value |= 0x80;
-                        RegisterWrite(4, new uint[8] { 0x80, Reg80Value, 0x81, Reg81Value, 0x82, Reg82Value, 0x83, Reg83Value });
-
-                        /*Read back  PreSet Gain code */
-                        BurstRead(0x80, 5, tempReadback);
-
-                        /* Change Current to IP  */
-                        dr = MessageBox.Show(String.Format("Please Change Current To {0}A", IP), "Change Current", MessageBoxButtons.OKCancel);
-                        if (dr == DialogResult.Cancel)
-                        {
-                            DisplayOperateMes("AutoTrim Canceled!", Color.Red);
-                            PowerOff();
-                            RestoreReg80ToReg83Value();
-                            return;
-                        }
-
-                        /* Get vout @ IP */
-                        EnterNomalMode();
-                        oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VOUT_WITH_CAP);
-                        Delay(Delay_Operation);
-                        Vout_IP = AverageVout();
-                        DisplayOperateMes("Vout @ IP = " + Vout_IP.ToString("F3"));
-
-                        /*Judge PreSet gain; delta Vout target >= delta Vout test * 86.07% */
-                        if (Vout_IP > saturationVout)
-                        {
-                            DisplayOperateMes("Module Vout is SATURATION!", Color.Red);
-                            PowerOff();
-                            RestoreReg80ToReg83Value();
-                            return;
-                        }
-
-                        /* Change Current to 0A */
-                        dr = MessageBox.Show(String.Format("Please Change Current To 0A"), "Change Current", MessageBoxButtons.OKCancel);
-                        if (dr == DialogResult.Cancel)
-                        {
-                            DisplayOperateMes("AutoTrim Canceled!", Color.Red);
-                            PowerOff();
-                            RestoreReg80ToReg83Value();
-                            return;
-                        }
-                        Delay(Delay_Operation);
-                        Vout_0A = AverageVout();
-                        DisplayOperateMes("Vout @ 0A = " + Vout_0A.ToString("F3"));
+                             bit_op_mask = bit0_Mask;
+                             Reg81Value &= ~bit_op_mask;
+                             Reg81Value |= Convert.ToUInt32(RoughTable_Customer[2][Ix_ForRoughGainCtrl]);
+                         }
                     }
-
                 }
 
             }
-            #endregion For low sensitivity case
+
+            #endregion For low sensitivity case, without IP
+
 
             #region Adapting Gain algorithm
-            /* autoAdaptingGoughGain algorithm*/
-            double autoAdaptingGoughGain = 0;
-            double autoAdaptingPresionGain = 0;
-            double tempG1 = 0;
-            double tempG2 = 0;
-            int Ix_forAutoAdaptingRoughGain = 0;
-            int Ix_forAutoAdaptingPresionGain = 0;
+            ///* autoAdaptingGoughGain algorithm*/
+            //double autoAdaptingGoughGain = 0;
+            //double autoAdaptingPresionGain = 0;
+            //double tempG1 = 0;
+            //double tempG2 = 0;
+            //int Ix_forAutoAdaptingRoughGain = 0;
+            //int Ix_forAutoAdaptingPresionGain = 0;
             tempG1 = RoughTable_Customer[0][Ix_ForRoughGainCtrl] / 100d;
             tempG2 = (TargetGain_customer / ((Vout_IP - Vout_0A) / IP)) / 1000d;
             autoAdaptingGoughGain = tempG1 * tempG2 * 100d;
