@@ -3302,9 +3302,50 @@ namespace CurrentSensorV3
             #region No need Trim case
             if (targetOffset * (1 - 0.01) <= Vout_0A && Vout_0A <= targetOffset * (1 + 0.01) && Vout_IP <= dVip_Target * (1 + 0.01) && Vout_IP >= dVip_Target * (1 - 0.01))
             {
-                DisplayOperateMes("Pass! Bin1");
-                this.lbl_passOrFailed.ForeColor = Color.Green;
-                this.lbl_passOrFailed.Text = "Pass!";
+                /* Repower on 6V */
+                oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VDD_FROM_EXT);
+                RePower();
+
+                //oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_CONFIG_TO_VOUT);
+                //oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VOUT_WITHOUT_CAP);
+                EnterTestMode();
+
+                /* Todo: write trim code to regsiters */
+                RegisterWrite(5, new uint[10] { 0x80, Reg80Value, 0x81, Reg81Value, 0x82, Reg82Value, 0x83, Reg83Value, 0x84, 0x07 });
+
+                BurstRead(0x80, 5, tempReadback);
+
+                /* fuse */
+                FuseClockOn(DeviceAddress, (double)num_UD_pulsewidth_ow_EngT.Value, (double)numUD_pulsedurationtime_ow_EngT.Value);
+
+                DisplayOperateMes("Processing...\r\n");
+
+                Delay(Delay_Fuse);
+
+                /* Margianl read, compare with writed code; 
+                 * if ( = ), go on
+                 * else bMarginal = true; */
+                MarginalReadPreset();
+                Delay(Delay_Fuse);
+                //uint[] tempReadback = new uint[5];
+                BurstRead(0x80, 5, tempReadback);
+                bMarginal = false;
+                if (((tempReadback[0] & 0xE0) != (Reg80Value & 0xE0)) | (tempReadback[1] & 0x81) != (Reg81Value & 0x81) |
+                    (tempReadback[2] & 0x99) != (Reg82Value & 0x99) | (tempReadback[3] & 0x83) != (Reg83Value & 0x83) | (tempReadback[4] < 3) )
+                    bMarginal = true;
+
+                if (!bMarginal)
+                {
+                    DisplayOperateMes("Pass! Bin1");
+                    this.lbl_passOrFailed.ForeColor = Color.Green;
+                    this.lbl_passOrFailed.Text = "Pass!";
+                }
+                else
+                {
+                    DisplayOperateMes("Fail!");
+                    this.lbl_passOrFailed.ForeColor = Color.Red;
+                    this.lbl_passOrFailed.Text = "Fail!";
+                }
                 PowerOff();
                 RestoreReg80ToReg83Value();
                 return;
@@ -3703,7 +3744,7 @@ namespace CurrentSensorV3
             BurstRead(0x80, 5, tempReadback);
             bMarginal = false;
             if (((tempReadback[0]&0xE0) != (Reg80Value&0xE0)) | (tempReadback[1]&0x81) != (Reg81Value&0x81) |
-                (tempReadback[2]&0x99) != (Reg82Value&0x99) | (tempReadback[3]&0x83) != (Reg83Value&0x83))
+                (tempReadback[2]&0x99) != (Reg82Value&0x99) | (tempReadback[3]&0x83) != (Reg83Value&0x83) | (tempReadback[4] < 3) )
                 bMarginal = true;
 
             //oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_CONFIG_TO_VOUT);
