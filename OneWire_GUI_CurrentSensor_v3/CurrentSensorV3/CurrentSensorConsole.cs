@@ -3331,7 +3331,7 @@ namespace CurrentSensorV3
                 BurstRead(0x80, 5, tempReadback);
                 bMarginal = false;
                 if (((tempReadback[0] & 0xE0) != (Reg80Value & 0xE0)) | (tempReadback[1] & 0x81) != (Reg81Value & 0x81) |
-                    (tempReadback[2] & 0x99) != (Reg82Value & 0x99) | (tempReadback[3] & 0x83) != (Reg83Value & 0x83) | (tempReadback[4] < 3) )
+                    (tempReadback[2] & 0x99) != (Reg82Value & 0x99) | (tempReadback[3] & 0x83) != (Reg83Value & 0x83) | (tempReadback[4] < 1) )
                     bMarginal = true;
 
                 if (!bMarginal)
@@ -3744,7 +3744,7 @@ namespace CurrentSensorV3
             BurstRead(0x80, 5, tempReadback);
             bMarginal = false;
             if (((tempReadback[0]&0xE0) != (Reg80Value&0xE0)) | (tempReadback[1]&0x81) != (Reg81Value&0x81) |
-                (tempReadback[2]&0x99) != (Reg82Value&0x99) | (tempReadback[3]&0x83) != (Reg83Value&0x83) | (tempReadback[4] < 3) )
+                (tempReadback[2]&0x99) != (Reg82Value&0x99) | (tempReadback[3]&0x83) != (Reg83Value&0x83) | (tempReadback[4] < 1) )
                 bMarginal = true;
 
             //oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_CONFIG_TO_VOUT);
