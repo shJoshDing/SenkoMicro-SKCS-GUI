@@ -24,10 +24,10 @@ namespace CurrentSensorV3
 
         bool bUsbConnected = false;
 
-        //bool bAutoTrimTest = true;          //Debug mode, display engineer tab
-        bool bAutoTrimTest = false;       //Release mode, bon't display engineer tab
-        //bool bPretrimOrAuto = false;        //For operator, only auto tab
-        bool bPretrimOrAuto = true;         //For engineer, only PreTrim tab
+        bool bAutoTrimTest = true;          //Debug mode, display engineer tab
+        //bool bAutoTrimTest = false;       //Release mode, bon't display engineer tab
+        bool bPretrimOrAuto = false;        //For operator, only auto tab
+        //bool bPretrimOrAuto = true;         //For engineer, only PreTrim tab
 
 
         uint DeviceAddress = 0x73;
@@ -38,9 +38,9 @@ namespace CurrentSensorV3
         /// <summary>
         /// Delay Define
         /// </summary>
-        int Delay_Power = 800;  //ms
-        int Delay_Operation = 300;  //ms
-        int Delay_Fuse = 500;    //ms
+        int Delay_Power = 500;  //ms
+        int Delay_Operation = 100;  //ms
+        int Delay_Fuse = 300;    //ms
 
         double ADCOffset = 0;
         double AadcOffset
@@ -56,7 +56,7 @@ namespace CurrentSensorV3
             get { return this.ADCOffset; }
         }
 
-        double VoutIPThreshold = 2.5;
+        double VoutIPThreshold = 0.010;
         double ThresholdOfGain = 1;
         double RefVoltOffset = -0.007;
 
@@ -2310,6 +2310,43 @@ namespace CurrentSensorV3
                 DisplayOperateMes("Marginal Read Setup failed!\r\n", Color.Red);
         }
 
+        private void ReloadPreset()
+        {
+            EnterTestMode();
+
+            uint _reg_addr = 0x43;
+            uint _reg_data = 0x0B;
+            bool writeResult = oneWrie_device.I2CWrite_Single(this.DeviceAddress, _reg_addr, _reg_data);
+            if (writeResult)
+            {
+                if (bAutoTrimTest)
+                {
+                    DisplayOperateMes("Reload succeeded!\r\n");
+                }
+            }
+            else
+            {
+                DisplayOperateMes("I2C write failed, Relaod Failed!\r\n", Color.Red);
+                return;
+            }
+
+            Delay(Delay_Operation);
+
+            _reg_addr = 0x43;
+            _reg_data = 0x0;
+            writeResult = oneWrie_device.I2CWrite_Single(this.DeviceAddress, _reg_addr, _reg_data);
+            if (writeResult)
+            {
+                if (bAutoTrimTest)
+                {
+                    DisplayOperateMes("Reload Setup succeeded!\r\n");
+                }
+            }
+            else
+                DisplayOperateMes("Reload Setup failed!\r\n", Color.Red);
+        
+        }
+
         private void SafetyReadPreset()
         {
             EnterTestMode();
@@ -3127,7 +3164,7 @@ namespace CurrentSensorV3
         {
             DialogResult dr;
             bool bMarginal = false;
-            bool bSafety = false;
+            //bool bSafety = false;
             uint[] tempReadback = new uint[5];
             double dVip_Target = targetOffset + TargetVoltage_customer;
             double dGainTestMinusTarget = 1;
@@ -3252,7 +3289,30 @@ namespace CurrentSensorV3
                 return;
             }
 
-            if (Vout_IP < VoutIPThreshold)
+            
+
+            #endregion Saturation judgement
+
+            #region Get Vout@0A
+
+            /* Change Current to 0A */
+            dr = MessageBox.Show(String.Format("Please Change Current To 0A"), "Change Current", MessageBoxButtons.OKCancel);
+            if (dr == DialogResult.Cancel)
+            {
+                DisplayOperateMes("AutoTrim Canceled!", Color.Red);
+                PowerOff();
+                RestoreReg80ToReg83Value();
+                return;
+            }
+            Delay(Delay_Operation);
+            Vout_0A = AverageVout();
+            DisplayOperateMes("Vout @ 0A = " + Vout_0A.ToString("F3"));
+
+            double dGainTest = 0;
+            dGainTest = 1000d * (Vout_IP - Vout_0A) / IP;
+
+
+            if ((Vout_IP-Vout_0A) < VoutIPThreshold)
             {
                 dr = MessageBox.Show(String.Format("Please Conform Current is {0}A!!!", IP), "Change Current", MessageBoxButtons.OKCancel);
                 if (dr == DialogResult.Cancel)
@@ -3274,33 +3334,15 @@ namespace CurrentSensorV3
                         RestoreReg80ToReg83Value();
                         return;
                     }
-                    
+
                 }
             }
 
-            #endregion Saturation judgement
 
-            #region Get Vout@0A
-
-            /* Change Current to 0A */
-            dr = MessageBox.Show(String.Format("Please Change Current To 0A"), "Change Current", MessageBoxButtons.OKCancel);
-            if (dr == DialogResult.Cancel)
-            {
-                DisplayOperateMes("AutoTrim Canceled!", Color.Red);
-                PowerOff();
-                RestoreReg80ToReg83Value();
-                return;
-            }
-            Delay(Delay_Operation);
-            Vout_0A = AverageVout();
-            DisplayOperateMes("Vout @ 0A = " + Vout_0A.ToString("F3"));
-
-            double dGainTest = 0;
-            dGainTest = 1000d * (Vout_IP - Vout_0A) / IP;
             #endregion  Get Vout@0A
 
             #region No need Trim case
-            if (targetOffset * (1 - 0.01) <= Vout_0A && Vout_0A <= targetOffset * (1 + 0.01) && Vout_IP <= dVip_Target * (1 + 0.01) && Vout_IP >= dVip_Target * (1 - 0.01))
+            if ((targetOffset + 0.01) <= Vout_0A && Vout_0A <= (targetOffset +0.01) && (Vout_IP - Vout_0A) <= (TargetVoltage_customer + 0.01) && (Vout_IP-Vout_0A) >= (TargetVoltage_customer + 0.01))
             {
                 /* Repower on 6V */
                 oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VDD_FROM_EXT);
@@ -3322,11 +3364,16 @@ namespace CurrentSensorV3
 
                 Delay(Delay_Fuse);
 
+                ReloadPreset();
+                Delay(Delay_Operation);
+                BurstRead(0x80, 5, tempReadback);
+                Delay(Delay_Operation);
+
                 /* Margianl read, compare with writed code; 
                  * if ( = ), go on
                  * else bMarginal = true; */
                 MarginalReadPreset();
-                Delay(Delay_Fuse);
+                Delay(Delay_Operation);
                 //uint[] tempReadback = new uint[5];
                 BurstRead(0x80, 5, tempReadback);
                 bMarginal = false;
@@ -3733,13 +3780,15 @@ namespace CurrentSensorV3
             //oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VOUT_WITHOUT_CAP);
             //EnterTestMode();  // MarginalReadPreset contain this
 
-            //Delay(Delay_Operation);
-
+            ReloadPreset();
+            Delay(Delay_Operation);
+            BurstRead(0x80,5,tempReadback);
+            Delay(Delay_Operation);
             /* Margianl read, compare with writed code; 
              * if ( = ), go on
              * else bMarginal = true; */
             MarginalReadPreset();
-            Delay(Delay_Fuse);
+            Delay(Delay_Operation);
             //uint[] tempReadback = new uint[5];
             BurstRead(0x80, 5, tempReadback);
             bMarginal = false;
@@ -3862,19 +3911,19 @@ namespace CurrentSensorV3
             //if ((!bMarginal) && (!bSafety))
             else
             {
-                if (targetOffset * (1 - 0.01) <= Vout_0A && Vout_0A <= targetOffset * (1 + 0.01) && Vout_IP <= dVip_Target * (1 + 0.01) && Vout_IP >= dVip_Target * (1 - 0.01))
+                if (targetOffset * (1 - 0.01) <= Vout_0A && Vout_0A <= targetOffset * (1 + 0.01) && (Vout_IP - Vout_0A) <= TargetVoltage_customer * (1 + 0.01) && (Vout_IP - Vout_0A) >= TargetVoltage_customer * (1 - 0.01))
                 {
                     DisplayOperateMes("Pass! Bin1");
                     this.lbl_passOrFailed.ForeColor = Color.Green;
                     this.lbl_passOrFailed.Text = "Pass!";
                 }
-                else if (targetOffset * (1 - bin2accuracy / 100) <= Vout_0A && Vout_0A <= targetOffset * (1 + bin2accuracy / 100) && Vout_IP <= dVip_Target * (1 + bin2accuracy / 100) && Vout_IP >= dVip_Target * (1 - bin2accuracy / 100))
+                else if (targetOffset * (1 - bin2accuracy / 100) <= Vout_0A && Vout_0A <= targetOffset * (1 + bin2accuracy / 100) && (Vout_IP - Vout_0A) <= TargetVoltage_customer * (1 + bin2accuracy / 100) && (Vout_IP-Vout_0A) >= TargetVoltage_customer * (1 - bin2accuracy / 100))
                 {
                     DisplayOperateMes("Pass! Bin2");
                     this.lbl_passOrFailed.ForeColor = Color.Green;
                     this.lbl_passOrFailed.Text = "Pass!";
                 }
-                else if (targetOffset * (1 - bin3accuracy / 100) <= Vout_0A && Vout_0A <= targetOffset * (1 + bin3accuracy / 100) && Vout_IP <= dVip_Target * (1 + bin3accuracy / 100) && Vout_IP >= dVip_Target * (1 - bin3accuracy / 100))
+                else if (targetOffset * (1 - bin3accuracy / 100) <= Vout_0A && Vout_0A <= targetOffset * (1 + bin3accuracy / 100) && (Vout_IP-Vout_0A) <= TargetVoltage_customer * (1 + bin3accuracy / 100) && (Vout_IP-Vout_0A) >= TargetVoltage_customer * (1 - bin3accuracy / 100))
                 {
                     DisplayOperateMes("Pass! Bin3");
                     this.lbl_passOrFailed.ForeColor = Color.Green;
@@ -3910,8 +3959,8 @@ namespace CurrentSensorV3
             //    }
             //}
 
-            //DisplayOperateMes("Vout @ 0A = " + Vout_0A.ToString("F3"));
-            //DisplayOperateMes("Vout @ IP = " + Vout_IP.ToString("F3"));
+            DisplayOperateMes("Vout @ 0A = " + Vout_0A.ToString("F3"));
+            DisplayOperateMes("Vout @ IP = " + Vout_IP.ToString("F3"));
 
             #endregion Bin
 
