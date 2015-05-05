@@ -8,3 +8,4 @@ C:\Users\IBM-201\Documents\GitHub\SenkoMicro-SKCS-GUI\OneWire_GUI_CurrentSensor_
 C:\Users\IBM-201\Documents\GitHub\SenkoMicro-SKCS-GUI\OneWire_GUI_CurrentSensor_v3\OWCI\obj\x86\Debug\OWCI.csproj.GenerateResource.Cache
 C:\Users\IBM-201\Documents\GitHub\SenkoMicro-SKCS-GUI\OneWire_GUI_CurrentSensor_v3\OWCI\obj\x86\Debug\OWCI.exe
 C:\Users\IBM-201\Documents\GitHub\SenkoMicro-SKCS-GUI\OneWire_GUI_CurrentSensor_v3\OWCI\obj\x86\Debug\OWCI.pdb
+C:\Users\IBM-201\Documents\GitHub\SenkoMicro-SKCS-GUI\OneWire_GUI_CurrentSensor_v3\OWCI\obj\x86\Debug\OWCI.csprojResolveAssemblyReference.cache

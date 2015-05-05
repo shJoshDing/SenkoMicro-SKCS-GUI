@@ -57,7 +57,7 @@ namespace CurrentSensorV3
         }
 
         double VoutIPThreshold = 0.010;
-        double ThresholdOfGain = 1;
+        double ThresholdOfGain = 0.995;
         double RefVoltOffset = -0.007;
 
         double Vout_0A = 0;
@@ -3280,8 +3280,9 @@ namespace CurrentSensorV3
             Vout_IP = AverageVout();
             DisplayOperateMes("Vout @ IP = " + Vout_IP.ToString("F3"));
 
+            //Vout_IP = 4.944;
             /*Judge PreSet gain; delta Vout target >= delta Vout test * 86.07% */
-            if (Vout_IP > saturationVout)
+            if(Vout_IP > saturationVout)
             {
                 DisplayOperateMes("Module Vout is SATURATION!", Color.Red);
                 PowerOff();
@@ -3593,7 +3594,7 @@ namespace CurrentSensorV3
             #endregion For low sensitivity case
 
             #region For low sensitivity case, without IP
-            if (dGainTest < (TargetGain_customer - ThresholdOfGain))
+            if (dGainTest < (TargetGain_customer * ThresholdOfGain))
             {
                 dGainTestMinusTarget = dGainTest/TargetGain_customer;
                 dGainPreset = RoughTable_Customer[0][Ix_ForRoughGainCtrl] / 100d;
@@ -3605,7 +3606,7 @@ namespace CurrentSensorV3
                         //Vout_0A = ;
                         //Vout_IP = Vout_0A + dGainTest/dGainPreset*IP/1000d;
 
-                        Ix_ForRoughGainCtrl = (uint)LookupRoughGain_Customer(dGainTestMinusTarget * 100d, RoughTable_Customer);
+                        Ix_ForRoughGainCtrl = (uint)LookupRoughGain_Customer(TargetGain_customer * 100d / dGainTest * dGainPreset, RoughTable_Customer);
 
                         //Ix_ForRoughGainCtrl = 15;
 
@@ -3633,7 +3634,7 @@ namespace CurrentSensorV3
                     {
                         //Vout_0A = ;
                         //Vout_IP = Vout_0A + dGainTest / dGainPreset * IP / 1000d;
-                        Ix_ForRoughGainCtrl = (uint)LookupRoughGain_Customer(dGainTestMinusTarget * 100d, RoughTable_Customer);
+                        Ix_ForRoughGainCtrl = (uint)LookupRoughGain_Customer(TargetGain_customer*100d /dGainTest * dGainPreset, RoughTable_Customer);
                         //Ix_ForRoughGainCtrl = 15;
 
                         /* Rough Gain Code*/
@@ -3647,13 +3648,13 @@ namespace CurrentSensorV3
                     }
                     else
                     {
-                        if (dGainTest * 1.5 / dGainPreset >= (TargetGain_customer - ThresholdOfGain))
+                        if (dGainTest * 1.5 / dGainPreset >= (TargetGain_customer * ThresholdOfGain))
                         {
                             //Vout_0A = ;
                             //Vout_IP = Vout_0A + dGainTest/dGainPreset*IP/1000d;
 
-                            Ix_ForRoughGainCtrl = (uint)LookupRoughGain_Customer((dGainTest * 1.5 / dGainPreset), RoughTable_Customer);
-
+                            //Ix_ForRoughGainCtrl = (uint)LookupRoughGain_Customer((dGainTestMinusTarget * 1.5d / dGainPreset), RoughTable_Customer);
+                            Ix_ForRoughGainCtrl = (uint)LookupRoughGain_Customer((TargetGain_customer*100d / (dGainTest * 1.5d) / dGainPreset), RoughTable_Customer);
                             //Ix_ForRoughGainCtrl = 15;
 
                             Reg83Value |= 0x80;
@@ -3676,6 +3677,8 @@ namespace CurrentSensorV3
                         }
                     }
                 }
+
+                DisplayOperateMes("Ix_ForRoughGainCtrl = " + Ix_ForRoughGainCtrl.ToString("F0"));
 
                 /*  power on */
                 RePower();
@@ -4816,12 +4819,12 @@ namespace CurrentSensorV3
             else if (ModuleTypeIndex == 1 )
             {
                 TargetOffset = 2.5;
-                saturationVout = 4.95;
+                saturationVout = 4.85;
             }
             else 
             {
                 //TargetOffset = 2.5;
-                saturationVout = 4.95;
+                saturationVout = 4.85;
             }
         }
 
