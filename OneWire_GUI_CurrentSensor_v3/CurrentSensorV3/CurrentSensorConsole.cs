@@ -101,7 +101,7 @@ namespace CurrentSensorV3
         uint bin2accuracy = 2;
         uint bin3accuracy = 3;
 
-        double targetVoltage_customer = 2;
+        double targetVoltage_customer = 1.6;
         double TargetVoltage_customer
         {
             get { return this.targetVoltage_customer; }
@@ -443,14 +443,14 @@ namespace CurrentSensorV3
             this.txt_SerialNum_PreT.Text = SerialNum;
 
             //Remove Internal Tab
-            if (!bAutoTrimTest)
+            //if (!bAutoTrimTest)
             {
                 this.tabControl1.Controls.Remove(EngineeringTab);
-                if (bPretrimOrAuto)
+                //if (bPretrimOrAuto)
                 {
-                    this.tabControl1.Controls.Remove(AutoTrimTab);
+                    //this.tabControl1.Controls.Remove(AutoTrimTab);
                 }
-                else
+                //else
                 {
                     this.tabControl1.Controls.Remove(PriTrimTab);
                 }
