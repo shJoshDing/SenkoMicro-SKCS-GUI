@@ -2256,7 +2256,7 @@
             this.txt_targetvoltage_PreT.Name = "txt_targetvoltage_PreT";
             this.txt_targetvoltage_PreT.Size = new System.Drawing.Size(78, 22);
             this.txt_targetvoltage_PreT.TabIndex = 83;
-            this.txt_targetvoltage_PreT.Text = "2";
+            this.txt_targetvoltage_PreT.Text = "1.6";
             this.txt_targetvoltage_PreT.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.txt_targetvoltage_PreT.TextChanged += new System.EventHandler(this.txt_targetvoltage_PreT_TextChanged);
             // 
@@ -2697,6 +2697,7 @@
             this.autoTrimResultIndicator.Size = new System.Drawing.Size(669, 24);
             this.autoTrimResultIndicator.TabIndex = 80;
             this.autoTrimResultIndicator.Text = "";
+            this.autoTrimResultIndicator.Visible = false;
             // 
             // label20
             // 
@@ -2786,7 +2787,7 @@
             this.groupBox8.Controls.Add(this.label61);
             this.groupBox8.Location = new System.Drawing.Point(26, 20);
             this.groupBox8.Name = "groupBox8";
-            this.groupBox8.Size = new System.Drawing.Size(610, 107);
+            this.groupBox8.Size = new System.Drawing.Size(610, 127);
             this.groupBox8.TabIndex = 109;
             this.groupBox8.TabStop = false;
             this.groupBox8.Text = "Preset";
@@ -2890,7 +2891,7 @@
             this.txt_TargertVoltage_AutoT.ReadOnly = true;
             this.txt_TargertVoltage_AutoT.Size = new System.Drawing.Size(100, 27);
             this.txt_TargertVoltage_AutoT.TabIndex = 107;
-            this.txt_TargertVoltage_AutoT.Text = "2";
+            this.txt_TargertVoltage_AutoT.Text = "1.6";
             this.txt_TargertVoltage_AutoT.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // txt_AdcOffset_AutoT
@@ -3216,7 +3217,7 @@
             this.Controls.Add(this.statusStrip);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.Name = "CurrentSensorConsole";
-            this.Text = "Current Sensor Console v3.2.3.RC - CopyRight of SenkoMicro, Inc";
+            this.Text = "Current Sensor Console v3.2.3.IP20A.FS25A - CopyRight of SenkoMicro, Inc";
             this.statusStrip.ResumeLayout(false);
             this.statusStrip.PerformLayout();
             this.toolStrip.ResumeLayout(false);
