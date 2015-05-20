@@ -3184,6 +3184,49 @@ namespace CurrentSensorV3
 
             /* AutoTrim code */
 
+            #region UART Initialize
+            //UART Initialization
+            if (oneWrie_device.UARTInitilize(4800, 1) && bAutoTrimTest)
+                DisplayAutoTrimOperateMes("UART Initilize succeeded!\r\n");
+            else
+                DisplayAutoTrimOperateMes("UART Initilize failed!\r\n");
+            //ding hao
+            Delay(Delay_Operation);
+            //DisplayAutoTrimOperateMes("Delay 300ms");
+
+            //1. Current Remote CTL
+            if (oneWrie_device.UARTWrite(OneWireInterface.UARTControlCommand.ADI_SDP_CMD_UART_REMOTE, 0) && bAutoTrimTest)
+                DisplayAutoTrimOperateMes("Set Current Remote succeeded!\r\n");
+            else
+                DisplayAutoTrimOperateMes("Set Current Remote failed!\r\n");
+
+            //Delay 300ms
+            Delay(Delay_Operation);
+            //DisplayAutoTrimOperateMes("Delay 300ms");
+
+            //2. Current On
+            if (oneWrie_device.UARTWrite(OneWireInterface.UARTControlCommand.ADI_SDP_CMD_UART_OUTPUTON, 0) && bAutoTrimTest)
+                DisplayAutoTrimOperateMes("Set Current On succeeded!\r\n");
+            else
+                DisplayAutoTrimOperateMes("Set Current On failed!\r\n");
+
+            //Delay 300ms
+            Delay(Delay_Operation);
+            //DisplayAutoTrimOperateMes("Delay 300ms");
+
+            //3. Set Voltage
+            if (oneWrie_device.UARTWrite(OneWireInterface.UARTControlCommand.ADI_SDP_CMD_UART_SETVOLT, 2u) && bAutoTrimTest)
+                DisplayAutoTrimOperateMes(string.Format("Set Voltage to {0}V succeeded!\r\n", 2));
+            else
+                DisplayAutoTrimOperateMes(string.Format("Set Voltage to {0}V failed!\r\n", 2));
+
+
+            //Delay 300ms
+            Delay(Delay_Operation);
+            //DisplayAutoTrimOperateMes("Delay 300ms");
+
+            #endregion UART Initialize
+
             //if (TargetOffset == 1.65)
             //    Reg82Value = 0x18;
 
@@ -3264,14 +3307,20 @@ namespace CurrentSensorV3
             BurstRead(0x80, 5, tempReadback);
 
             /* Change Current to IP  */
-            dr = MessageBox.Show(String.Format("Please Change Current To {0}A", IP), "Change Current", MessageBoxButtons.OKCancel);
-            if (dr == DialogResult.Cancel)
-            {
-                DisplayOperateMes("AutoTrim Canceled!", Color.Red);
-                PowerOff();
-                RestoreReg80ToReg83Value();
-                return;
-            }
+            //dr = MessageBox.Show(String.Format("Please Change Current To {0}A", IP), "Change Current", MessageBoxButtons.OKCancel);
+            //if (dr == DialogResult.Cancel)
+            //{
+            //    DisplayOperateMes("AutoTrim Canceled!", Color.Red);
+            //    PowerOff();
+            //    RestoreReg80ToReg83Value();
+            //    return;
+            //}
+
+            oneWrie_device.UARTWrite(OneWireInterface.UARTControlCommand.ADI_SDP_CMD_UART_SETCURR, (uint)IP);
+            if (bAutoTrimTest)
+                DisplayOperateMes("Set IP on");
+            //message = string.Format("Set Current to {0}A", selectedCurrent_Auto);
+            //DisplayAutoTrimOperateMes(message, setResult, 2);
 
             /* Get vout @ IP */
             EnterNomalMode();
@@ -3297,14 +3346,20 @@ namespace CurrentSensorV3
             #region Get Vout@0A
 
             /* Change Current to 0A */
-            dr = MessageBox.Show(String.Format("Please Change Current To 0A"), "Change Current", MessageBoxButtons.OKCancel);
-            if (dr == DialogResult.Cancel)
-            {
-                DisplayOperateMes("AutoTrim Canceled!", Color.Red);
-                PowerOff();
-                RestoreReg80ToReg83Value();
-                return;
-            }
+            //dr = MessageBox.Show(String.Format("Please Change Current To 0A"), "Change Current", MessageBoxButtons.OKCancel);
+            //if (dr == DialogResult.Cancel)
+            //{
+            //    DisplayOperateMes("AutoTrim Canceled!", Color.Red);
+            //    PowerOff();
+            //    RestoreReg80ToReg83Value();
+            //    return;
+            //}
+            oneWrie_device.UARTWrite(OneWireInterface.UARTControlCommand.ADI_SDP_CMD_UART_SETCURR, 0);
+            if (bAutoTrimTest)
+                DisplayOperateMes("Set IP off");
+
+
+
             Delay(Delay_Operation);
             Vout_0A = AverageVout();
             DisplayOperateMes("Vout @ 0A = " + Vout_0A.ToString("F3"));
@@ -3699,14 +3754,19 @@ namespace CurrentSensorV3
                 BurstRead(0x80, 5, tempReadback);
 
                 /* Change Current to IP  */
-                dr = MessageBox.Show(String.Format("Please Change Current To {0}A", IP), "Change Current", MessageBoxButtons.OKCancel);
-                if (dr == DialogResult.Cancel)
-                {
-                    DisplayOperateMes("AutoTrim Canceled!", Color.Red);
-                    PowerOff();
-                    RestoreReg80ToReg83Value();
-                    return;
-                }
+                //dr = MessageBox.Show(String.Format("Please Change Current To {0}A", IP), "Change Current", MessageBoxButtons.OKCancel);
+                //if (dr == DialogResult.Cancel)
+                //{
+                //    DisplayOperateMes("AutoTrim Canceled!", Color.Red);
+                //    PowerOff();
+                //    RestoreReg80ToReg83Value();
+                //    return;
+                //}
+
+                oneWrie_device.UARTWrite(OneWireInterface.UARTControlCommand.ADI_SDP_CMD_UART_SETCURR, (uint)IP);
+                if (bAutoTrimTest)
+                    DisplayOperateMes("Set IP on");
+
 
                 /* Get vout @ IP */
                 EnterNomalMode();
@@ -3725,14 +3785,20 @@ namespace CurrentSensorV3
                 }
 
                 /* Change Current to 0A */
-                dr = MessageBox.Show(String.Format("Please Change Current To 0A"), "Change Current", MessageBoxButtons.OKCancel);
-                if (dr == DialogResult.Cancel)
-                {
-                    DisplayOperateMes("AutoTrim Canceled!", Color.Red);
-                    PowerOff();
-                    RestoreReg80ToReg83Value();
-                    return;
-                }
+                //dr = MessageBox.Show(String.Format("Please Change Current To 0A"), "Change Current", MessageBoxButtons.OKCancel);
+                //if (dr == DialogResult.Cancel)
+                //{
+                //    DisplayOperateMes("AutoTrim Canceled!", Color.Red);
+                //    PowerOff();
+                //    RestoreReg80ToReg83Value();
+                //    return;
+                //}
+
+                oneWrie_device.UARTWrite(OneWireInterface.UARTControlCommand.ADI_SDP_CMD_UART_SETCURR, 0);
+                if (bAutoTrimTest)
+                    DisplayOperateMes("Set IP off");
+
+
                 Delay(Delay_Operation);
                 Vout_0A = AverageVout();
                 DisplayOperateMes("Vout @ 0A = " + Vout_0A.ToString("F3"));
@@ -3939,14 +4005,18 @@ namespace CurrentSensorV3
             Vout_0A = AverageVout();
 
             /* Change Current to IP  */
-            dr = MessageBox.Show(String.Format("Please Change Current To {0}A", IP), "Change Current", MessageBoxButtons.OKCancel);
-            if (dr == DialogResult.Cancel)
-            {
-                DisplayOperateMes("AutoTrim Canceled!", Color.Red);
-                PowerOff();
-                RestoreReg80ToReg83Value();
-                return;
-            }
+            //dr = MessageBox.Show(String.Format("Please Change Current To {0}A", IP), "Change Current", MessageBoxButtons.OKCancel);
+            //if (dr == DialogResult.Cancel)
+            //{
+            //    DisplayOperateMes("AutoTrim Canceled!", Color.Red);
+            //    PowerOff();
+            //    RestoreReg80ToReg83Value();
+            //    return;
+            //}
+
+            oneWrie_device.UARTWrite(OneWireInterface.UARTControlCommand.ADI_SDP_CMD_UART_SETCURR, (uint)IP);
+            if (bAutoTrimTest)
+                DisplayOperateMes("Set IP on");
 
             Vout_IP = AverageVout();
 

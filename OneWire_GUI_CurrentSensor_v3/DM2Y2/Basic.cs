@@ -1617,7 +1617,13 @@ namespace ADI.DMY2
         ADCSigPathSet       = 0x6000000B,           //ADCSigPathSet
         ADCReset            = 0x6000000C,           //Reset ADC
         ADCSigPathInit      = 0x6000000D,           //ADCSigPathInit
-        ADC_VDD_FROM_5V     = 0x60000010
+        ADC_VDD_FROM_5V     = 0x60000010,
+
+        //UART control
+        ADI_SDP_CMD_GROUP_UART = 0x70000000,
+        ADI_SDP_CMD_UART_INIT = 0x70000001,
+        ADI_SDP_CMD_UART_WRITE = 0x70000002,
+        ADI_SDP_CMD_UART_READ = 0x70000003
 }
     #endregion One Wire Interface
 

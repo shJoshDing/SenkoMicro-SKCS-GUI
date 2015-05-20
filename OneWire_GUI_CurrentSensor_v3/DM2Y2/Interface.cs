@@ -3389,6 +3389,40 @@ namespace ADI.DMY2
             return myDevice.UsbReportWrite(buffer_uint);
         }
 
+
+
+
+        #region UART Control
+        public bool UARTInitilize(uint bitRate, uint stopBit)
+        {
+            buffer_uint[0] = (uint)OneWire_USB_COMMAND.ADI_SDP_CMD_UART_INIT;
+            buffer_uint[1] = bitRate;
+            buffer_uint[2] = stopBit;
+            return myDevice.UsbReportWrite(buffer_uint);
+        }
+
+        public bool UARTRead()
+        {
+            //todo
+            //buffer_uint[0] = (uint)OneWire_USB_COMMAND.ADI_SDP_CMD_UART_WRITE;
+            //return myDevice.UsbReportWrite(buffer_uint);
+            return false;
+        }
+
+        public bool UARTWrite(UARTControlCommand cmd, uint value)
+        {
+            buffer_uint[0] = (uint)OneWire_USB_COMMAND.ADI_SDP_CMD_UART_WRITE;
+            buffer_uint[1] = (uint)cmd;
+            buffer_uint[2] = (uint)value;
+            return myDevice.UsbReportWrite(buffer_uint);
+        }
+        #endregion UART Control
+
+
+
+
+
+
         /// <summary>
         /// ReadBack the build infomation of current FW.
         /// </summary>
@@ -3532,6 +3566,17 @@ namespace ADI.DMY2
             ADC_CONFIG_TO_MOUT = 0x75,
             ADC_CONFIG_TO_VCS = 0x76
         }
+
+        public enum UARTControlCommand
+        {
+            ADI_SDP_CMD_UART_REMOTE = 0x71,
+            ADI_SDP_CMD_UART_LOCAL = 0x72,
+            ADI_SDP_CMD_UART_OUTPUTON = 0x73,
+            ADI_SDP_CMD_UART_OUTPUTOFF = 0x74,
+            ADI_SDP_CMD_UART_SETVOLT = 0x75,
+            ADI_SDP_CMD_UART_SETCURR = 0x76
+        }
+
         #endregion 读写设备
 
         #region Test Interfaces            
