@@ -31,16 +31,16 @@ namespace CurrentSensorV3
 
 
         uint DeviceAddress = 0x73;
-        uint SampleRateNum = 1024;
+        uint SampleRateNum = 2048;
         uint SampleRate = 1000;     //KHz
         string SerialNum = "None";
 
         /// <summary>
         /// Delay Define
         /// </summary>
-        int Delay_Power = 500;  //ms
+        int Delay_Power = 100;  //ms
         int Delay_Operation = 100;  //ms
-        int Delay_Fuse = 300;    //ms
+        int Delay_Fuse = 100;    //ms
 
         double ADCOffset = 0;
         double AadcOffset
@@ -350,6 +350,8 @@ namespace CurrentSensorV3
             uint _reg_addr = 0x43;
             uint _reg_data = 0x03;
             oneWrie_device.I2CWrite_Single(this.DeviceAddress, _reg_addr, _reg_data);
+
+            //Delay(20);
 
             //0xAA->0x44
             _reg_addr = 0x44;
@@ -1652,7 +1654,7 @@ namespace CurrentSensorV3
                 return false; ;
             }
 
-            Delay(Delay_Power);
+            Delay(Delay_Fuse);
 
             //Fuse 
             if (oneWrie_device.FuseClockSwitch(fusePulseWidth, fuseDurationTime))
@@ -1932,6 +1934,11 @@ namespace CurrentSensorV3
 
         private bool RegisterWrite(int wrNum, uint[] data)
         {
+            oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_CONFIG_TO_VOUT);
+            rbt_signalPathSeting_Config_EngT.Checked = true;
+
+            oneWrie_device.I2CWrite_Single(this.DeviceAddress, 0x55, 0xAA);
+
             bool rt = false;
             if (data.Length < wrNum * 2)
                 return false;
@@ -1939,6 +1946,7 @@ namespace CurrentSensorV3
             for (int ix = 0; ix < wrNum; ix++)
             {
                 rt = oneWrie_device.I2CWrite_Single(this.DeviceAddress, data[ix * 2], data[ix * 2 + 1]);
+                //Delay(1000);
             }
 
             return rt;
@@ -2208,6 +2216,7 @@ namespace CurrentSensorV3
 
             //2. Power On
             PowerOn();
+            Delay(Delay_Power);
         }
 
         private void PowerOff()
@@ -3855,9 +3864,12 @@ namespace CurrentSensorV3
             //oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_CONFIG_TO_VOUT);
             //oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VOUT_WITHOUT_CAP);
             EnterTestMode();
+            Delay(Delay_Operation);
 
             /* Todo: write trim code to regsiters */
             RegisterWrite(5, new uint[10] { 0x80, Reg80Value, 0x81, Reg81Value, 0x82, Reg82Value, 0x83, Reg83Value, 0x84, 0x07 });
+
+            //Delay(Delay_Operation);
 
             BurstRead(0x80, 5, tempReadback);
 

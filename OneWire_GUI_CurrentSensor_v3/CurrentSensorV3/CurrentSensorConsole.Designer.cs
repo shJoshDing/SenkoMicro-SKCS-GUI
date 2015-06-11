@@ -1450,7 +1450,7 @@
             this.txt_sampleNum_EngT.Name = "txt_sampleNum_EngT";
             this.txt_sampleNum_EngT.Size = new System.Drawing.Size(56, 20);
             this.txt_sampleNum_EngT.TabIndex = 81;
-            this.txt_sampleNum_EngT.Text = "1024";
+            this.txt_sampleNum_EngT.Text = "2048";
             this.txt_sampleNum_EngT.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.txt_sampleNum_EngT.TextChanged += new System.EventHandler(this.txt_sampleNum_EngT_TextChanged);
             // 
@@ -3216,7 +3216,7 @@
             this.Controls.Add(this.statusStrip);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.Name = "CurrentSensorConsole";
-            this.Text = "Current Sensor Console v3.2.3.General - CopyRight of SenkoMicro, Inc";
+            this.Text = "Current Sensor Console v3.2.4.General - CopyRight of SenkoMicro, Inc";
             this.statusStrip.ResumeLayout(false);
             this.statusStrip.PerformLayout();
             this.toolStrip.ResumeLayout(false);
