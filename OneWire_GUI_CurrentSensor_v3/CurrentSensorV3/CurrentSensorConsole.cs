@@ -60,6 +60,7 @@ namespace CurrentSensorV3
         double ThresholdOfGain = 0.995;
         double RefVoltOffset = -0.007;
 
+        double Vref = 0;
         double Vout_0A = 0;
         double Vout_IP = 0;
         double Mout_0A = 0;
@@ -518,6 +519,84 @@ namespace CurrentSensorV3
         private double GainTuningCalc_Customer(double testValue, double targetValue)
         {
             return targetValue / testValue;
+        }
+
+        private void voutOffsetAlgForDiffMode(double vout_0A, double vref)
+        {
+            string baseMes = "Diff Mode Vout Offset Trim Operation:";
+            if (bAutoTrimTest)
+                DisplayOperateMes(baseMes);
+            
+            double offsetTuning = 100d * vref/vout_0A; 
+
+            if (bAutoTrimTest)
+                DisplayOperateMes("Lookup offset = " + offsetTuning.ToString("F4") + "%");
+
+
+            //Ix_ForOffsetATable = LookupOffset(ref offsetTuning, OffsetTableA_Customer); 
+            Ix_ForOffsetBTable = LookupOffsetForDiffMode(offsetTuning, OffsetTableB_Customer);
+
+            if (bAutoTrimTest)
+            {
+                //DisplayOperateMes("Offset TableA chose Index = " + Ix_ForOffsetATable.ToString() + ";Choosed OffsetA = " + OffsetTableA_Customer[0][Ix_ForOffsetATable].ToString("F4"));
+                DisplayOperateMes("Offset TableB chose Index = " + Ix_ForOffsetBTable.ToString() + ";Choosed OffsetB = " + OffsetTableB_Customer[0][Ix_ForOffsetBTable].ToString("F4"));
+            }
+
+            //Reg81Value += Convert.ToUInt32(OffsetTableA_Customer[1][Ix_ForOffsetATable]);
+            //Reg82Value += Convert.ToUInt32(OffsetTableA_Customer[2][Ix_ForOffsetATable]);
+
+            //if (bAutoTrimTest)
+            //{
+            //    DisplayOperateMes("Reg2 Value = " + Reg81Value.ToString() + "(+ 0x" + Convert.ToInt32(OffsetTableA_Customer[1][Ix_ForOffsetATable]).ToString("X") + ")\r\n");
+            //    DisplayOperateMes("Reg3 Value = " + Reg82Value.ToString() + "(+ 0x" + Convert.ToInt32(OffsetTableA_Customer[2][Ix_ForOffsetATable]).ToString("X") + ")\r\n");
+            //}
+
+            bit_op_mask = bit2_Mask | bit3_Mask | bit4_Mask | bit5_Mask;
+            Reg83Value &= ~bit_op_mask;
+            Reg83Value |= Convert.ToUInt32(OffsetTableB_Customer[1][Ix_ForOffsetBTable]);
+
+            if (bAutoTrimTest)
+                DisplayOperateMes("Reg4 Value = " + Reg83Value.ToString() + "(+ 0x" + Convert.ToInt32(OffsetTableB_Customer[1][Ix_ForOffsetBTable]).ToString("X") + ")\r\n");
+
+        }
+
+        private void vrefOffsetAlgForDiffMode(double vout_0A, double vref)
+        {
+            string baseMes = "Diff Mode Vref Offset Trim Operation:";
+            if (bAutoTrimTest)
+                DisplayOperateMes(baseMes);
+
+            double offsetTuning = 100d * TargetOffset / vout_0A;
+
+            if (bAutoTrimTest)
+                DisplayOperateMes("Lookup offset = " + offsetTuning.ToString("F4") + "%");
+
+
+            Ix_ForOffsetATable = LookupOffsetForDiffMode(offsetTuning, OffsetTableA_Customer); 
+            //Ix_ForOffsetBTable = LookupOffset(ref offsetTuning, OffsetTableB_Customer);
+
+            if (bAutoTrimTest)
+            {
+                DisplayOperateMes("Offset TableA chose Index = " + Ix_ForOffsetATable.ToString() + ";Choosed OffsetA = " + OffsetTableA_Customer[0][Ix_ForOffsetATable].ToString("F4"));
+                //DisplayOperateMes("Offset TableB chose Index = " + Ix_ForOffsetBTable.ToString() + ";Choosed OffsetB = " + OffsetTableB_Customer[0][Ix_ForOffsetBTable].ToString("F4"));
+            }
+
+            Reg81Value += Convert.ToUInt32(OffsetTableA_Customer[1][Ix_ForOffsetATable]);
+            Reg82Value += Convert.ToUInt32(OffsetTableA_Customer[2][Ix_ForOffsetATable]);
+
+            if (bAutoTrimTest)
+            {
+                DisplayOperateMes("Reg2 Value = " + Reg81Value.ToString() + "(+ 0x" + Convert.ToInt32(OffsetTableA_Customer[1][Ix_ForOffsetATable]).ToString("X") + ")\r\n");
+                DisplayOperateMes("Reg3 Value = " + Reg82Value.ToString() + "(+ 0x" + Convert.ToInt32(OffsetTableA_Customer[2][Ix_ForOffsetATable]).ToString("X") + ")\r\n");
+            }
+
+            //bit_op_mask = bit2_Mask | bit3_Mask | bit4_Mask | bit5_Mask;
+            //Reg83Value &= ~bit_op_mask;
+            //Reg83Value |= Convert.ToUInt32(OffsetTableB_Customer[1][Ix_ForOffsetBTable]);
+
+            //if (bAutoTrimTest)
+            //    DisplayOperateMes("Reg4 Value = " + Reg83Value.ToString() + "(+ 0x" + Convert.ToInt32(OffsetTableB_Customer[1][Ix_ForOffsetBTable]).ToString("X") + ")\r\n");
+
         }
 
         private void FilledRoughTable()
@@ -1118,6 +1197,23 @@ namespace CurrentSensorV3
         }
 
         private int LookupOffset(ref double offset, double[][] offsetTable)
+        {
+            double temp = offset - offsetTable[0][0];
+            int ix = 0;
+            for (int i = 1; i < offsetTable[0].Length; i++)
+            {
+                if (Math.Abs(temp) > Math.Abs(offset - offsetTable[0][i]))
+                {
+                    temp = offset - offsetTable[0][i];
+                    ix = i;
+                }
+            }
+            //offset = temp;
+            offset = 100 * offset / offsetTable[0][ix];
+            return ix;
+        }
+
+        private int LookupOffsetForDiffMode( double offset, double[][] offsetTable)
         {
             double temp = offset - offsetTable[0][0];
             int ix = 0;
@@ -3299,6 +3395,12 @@ namespace CurrentSensorV3
             Vout_IP = AverageVout();
             DisplayOperateMes("Vout @ IP = " + Vout_IP.ToString("F3"));
 
+            oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VIN_TO_VREF);
+            Delay(Delay_Operation);
+            Vref = AverageVout();
+            DisplayOperateMes("Vref @ IP = " + Vref.ToString("F3"));
+            oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VIN_TO_VOUT);
+
             //Vout_IP = 4.944;
             /*Judge PreSet gain; delta Vout target >= delta Vout test * 86.07% */
             if(Vout_IP > saturationVout)
@@ -3334,6 +3436,13 @@ namespace CurrentSensorV3
             Vout_0A = AverageVout();
             DisplayOperateMes("Vout @ 0A = " + Vout_0A.ToString("F3"));
 
+            //Capture Vref
+            oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VIN_TO_VREF);
+            Delay(Delay_Operation);
+            Vref = AverageVout();
+            DisplayOperateMes("Vref @ 0A = " + Vref.ToString("F3"));
+            oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VIN_TO_VOUT);
+
             double dGainTest = 0;
             dGainTest = 1000d * (Vout_IP - Vout_0A) / IP;
 
@@ -3368,7 +3477,8 @@ namespace CurrentSensorV3
             #endregion  Get Vout@0A
 
             #region No need Trim case
-            if ((targetOffset - 0.01) <= Vout_0A && Vout_0A <= (targetOffset +0.01) && (Vout_IP - Vout_0A) <= (TargetVoltage_customer + 0.01) && (Vout_IP-Vout_0A) >= (TargetVoltage_customer - 0.01))
+            //if ((targetOffset - 0.01) <= Vout_0A && Vout_0A <= (targetOffset +0.01) && (Vout_IP - Vout_0A) <= (TargetVoltage_customer + 0.01) && (Vout_IP-Vout_0A) >= (TargetVoltage_customer - 0.01))
+            if (abs(Vout_0A - Vref) <= 0.003d && (Vout_IP - Vout_0A) <= (TargetVoltage_customer + 0.01d) && (Vout_IP - Vout_0A) >= (TargetVoltage_customer - 0.01d))
             {
                 /* Repower on 6V */
                 oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VDD_FROM_EXT);
@@ -3787,6 +3897,10 @@ namespace CurrentSensorV3
             //double tempG2 = 0;
             //int Ix_forAutoAdaptingRoughGain = 0;
             //int Ix_forAutoAdaptingPresionGain = 0;
+
+            //Set Vout_0A to Vref 
+            //Vout_0A = Vref;
+
             tempG1 = RoughTable_Customer[0][Ix_ForRoughGainCtrl] / 100d;
             tempG2 = (TargetGain_customer / ((Vout_IP - Vout_0A) / IP)) / 1000d;
             autoAdaptingGoughGain = tempG1 * tempG2 * 100d;
@@ -3851,7 +3965,11 @@ namespace CurrentSensorV3
             }
 
             /* Offset trim code calculate */
-            btn_offset_Click(null, null);
+            //btn_offset_Click(null, null);
+            voutOffsetAlgForDiffMode(Vout_0A, Vref);
+
+            vrefOffsetAlgForDiffMode(Vout_0A, Vref);
+
             DisplayOperateMes("Processing...\r\n");
             #endregion Adapting Offset algorithm
 
@@ -3993,23 +4111,31 @@ namespace CurrentSensorV3
 
             Vout_IP = AverageVout();
 
+            //Capture Vref
+            oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VIN_TO_VREF);
+            Delay(Delay_Operation);
+            Vref = AverageVout();
+            DisplayOperateMes("Vref @ 0A = " + Vref.ToString("F3"));
+            oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VIN_TO_VOUT);
+
             DisplayOperateMes("Done...\r\n");
 
             if(bMarginal == true)
             {
-                if (targetOffset * (1 - 0.01) <= Vout_0A && Vout_0A <= targetOffset * (1 + 0.01) && (Vout_IP - Vout_0A) <= TargetVoltage_customer * (1 + 0.01) && (Vout_IP - Vout_0A) >= TargetVoltage_customer * (1 - 0.01))
+                //if (targetOffset * (1 - 0.01) <= Vout_0A && Vout_0A <= targetOffset * (1 + 0.01) && (Vout_IP - Vout_0A) <= TargetVoltage_customer * (1 + 0.01) && (Vout_IP - Vout_0A) >= TargetVoltage_customer * (1 - 0.01))
+                if (abs(Vout_0A - Vref) <= 0.003d && (Vout_IP - Vout_0A) <= (TargetVoltage_customer + 0.01d) && (Vout_IP - Vout_0A) >= (TargetVoltage_customer - 0.01d))
                 {
                     DisplayOperateMes("Pass! Bin4");
                     this.lbl_passOrFailed.ForeColor = Color.Green;
                     this.lbl_passOrFailed.Text = "Pass!";
                 }
-                else if (targetOffset * (1 - bin2accuracy / 100d) <= Vout_0A && Vout_0A <= targetOffset * (1 + bin2accuracy / 100d) && (Vout_IP - Vout_0A) <= TargetVoltage_customer * (1 + bin2accuracy / 100d) && (Vout_IP - Vout_0A) >= TargetVoltage_customer * (1 - bin2accuracy / 100d))
+                else if (abs(Vout_0A - Vref) <= 0.006d && (Vout_IP - Vout_0A) <= TargetVoltage_customer * (1 + bin2accuracy / 100d) && (Vout_IP - Vout_0A) >= TargetVoltage_customer * (1 - bin2accuracy / 100d))
                 {
                     DisplayOperateMes("Pass! Bin5");
                     this.lbl_passOrFailed.ForeColor = Color.Green;
                     this.lbl_passOrFailed.Text = "Pass!";
                 }
-                else if (targetOffset * (1 - bin3accuracy / 100d) <= Vout_0A && Vout_0A <= targetOffset * (1 + bin3accuracy / 100d) && (Vout_IP - Vout_0A) <= TargetVoltage_customer * (1 + bin3accuracy / 100d) && (Vout_IP - Vout_0A) >= TargetVoltage_customer * (1 - bin3accuracy / 100d))
+                else if (abs(Vout_0A - Vref) <= 0.009d && (Vout_IP - Vout_0A) <= TargetVoltage_customer * (1 + bin3accuracy / 100d) && (Vout_IP - Vout_0A) >= TargetVoltage_customer * (1 - bin3accuracy / 100d))
                 {
                     DisplayOperateMes("Pass! Bin6");
                     this.lbl_passOrFailed.ForeColor = Color.Green;
@@ -4027,19 +4153,19 @@ namespace CurrentSensorV3
             //if ((!bMarginal) && (!bSafety))
             else
             {
-                if (targetOffset * (1 - 0.01) <= Vout_0A && Vout_0A <= targetOffset * (1 + 0.01) && (Vout_IP - Vout_0A) <= TargetVoltage_customer * (1 + 0.01) && (Vout_IP - Vout_0A) >= TargetVoltage_customer * (1 - 0.01))
+                if (abs(Vout_0A - Vref) <= 0.003d && (Vout_IP - Vout_0A) <= TargetVoltage_customer * (1 + 0.01) && (Vout_IP - Vout_0A) >= TargetVoltage_customer * (1 - 0.01))
                 {
                     DisplayOperateMes("Pass! Bin1");
                     this.lbl_passOrFailed.ForeColor = Color.Green;
                     this.lbl_passOrFailed.Text = "Pass!";
                 }
-                else if (targetOffset * (1 - bin2accuracy / 100d) <= Vout_0A && Vout_0A <= targetOffset * (1 + bin2accuracy / 100d) && (Vout_IP - Vout_0A) <= TargetVoltage_customer * (1 + bin2accuracy / 100d) && (Vout_IP-Vout_0A) >= TargetVoltage_customer * (1 - bin2accuracy / 100d))
+                else if (abs(Vout_0A - Vref) <= 0.006d && (Vout_IP - Vout_0A) <= TargetVoltage_customer * (1 + bin2accuracy / 100d) && (Vout_IP-Vout_0A) >= TargetVoltage_customer * (1 - bin2accuracy / 100d))
                 {
                     DisplayOperateMes("Pass! Bin2");
                     this.lbl_passOrFailed.ForeColor = Color.Green;
                     this.lbl_passOrFailed.Text = "Pass!";
                 }
-                else if (targetOffset * (1 - bin3accuracy / 100d) <= Vout_0A && Vout_0A <= targetOffset * (1 + bin3accuracy / 100d) && (Vout_IP-Vout_0A) <= TargetVoltage_customer * (1 + bin3accuracy / 100d) && (Vout_IP-Vout_0A) >= TargetVoltage_customer * (1 - bin3accuracy / 100d))
+                else if (abs(Vout_0A - Vref) <= 0.009d &&(Vout_IP-Vout_0A) <= TargetVoltage_customer * (1 + bin3accuracy / 100d) && (Vout_IP-Vout_0A) >= TargetVoltage_customer * (1 - bin3accuracy / 100d))
                 {
                     DisplayOperateMes("Pass! Bin3");
                     this.lbl_passOrFailed.ForeColor = Color.Green;
