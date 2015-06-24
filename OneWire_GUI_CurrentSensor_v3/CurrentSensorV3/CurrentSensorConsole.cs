@@ -3166,6 +3166,7 @@ namespace CurrentSensorV3
 
         private void btn_AutomaticaTrim5V_Click(object sender, EventArgs e)
         {
+            #region Define Parameters
             DialogResult dr;
             bool bMarginal = false;
             //bool bSafety = false;
@@ -3197,8 +3198,7 @@ namespace CurrentSensorV3
             DisplayOperateMes("Start...\r\n");
             this.lbl_passOrFailed.ForeColor = Color.Black;
             this.lbl_passOrFailed.Text = "START!";
-
-            /* AutoTrim code */
+            #endregion Define Parameters
 
             #region UART Initialize
             //UART Initialization
@@ -3242,9 +3242,6 @@ namespace CurrentSensorV3
             //DisplayAutoTrimOperateMes("Delay 300ms");
 
             #endregion UART Initialize
-
-            //if (TargetOffset == 1.65)
-            //    Reg82Value = 0x18;
 
             #region Get module current
 
@@ -3296,10 +3293,11 @@ namespace CurrentSensorV3
                 dModuleCurrent = GetModuleCurrent();
                 if (8 > dModuleCurrent || dModuleCurrent > 20)
                 {
-                    DisplayOperateMes("Module " + idut.ToString() + " power is abnormal!", Color.Red);
+                    DisplayOperateMes("Module " + idut.ToString() + " current is " + dModuleCurrent.ToString("F3"), Color.Red);
                     bDutIndex[idut] = false;
                 }
                 else
+                    DisplayOperateMes("Module " + idut.ToString() + " current is " + dModuleCurrent.ToString("F3"));
                     bDutIndex[idut] = true;
 
                 bValidRound |= bDutIndex[idut];
@@ -3308,14 +3306,12 @@ namespace CurrentSensorV3
             /* Judge IDD */
             if ( !bValidRound )
             {
-                dr = MessageBox.Show(String.Format("Module Current"), "Warning", MessageBoxButtons.OK);
+                dr = MessageBox.Show(String.Format("Module Current is abnormal!"), "Warning", MessageBoxButtons.OK);
                 DisplayOperateMes("No Valid Module!!!", Color.Red);
                 PowerOff();
                 return;
             }
             #endregion Get module current
-
-            this.lbl_passOrFailed.Text = "Processing!";
 
             #region Saturation judgement
             /* Change Current to IP  */
@@ -3801,6 +3797,7 @@ namespace CurrentSensorV3
 
             #endregion Bin
 
+            #region Display Result and Reset parameters
             for (uint idut = 0; idut < uDutCount; idut++)
             {
                 DisplayOperateMes("Dut"+idut.ToString() + " = " + uDutTrimResult[idut].ToString());
@@ -3810,6 +3807,7 @@ namespace CurrentSensorV3
             oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VDD_POWER_OFF);
             RestoreReg80ToReg83Value();
             DisplayOperateMes("Next...\r\n");
+            #endregion Display Result and Reset parameters
         }     
 
         private void btn_AutomaticaTrim15V_Click(object sender, EventArgs e)
@@ -5060,13 +5058,6 @@ namespace CurrentSensorV3
 
 
         #endregion Events
-
-        
-
-       
-
-
-
 
     }
 
