@@ -137,10 +137,10 @@ namespace Test
             if (dr == DialogResult.Cancel)
                 return;
 
-            oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_CONFIG_TO_VOUT);
+            oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_CONFIG_TO_VOUT);
             rbt_signalPathSeting_Config.Checked = true;
 
-            oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VOUT_WITHOUT_CAP);
+            oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VOUT_WITHOUT_CAP);
             //rbt_withCap_Vout.Checked = false;
             rbt_withoutCap_Vout.Checked = true;
             //rbt_signalPathSeting_Vout.Checked = false;
@@ -1642,7 +1642,7 @@ namespace Test
 
         private void btn_PowerOn_OWCI_ADC_Click(object sender, EventArgs e)
         {
-            if (oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VDD_POWER_ON))
+            if (oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VDD_POWER_ON))
                 DisplayOperateMes("Power on succeeded!\r\n");
             else
                 DisplayOperateMes("Power on failed!\r\n");
@@ -1650,7 +1650,7 @@ namespace Test
 
         private void btn_PowerOff_OWCI_ADC_Click(object sender, EventArgs e)
         {
-            if (oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VDD_POWER_OFF))
+            if (oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VDD_POWER_OFF))
                 DisplayOperateMes("Power off succeeded!\r\n");
             else
                 DisplayOperateMes("Power off failed!\r\n");
@@ -1658,7 +1658,7 @@ namespace Test
 
         private void btn_enterNomalMode_Click(object sender, EventArgs e)
         {
-            oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_CONFIG_TO_VOUT);
+            oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_CONFIG_TO_VOUT);
             rbt_signalPathSeting_Config.Checked = true;
             Thread.Sleep(100);
 
@@ -1688,13 +1688,13 @@ namespace Test
 
             Thread.Sleep(100);
 
-            oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VIN_TO_VOUT);
+            oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VIN_TO_VOUT);
             rbt_signalPathSeting_AIn.Checked = true;
         }
 
         private void btn_Vout_15A_Click(object sender, EventArgs e)
         {
-            oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VIN_TO_VOUT);
+            oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VIN_TO_VOUT);
             rbt_signalPathSeting_AIn.Checked = true;
 
             IP15 = AverageVout("15 A");
@@ -1704,7 +1704,7 @@ namespace Test
 
         private void btn_Vout_10A_Click(object sender, EventArgs e)
         {
-            oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VIN_TO_VOUT);
+            oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VIN_TO_VOUT);
             rbt_signalPathSeting_AIn.Checked = true;
 
             IP10 = AverageVout("10 A");
@@ -1713,7 +1713,7 @@ namespace Test
 
         private void btn_Vout_5A_Click(object sender, EventArgs e)
         {
-            oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VIN_TO_VOUT);
+            oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VIN_TO_VOUT);
             rbt_signalPathSeting_AIn.Checked = true;
 
             IP5 = AverageVout("5 A");
@@ -1722,7 +1722,7 @@ namespace Test
 
         private void btn_Vout_0A_Click(object sender, EventArgs e)
         {
-            oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VIN_TO_VOUT);
+            oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VIN_TO_VOUT);
             rbt_signalPathSeting_AIn.Checked = true;
 
             IP0 = AverageVout("0 A");
@@ -1855,7 +1855,7 @@ namespace Test
             //set pilot firstly
             numUD_pilotwidth_ow_ValueChanged(null, null);
 
-            oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_CONFIG_TO_VOUT);
+            oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_CONFIG_TO_VOUT);
             rbt_signalPathSeting_Config.Checked = true;
 
 
@@ -2134,9 +2134,9 @@ namespace Test
         {
             bool setResult;
             if (rbt_5V.Checked)
-                setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VDD_FROM_5V);
+                setResult = oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VDD_FROM_5V);
             else
-                setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VDD_FROM_EXT);
+                setResult = oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VDD_FROM_EXT);
 
             string message;
             if (rbt_5V.Checked)
@@ -2160,9 +2160,9 @@ namespace Test
         {
             bool setResult;
             if (rbt_withCap_Vout.Checked)
-                setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VOUT_WITH_CAP);
+                setResult = oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VOUT_WITH_CAP);
             else
-                setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VOUT_WITHOUT_CAP);
+                setResult = oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VOUT_WITHOUT_CAP);
 
             string message;
             if (rbt_withCap_Vout.Checked)
@@ -2186,9 +2186,9 @@ namespace Test
         {
             bool setResult;
             if (rbt_withCap_Vref.Checked)
-                setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VREF_WITH_CAP);
+                setResult = oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VREF_WITH_CAP);
             else
-                setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VREF_WITHOUT_CAP);
+                setResult = oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VREF_WITHOUT_CAP);
 
             string message;
             if (rbt_withCap_Vref.Checked)
@@ -2213,22 +2213,22 @@ namespace Test
             string message;
             if (rbt_signalPathSeting_Vout.Checked && rbt_signalPathSeting_AIn.Checked)
             {
-                setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VIN_TO_VOUT);
+                setResult = oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VIN_TO_VOUT);
                 message = "Vout to VIn set";
             }
             else if (rbt_signalPathSeting_Vout.Checked && rbt_signalPathSeting_Config.Checked)
             {
-                setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_CONFIG_TO_VOUT);
+                setResult = oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_CONFIG_TO_VOUT);
                 message = "Vout to CONFIG set";
             }
             else if (rbt_signalPathSeting_Vref.Checked && rbt_signalPathSeting_AIn.Checked)
             {
-                setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VIN_TO_VREF);
+                setResult = oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VIN_TO_VREF);
                 message = "Vref to VIn set";
             }
             else if (rbt_signalPathSeting_Vref.Checked && rbt_signalPathSeting_Config.Checked)
             {
-                setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_CONFIG_TO_VREF);
+                setResult = oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_CONFIG_TO_VREF);
                 message = "Vref to CONFIG set";
             }
             else
@@ -2254,7 +2254,7 @@ namespace Test
             //set pilot firstly
             numUD_pilotwidth_ow_ValueChanged(null, null);
 
-            oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_CONFIG_TO_VOUT);
+            oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_CONFIG_TO_VOUT);
             rbt_signalPathSeting_Config.Checked = true;
 
             try
@@ -2291,7 +2291,7 @@ namespace Test
 
         private void btn_MarginalRead_Click(object sender, EventArgs e)
         {
-            oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_CONFIG_TO_VOUT);
+            oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_CONFIG_TO_VOUT);
             rbt_signalPathSeting_Config.Checked = true;
 
             try
@@ -2335,7 +2335,7 @@ namespace Test
 
         private void btn_Reload_Click(object sender, EventArgs e)
         {
-            oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_CONFIG_TO_VOUT);
+            oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_CONFIG_TO_VOUT);
             rbt_signalPathSeting_Config.Checked = true;
 
             try
@@ -2427,7 +2427,7 @@ namespace Test
             #region 3. Power on and Capture Vout @ 15A and 0A for calc
             #region 3.1 Power 0n @ 5V
 
-            setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VDD_FROM_5V);
+            setResult = oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VDD_FROM_5V);
             if ( setResult )
             {
                 message = "Set VDD from 5V";
@@ -2442,15 +2442,15 @@ namespace Test
             }
             
 
-            setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VDD_POWER_ON);
+            setResult = oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VDD_POWER_ON);
             message = "Set VDD Power On";
             DisplayAutoTrimOperateMes(message, setResult, 31);
 
-            setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VOUT_WITH_CAP);
+            setResult = oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VOUT_WITH_CAP);
             message = "Set Vout with Cap";
             DisplayAutoTrimOperateMes(message, setResult, 31);
 
-            setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VREF_WITH_CAP);
+            setResult = oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VREF_WITH_CAP);
             message = "Set Vref with Cap";
             DisplayAutoTrimOperateMes(message, setResult, 31);
 
@@ -2464,7 +2464,7 @@ namespace Test
 
             #region 3.2 Capture Vout @ 15A
             //Set Config to Vout
-            setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_CONFIG_TO_VOUT);
+            setResult = oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_CONFIG_TO_VOUT);
             message = "Set Config to Vout";
             DisplayAutoTrimOperateMes(message, setResult, 32);
 
@@ -2502,7 +2502,7 @@ namespace Test
             }
 
             //Vout to Vin
-            setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VIN_TO_VOUT);
+            setResult = oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VIN_TO_VOUT);
             message = "Set Vin to Vout";
             DisplayAutoTrimOperateMes(message, setResult, 32);
 
@@ -2581,12 +2581,12 @@ namespace Test
 
                 #region 4.1.1 Re-power on at 6V
                 //VDD to EXT
-                setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VDD_FROM_EXT);
+                setResult = oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VDD_FROM_EXT);
                 message = "Set VDD to EXT";
                 DisplayAutoTrimOperateMes(message, setResult, 41);
 
                 //Power Off
-                setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VDD_POWER_OFF);
+                setResult = oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VDD_POWER_OFF);
                 message = "Set VDD Power Off";
                 DisplayAutoTrimOperateMes(message, setResult, 41);
 
@@ -2595,7 +2595,7 @@ namespace Test
                 DisplayAutoTrimOperateMes("Delay 500ms", 41);
 
                 //Power On
-                setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VDD_POWER_ON);
+                setResult = oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VDD_POWER_ON);
                 message = "Set VDD Power On";
                 DisplayAutoTrimOperateMes(message, setResult, 41);
 
@@ -2607,17 +2607,17 @@ namespace Test
 
                 #region 4.1.2 Setup signal path for Reg operation and Fuse
                 //Vout without cap
-                setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VOUT_WITHOUT_CAP);
+                setResult = oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VOUT_WITHOUT_CAP);
                 message = "Set Vout without Cap";
                 DisplayAutoTrimOperateMes(message, setResult, 41);
 
                 //Vref without cap
-                setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VREF_WITHOUT_CAP);
+                setResult = oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VREF_WITHOUT_CAP);
                 message = "Set Vref without Cap";
                 DisplayAutoTrimOperateMes(message, setResult, 41);
 
                 //Vout to Config
-                setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_CONFIG_TO_VOUT);
+                setResult = oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_CONFIG_TO_VOUT);
                 message = "Set Vout to CONFIG";
                 DisplayAutoTrimOperateMes(message, setResult, 41);
 
@@ -2720,7 +2720,7 @@ namespace Test
 
             #region 4.2 Auto-Repower at 5V
             //Power Off
-            setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VDD_POWER_OFF);
+            setResult = oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VDD_POWER_OFF);
             message = "Set VDD Power Off";
             DisplayAutoTrimOperateMes(message, setResult, 42);
 
@@ -2729,7 +2729,7 @@ namespace Test
             DisplayAutoTrimOperateMes("Delay 50ms", 42);
 
             //Vout to CONFIG
-            setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_CONFIG_TO_VOUT);
+            setResult = oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_CONFIG_TO_VOUT);
             message = "Set Vout to CONFIG";
             DisplayAutoTrimOperateMes(message, setResult, 42);
 
@@ -2738,7 +2738,7 @@ namespace Test
             DisplayAutoTrimOperateMes("Delay 50ms", 42);
 
             //Power On
-            setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VDD_POWER_ON);
+            setResult = oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VDD_POWER_ON);
             message = "Set VDD Power On";
             DisplayAutoTrimOperateMes(message, setResult, 42);
 
@@ -2812,7 +2812,7 @@ namespace Test
             }
 
             //Vout to VIN
-            setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VIN_TO_VOUT);
+            setResult = oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VIN_TO_VOUT);
             message = "Set Vout to VIN";
             DisplayAutoTrimOperateMes(message, setResult, 43);
 
@@ -2869,12 +2869,12 @@ namespace Test
 
             #region 5.1 Re-power on at 6V
             //VDD to EXT
-            setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VDD_FROM_EXT);
+            setResult = oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VDD_FROM_EXT);
             message = "Set VDD to EXT";
             DisplayAutoTrimOperateMes(message, setResult, 51);
 
             //Power Off
-            setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VDD_POWER_OFF);
+            setResult = oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VDD_POWER_OFF);
             message = "Set VDD Power Off";
             DisplayAutoTrimOperateMes(message, setResult, 51);
 
@@ -2883,7 +2883,7 @@ namespace Test
             DisplayAutoTrimOperateMes("Delay 500ms", 51);
 
             //Power On
-            setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VDD_POWER_ON);
+            setResult = oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VDD_POWER_ON);
             message = "Set VDD Power On";
             DisplayAutoTrimOperateMes(message, setResult, 51);
 
@@ -2895,17 +2895,17 @@ namespace Test
 
             #region 5.2 Setup signal path for Reg operation and Fuse
             //Vout without cap
-            setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VOUT_WITHOUT_CAP);
+            setResult = oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VOUT_WITHOUT_CAP);
             message = "Set Vout without Cap";
             DisplayAutoTrimOperateMes(message, setResult, 52);
 
             //Vref without cap
-            setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VREF_WITHOUT_CAP);
+            setResult = oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VREF_WITHOUT_CAP);
             message = "Set Vref without Cap";
             DisplayAutoTrimOperateMes(message, setResult, 52);
 
             //Vout to Config
-            setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_CONFIG_TO_VOUT);
+            setResult = oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_CONFIG_TO_VOUT);
             message = "Set Vout to CONFIG";
             DisplayAutoTrimOperateMes(message, setResult, 52);
 
@@ -3125,12 +3125,12 @@ namespace Test
 
                 #region 6.1 Re-Power at 6V
                 //Power Off
-                setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VDD_POWER_OFF);
+                setResult = oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VDD_POWER_OFF);
                 message = "Set VDD Power Off";
                 DisplayAutoTrimOperateMes(message, setResult, 61);
 
                 ////VDD to 5V
-                setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VDD_FROM_EXT);
+                setResult = oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VDD_FROM_EXT);
                 message = "Set VDD to 5V";
                 DisplayAutoTrimOperateMes(message, setResult, 61);
 
@@ -3139,7 +3139,7 @@ namespace Test
                 DisplayAutoTrimOperateMes("Delay 500ms", 61);
 
                 //Power On
-                setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VDD_POWER_ON);
+                setResult = oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VDD_POWER_ON);
                 message = "Set VDD Power On";
                 DisplayAutoTrimOperateMes(message, setResult, 61);
 
@@ -3282,12 +3282,12 @@ namespace Test
 
                 #region Re-power on at 5V
                 //Power Off
-                setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VDD_POWER_OFF);
+                setResult = oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VDD_POWER_OFF);
                 message = "Set VDD Power Off";
                 DisplayAutoTrimOperateMes(message, setResult, 64);
 
                 ////VDD to 5V
-                setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VDD_FROM_5V);
+                setResult = oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VDD_FROM_5V);
                 message = "Set VDD to 5V";
                 DisplayAutoTrimOperateMes(message, setResult, 64);
 
@@ -3296,7 +3296,7 @@ namespace Test
                 DisplayAutoTrimOperateMes("Delay 500ms", 64);
 
                 //Power On
-                setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VDD_POWER_ON);
+                setResult = oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VDD_POWER_ON);
                 message = "Set VDD Power On";
                 DisplayAutoTrimOperateMes(message, setResult, 64);
 
@@ -3373,17 +3373,17 @@ namespace Test
                 }
 
                 //Vout with cap
-                setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VOUT_WITH_CAP);
+                setResult = oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VOUT_WITH_CAP);
                 message = "Set Vout with Cap";
                 DisplayAutoTrimOperateMes(message, setResult, 64);
 
                 //Vref with cap
-                setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VREF_WITH_CAP);
+                setResult = oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VREF_WITH_CAP);
                 message = "Set Vref with Cap";
                 DisplayAutoTrimOperateMes(message, setResult, 64);
 
                 //Vout to Vin
-                setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VIN_TO_VOUT);
+                setResult = oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VIN_TO_VOUT);
                 message = "Set Vin to Vout";
                 DisplayAutoTrimOperateMes(message, setResult, 64);
                 #endregion
@@ -3473,27 +3473,27 @@ namespace Test
 
             #region 7.1 Re-Power at 6V
             ////VDD to 6V
-            setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VDD_FROM_EXT);
+            setResult = oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VDD_FROM_EXT);
             message = "Set VDD to 6V";
             DisplayAutoTrimOperateMes(message, setResult, 71);
 
             //Power Off
-            setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VDD_POWER_OFF);
+            setResult = oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VDD_POWER_OFF);
             message = "Set VDD Power Off";
             DisplayAutoTrimOperateMes(message, setResult, 71);
 
             //Vout without cap
-            setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VOUT_WITHOUT_CAP);
+            setResult = oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VOUT_WITHOUT_CAP);
             message = "Set Vout without Cap";
             DisplayAutoTrimOperateMes(message, setResult, 71);
 
             //Vref without cap
-            setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VREF_WITHOUT_CAP);
+            setResult = oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VREF_WITHOUT_CAP);
             message = "Set Vref without Cap";
             DisplayAutoTrimOperateMes(message, setResult, 71);
 
             //Vout to Config
-            setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_CONFIG_TO_VOUT);
+            setResult = oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_CONFIG_TO_VOUT);
             message = "Set VIN to Vout";
             DisplayAutoTrimOperateMes(message, setResult, 71);
 
@@ -3502,7 +3502,7 @@ namespace Test
             DisplayAutoTrimOperateMes("Delay 500ms", 71);
 
             //Power On
-            setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VDD_POWER_ON);
+            setResult = oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VDD_POWER_ON);
             message = "Set VDD Power On";
             DisplayAutoTrimOperateMes(message, setResult, 71);
 
@@ -3666,12 +3666,12 @@ namespace Test
 
             #region 8.1 Re-Power at 5V
             //Power Off
-            setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VDD_POWER_OFF);
+            setResult = oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VDD_POWER_OFF);
             message = "Set VDD Power Off";
             DisplayAutoTrimOperateMes(message, setResult, 81);
 
             ////VDD to 5V
-            setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VDD_FROM_5V);
+            setResult = oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VDD_FROM_5V);
             message = "Set VDD to 5V";
             DisplayAutoTrimOperateMes(message, setResult, 81);
 
@@ -3680,7 +3680,7 @@ namespace Test
             DisplayAutoTrimOperateMes("Delay 500ms", 81);
 
             //Power On
-            setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VDD_POWER_ON);
+            setResult = oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VDD_POWER_ON);
             message = "Set VDD Power On";
             DisplayAutoTrimOperateMes(message, setResult, 81);
 
@@ -3691,17 +3691,17 @@ namespace Test
 
             #region 8.2 Set up signal path for AIN capture
             //Vout with cap
-            setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VOUT_WITH_CAP);
+            setResult = oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VOUT_WITH_CAP);
             message = "Set Vout with Cap";
             DisplayAutoTrimOperateMes(message, setResult, 82);
 
             //Vref with cap
-            setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VREF_WITH_CAP);
+            setResult = oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VREF_WITH_CAP);
             message = "Set Vref with Cap";
             DisplayAutoTrimOperateMes(message, setResult, 82);
 
             //Vout to Vin
-            setResult = oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VIN_TO_VOUT);
+            setResult = oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VIN_TO_VOUT);
             message = "Set VIN to Vout";
             DisplayAutoTrimOperateMes(message, setResult, 82);
 

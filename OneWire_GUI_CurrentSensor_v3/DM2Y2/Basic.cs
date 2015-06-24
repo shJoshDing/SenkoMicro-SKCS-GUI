@@ -1604,26 +1604,32 @@ namespace ADI.DMY2
         //OWI ADC specially
         GetFirmwareVersion  = 0xCA000002,           //Get firm ware version
         ResetBoard          = 0xCA000005,           //Reset Board
-        ADC_VOUT_WITH_CAP   = 0x60000001,
-        ADC_VOUT_WITHOUT_CAP = 0x60000002,
-        ADC_VREF_WITH_CAP   = 0x60000003,
-        ADC_VREF_WITHOUT_CAP = 0x60000004,
-        ADC_VIN_TO_VOUT     = 0x60000005,
-        ADC_VIN_TO_VREF     = 0x60000006,
-        ADC_CONFIG_TO_VOUT  = 0x60000007,
-        ADC_CONFIG_TO_VREF  = 0x60000008,
-        ADC_VDD_FROM_EXT    = 0x60000009,
+        //ADC_VOUT_WITH_CAP   = 0x60000001,
+        //ADC_VOUT_WITHOUT_CAP = 0x60000002,
+        //ADC_VREF_WITH_CAP   = 0x60000003,
+        //ADC_VREF_WITHOUT_CAP = 0x60000004,
+        //ADC_VIN_TO_VOUT     = 0x60000005,
+        //ADC_VIN_TO_VREF     = 0x60000006,
+        //ADC_CONFIG_TO_VOUT  = 0x60000007,
+        //ADC_CONFIG_TO_VREF  = 0x60000008,
+        //ADC_VDD_FROM_EXT    = 0x60000009,
         AdcSampleTransfer   = 0x6000000A,           //AdcSampleTransfer
-        ADCSigPathSet       = 0x6000000B,           //ADCSigPathSet
         ADCReset            = 0x6000000C,           //Reset ADC
-        ADCSigPathInit      = 0x6000000D,           //ADCSigPathInit
-        ADC_VDD_FROM_5V     = 0x60000010,
+        //ADCSigPathSet       = 0x6000000B,           //ADCSigPathSet
+        //ADCSigPathInit      = 0x6000000D,           //ADCSigPathInit
+        //ADC_VDD_FROM_5V     = 0x60000010,
 
         //UART control
         ADI_SDP_CMD_GROUP_UART = 0x70000000,
         ADI_SDP_CMD_UART_INIT = 0x70000001,
         ADI_SDP_CMD_UART_WRITE = 0x70000002,
-        ADI_SDP_CMD_UART_READ = 0x70000003
+        ADI_SDP_CMD_UART_READ = 0x70000003,
+
+        //SIGNAL PATH SETTING GROUP
+        ADI_SDP_CMD_SIGNALPATH_SET  = 0x8000000A,           //ADCSigPathSet
+        ADI_SDP_CMD_SIGNALPATH_INIT = 0x8000000B,          //ADCSigPathInit
+        ADI_SDP_CMD_SIGNALPATH_GROUP  = 0x8000000C,
+        ADI_SDP_CMD_SIGNALPATH_SOCKET = 0x8000000D
 }
     #endregion One Wire Interface
 

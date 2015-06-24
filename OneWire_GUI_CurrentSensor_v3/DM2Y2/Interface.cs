@@ -3461,15 +3461,29 @@ namespace ADI.DMY2
             return myDevice.UsbReportWrite(buffer_uint);
         }
 
-        public bool ADCSigPathInit()
+        public bool SDPSigPathInit()
         {
-            buffer_uint[0] = (uint)OneWire_USB_COMMAND.ADCSigPathInit;
+            buffer_uint[0] = (uint)OneWire_USB_COMMAND.ADI_SDP_CMD_SIGNALPATH_INIT;
             return myDevice.UsbReportWrite(buffer_uint);
         }
 
-        public bool ADCSigPathSet(ADCControlCommand cmd)
+        public bool SDPSignalPathSet(SPControlCommand cmd)
         {
-            buffer_uint[0] = (uint)OneWire_USB_COMMAND.ADCSigPathSet;
+            buffer_uint[0] = (uint)OneWire_USB_COMMAND.ADI_SDP_CMD_SIGNALPATH_SET;
+            buffer_uint[3] = (uint)cmd;
+            return myDevice.UsbReportWrite(buffer_uint);
+        }
+
+        public bool SDPSignalPathGroupSel(SPControlCommand cmd)
+        {
+            buffer_uint[0] = (uint)OneWire_USB_COMMAND.ADI_SDP_CMD_SIGNALPATH_GROUP;
+            buffer_uint[3] = (uint)cmd;
+            return myDevice.UsbReportWrite(buffer_uint);
+        }
+
+        public bool SDPSignalPathSocketSel(uint cmd)
+        {
+            buffer_uint[0] = (uint)OneWire_USB_COMMAND.ADI_SDP_CMD_SIGNALPATH_SOCKET;
             buffer_uint[3] = (uint)cmd;
             return myDevice.UsbReportWrite(buffer_uint);
         }
@@ -3541,30 +3555,32 @@ namespace ADI.DMY2
             width_200ns = 270
         }
 
-        public enum ADCControlCommand
+        public enum SPControlCommand
         {
-            ADC_VOUT_WITH_CAP = 0x61,
-            ADC_VOUT_WITHOUT_CAP = 0x62,
-            ADC_VREF_WITH_CAP = 0x63,
-            ADC_VREF_WITHOUT_CAP = 0x64,
-            ADC_VIN_TO_VOUT = 0x65,
-            ADC_VIN_TO_VREF = 0x66,
-            ADC_CONFIG_TO_VOUT = 0x67,
-            ADC_CONFIG_TO_VREF = 0x68,
-            ADC_VDD_FROM_EXT = 0x69,
-            ADC_VDD_FROM_5V = 0x6A,
-            ADC_VDD_POWER_ON = 0x6B,
-            ADC_VDD_POWER_OFF = 0x6C,
-            ADC_MODULE_510OUT = 0x6D,
-            ADC_MODULE_AMPOUT = 0x6E,
-            ADC_VIN_TO_VCS = 0x6F,
-            ADC_SET_CURRENT_SENCE = 0X70,
-            ADC_BYPASS_CURRENT_SENCE = 0X71,
-            ADC_VIN_TO_510OUT = 0x72,
-            ADC_VIN_TO_MOUT = 0x73,
-            ADC_CONFIG_TO_510OUT = 0x74,
-            ADC_CONFIG_TO_MOUT = 0x75,
-            ADC_CONFIG_TO_VCS = 0x76
+            SP_VOUT_WITH_CAP = 0x61,
+            SP_VOUT_WITHOUT_CAP = 0x62,
+            SP_VREF_WITH_CAP = 0x63,
+            SP_VREF_WITHOUT_CAP = 0x64,
+            SP_VIN_TO_VOUT = 0x65,
+            SP_VIN_TO_VREF = 0x66,
+            SP_CONFIG_TO_VOUT = 0x67,
+            SP_CONFIG_TO_VREF = 0x68,
+            SP_VDD_FROM_EXT = 0x69,
+            SP_VDD_FROM_5V = 0x6A,
+            SP_VDD_POWER_ON = 0x6B,
+            SP_VDD_POWER_OFF = 0x6C,
+            SP_MODULE_510OUT = 0x6D,
+            SP_MODULE_AMPOUT = 0x6E,
+            SP_VIN_TO_VCS = 0x6F,
+            SP_SET_CURRENT_SENCE = 0X70,
+            SP_BYPASS_CURRENT_SENCE = 0X71,
+            SP_VIN_TO_510OUT = 0x72,
+            SP_VIN_TO_MOUT = 0x73,
+            SP_CONFIG_TO_510OUT = 0x74,
+            SP_CONFIG_TO_MOUT = 0x75,
+            SP_CONFIG_TO_VCS = 0x76,
+            SP_MULTISITTE_GROUP_A = 0X79,
+            SP_MULTISITTE_GROUP_B = 0X7A
         }
 
         public enum UARTControlCommand
