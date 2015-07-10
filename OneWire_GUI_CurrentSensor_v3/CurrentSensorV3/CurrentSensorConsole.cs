@@ -38,8 +38,8 @@ namespace CurrentSensorV3
         /// <summary>
         /// Delay Define
         /// </summary>
-        int Delay_Power = 500;  //ms
-        int Delay_Operation =300;  //ms
+        int Delay_Power = 300;  //ms
+        int Delay_Operation =200;  //ms
         int Delay_Fuse = 300;    //ms
 
         double ADCOffset = 0;
@@ -1504,6 +1504,42 @@ namespace CurrentSensorV3
             txt_OutputLogInfo.Refresh();
         }
 
+        private void MultiSiteDisplayResult(uint[] uResult)
+        {
+            //bool FF = false;
+            autoTrimResultIndicator.Clear();
+            autoTrimResultIndicator.SelectionColor = Color.Black;
+            autoTrimResultIndicator.AppendText("\r\n");
+            autoTrimResultIndicator.AppendText("--00--\t--01--\t--02--\t--03--\t--04--\t--05--\t--06--\t--07--\t--08--\t--09--\t--10--\t--11--\t--12--\t--13--\t--14--\t--15--\r\n\r\n");
+            for (uint idut = 0; idut < 16; idut++)
+            {
+                if ( uResult[idut] < 7 && uResult[idut] >0 )
+                {
+                    autoTrimResultIndicator.SelectionColor = Color.Green;
+                    autoTrimResultIndicator.AppendText("PASS\t");
+                }
+                else
+                {
+                    autoTrimResultIndicator.SelectionColor = Color.Red;
+                    autoTrimResultIndicator.AppendText("**" + uResult[idut].ToString() + "**\t");
+                }
+            }
+        }
+
+        private void MultiSiteDisplayVout(double[] uResult)
+        {
+            //bool FF = false;
+            autoTrimResultIndicator.Clear();
+            autoTrimResultIndicator.SelectionColor = Color.Black;
+            autoTrimResultIndicator.AppendText("\r\n");
+            autoTrimResultIndicator.AppendText("--00--\t--01--\t--02--\t--03--\t--04--\t--05--\t--06--\t--07--\t--08--\t--09--\t--10--\t--11--\t--12--\t--13--\t--14--\t--15--\r\n\r\n");
+            for (uint idut = 0; idut < 16; idut++)
+            {
+                autoTrimResultIndicator.SelectionColor = Color.Green;
+                autoTrimResultIndicator.AppendText( uResult[idut].ToString("F3") + "\t");             
+            }
+        }
+
         private string CreateSingleLogInfo(int index)
         {
             return string.Format("{0}\t{1}\t", "DUT" + index, DateTime.Now.ToString());
@@ -2553,6 +2589,15 @@ namespace CurrentSensorV3
                 DisplayOperateMes("Power off succeeded!\r\n");
             else
                 DisplayOperateMes("Power off failed!\r\n");
+            //uint[] uTest = new uint[16];
+            //for (uint i = 0; i < 16; i++)
+            //{
+            //    uTest[i] = i;
+            //}
+
+            //MultiSiteDisplayResult(uTest);
+
+
         }
 
         private void btn_enterNomalMode_Click(object sender, EventArgs e)
@@ -3250,6 +3295,7 @@ namespace CurrentSensorV3
 
         private void btn_AutomaticaTrim5V_Click(object sender, EventArgs e)
         {
+            
             #region Define Parameters
             DialogResult dr;
             bool bMarginal = false;
@@ -3264,7 +3310,7 @@ namespace CurrentSensorV3
             //**********************************
             uint uDutCount = 16;
             bool bValidRound = false;
-            bool bSecondCurrentOn = false;
+            //bool bSecondCurrentOn = false;
             double dModuleCurrent = 0;
             bool[] bGainBoost = new bool[16];
             bool[] bDutValid = new bool[16];
@@ -3666,7 +3712,7 @@ namespace CurrentSensorV3
 
                         DisplayOperateMes("RoughGainCodeIndex of DUT" + idut.ToString() + " = " + MultiSiteRoughGainCodeIndex[idut].ToString("F0"));
 
-                        bSecondCurrentOn = true;
+                        //bSecondCurrentOn = true;
                     }
                     //SaveMultiSiteRegData(idut);
                     bValidRound |= bDutValid[idut];
@@ -3976,6 +4022,7 @@ namespace CurrentSensorV3
             }
 
             #endregion Bin
+            
 
             #region Display Result and Reset parameters
             for (uint idut = 0; idut < uDutCount; idut++)
@@ -3985,6 +4032,8 @@ namespace CurrentSensorV3
                 else
                     DisplayOperateMes("Dut"+idut.ToString() + " = " + uDutTrimResult[idut].ToString());
             }
+
+            MultiSiteDisplayResult(uDutTrimResult);
 
             //reset vout_0A, vout_IP and power off
             oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VDD_POWER_OFF);
@@ -5239,8 +5288,29 @@ namespace CurrentSensorV3
             }
         }
 
+        private void btn_Vout_AutoT_Click(object sender, EventArgs e)
+        {
+            uint uDutCount = 16;
+            uint idut = 0;
+            double[] uVout = new double[16];
+
+            RePower();
+            for (idut = 0; idut < uDutCount; idut++)
+            {
+                oneWrie_device.SDPSignalPathSocketSel(idut);
+                oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VOUT_WITH_CAP);
+                oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VIN_TO_VOUT);
+                Delay(Delay_Operation);
+                uVout[idut] = AverageVout();
+                DisplayOperateMes("Vout[" + idut.ToString() + "] @ 0A = " + uVout[idut].ToString("F3"));
+            }
+
+            MultiSiteDisplayVout(uVout);
+        }
 
         #endregion Events
+
+        
 
     }
 
