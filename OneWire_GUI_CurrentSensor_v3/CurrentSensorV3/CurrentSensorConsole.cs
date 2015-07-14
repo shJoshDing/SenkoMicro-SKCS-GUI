@@ -3686,7 +3686,7 @@ namespace CurrentSensorV3
                             //Vout_IP = Vout_0A + dGainTest/dGainPreset*IP/1000d;
 
                             //Ix_ForRoughGainCtrl = (uint)LookupRoughGain_Customer((dGainTestMinusTarget * 1.5d / dGainPreset), RoughTable_Customer);
-                            Ix_ForRoughGainCtrl = (uint)LookupRoughGain_Customer((TargetGain_customer*100d / (dGainTest * 1.5d) / dGainPreset), RoughTable_Customer);
+                            Ix_ForRoughGainCtrl = (uint)LookupRoughGain_Customer((TargetGain_customer*100d / (dGainTest * 1.5d) * dGainPreset), RoughTable_Customer);
                             //Ix_ForRoughGainCtrl = 15;
 
                             Reg83Value |= 0x80;
