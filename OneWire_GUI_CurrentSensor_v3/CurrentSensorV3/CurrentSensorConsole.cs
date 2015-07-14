@@ -23,6 +23,7 @@ namespace CurrentSensorV3
         #region Param Definition
 
         bool bUsbConnected = false;
+        //bool bStop = false;
 
         bool bAutoTrimTest = true;          //Debug mode, display engineer tab
         //bool bAutoTrimTest = false;       //Release mode, bon't display engineer tab
@@ -457,6 +458,9 @@ namespace CurrentSensorV3
                     this.tabControl1.Controls.Remove(PriTrimTab);
                 }
             }
+
+            //load config data
+            btn_loadconfig_AutoT_Click(null, null);
         }
 
         private double AverageVout()
@@ -2520,10 +2524,9 @@ namespace CurrentSensorV3
 
         private void btn_PowerOff_OWCI_ADC_Click(object sender, EventArgs e)
         {
-            if (oneWrie_device.ADCSigPathSet(OneWireInterface.ADCControlCommand.ADC_VDD_POWER_OFF))
-                DisplayOperateMes("Power off succeeded!\r\n");
-            else
-                DisplayOperateMes("Power off failed!\r\n");
+            //bStop = true;
+            PowerOff();
+            RestoreReg80ToReg83Value();
         }
 
         private void btn_enterNomalMode_Click(object sender, EventArgs e)
@@ -3173,6 +3176,8 @@ namespace CurrentSensorV3
 
         private void btn_AutomaticaTrim5V_Click(object sender, EventArgs e)
         {
+            //btn_loadconfig_AutoT_Click(null,null);
+
             DialogResult dr;
             bool bMarginal = false;
             //bool bSafety = false;
@@ -3193,10 +3198,7 @@ namespace CurrentSensorV3
             this.lbl_passOrFailed.ForeColor = Color.Black;
             this.lbl_passOrFailed.Text = "START!";
 
-            /* AutoTrim code */
-
-            
-
+            /* AutoTrim code */         
             //if (TargetOffset == 1.65)
             //    Reg82Value = 0x18;
 
@@ -3248,12 +3250,17 @@ namespace CurrentSensorV3
             {
                 dr = MessageBox.Show(String.Format("Module power is abnormal!"), "Warning", MessageBoxButtons.OK);
                 DisplayOperateMes("Module power is abnormal!", Color.Red);
-
                 PowerOff();
-
                 return;
             }
             #endregion Get module current
+
+            //if( bStop )
+            //{
+            //    PowerOff();
+            //    RestoreReg80ToReg83Value();
+            //    return;
+            //}
 
             this.lbl_passOrFailed.Text = "Processing!";
 
@@ -5140,17 +5147,23 @@ namespace CurrentSensorV3
         {
             try
             {
-                OpenFileDialog openfiledlg = new OpenFileDialog();
-                openfiledlg.Title = "Please choose the config file to be imported...";
-                openfiledlg.Filter = "Config file(*.cfg)|*.cfg";
-                openfiledlg.RestoreDirectory = true;
-                string filename = "";
-                if (openfiledlg.ShowDialog() == DialogResult.OK)
-                {
-                    filename = openfiledlg.FileName;
-                }
-                else
-                    return;
+                //OpenFileDialog openfiledlg = new OpenFileDialog();
+                //openfiledlg.Title = "Please choose the config file to be imported...";
+                //openfiledlg.Filter = "Config file(*.cfg)|*.cfg";
+                //openfiledlg.RestoreDirectory = true;
+                //string filename = "";           
+                //if (openfiledlg.ShowDialog() == DialogResult.OK)
+                //{
+                //    filename = openfiledlg.FileName;
+                //}
+                //else
+                //    return;
+
+                string filename = System.Windows.Forms.Application.StartupPath;
+                //filename += @"\";
+                filename += @"\config.cfg";
+
+                DisplayAutoTrimOperateMes(filename);
 
                 StreamReader sr = new StreamReader(filename);
                 string comment = sr.ReadLine();
@@ -5199,7 +5212,7 @@ namespace CurrentSensorV3
                 // ADC Offset
                 msg = sr.ReadLine().Split("|".ToCharArray());
                 //ix = int.Parse(msg[1]);
-                this.txt_AdcOffset_AutoT.Text = msg[1];
+                this.txt_AdcOffset_PreT.Text = msg[1];
 
                 // Vout @ 0A
                 msg = sr.ReadLine().Split("|".ToCharArray());
