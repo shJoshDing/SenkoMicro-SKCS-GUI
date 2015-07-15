@@ -3685,7 +3685,7 @@ namespace CurrentSensorV3
                             {
                                 if (dGainTest * 1.5 / dGainPreset >= (TargetGain_customer * ThresholdOfGain))
                                 {
-                                    MultiSiteRoughGainCodeIndex[idut] = (uint)LookupRoughGain_Customer((TargetGain_customer * 100d / (dGainTest * 1.5d) / dGainPreset), RoughTable_Customer);
+                                    MultiSiteRoughGainCodeIndex[idut] = (uint)LookupRoughGain_Customer((TargetGain_customer * 100d / (dGainTest * 1.5d) * dGainPreset), RoughTable_Customer);
                                     MultiSiteReg3[idut] |= 0x80;
                                     /* Rough Gain Code*/
                                     bit_op_mask = bit5_Mask | bit6_Mask | bit7_Mask;
@@ -3710,10 +3710,17 @@ namespace CurrentSensorV3
                             }
                         }
 
-                        DisplayOperateMes("RoughGainCodeIndex of DUT" + idut.ToString() + " = " + MultiSiteRoughGainCodeIndex[idut].ToString("F0"));
+                        //DisplayOperateMes("RoughGainCodeIndex of DUT" + idut.ToString() + " = " + MultiSiteRoughGainCodeIndex[idut].ToString("F0"));
 
                         //bSecondCurrentOn = true;
                     }
+
+                    DisplayOperateMes("RoughGainCodeIndex of DUT" + idut.ToString() + " = " + MultiSiteRoughGainCodeIndex[idut].ToString("F0"));
+                    DisplayOperateMes("SelectedRoughGain = " + RoughTable_Customer[0][MultiSiteRoughGainCodeIndex[idut]].ToString());
+                    DisplayOperateMes("0x80 = 0x" + MultiSiteReg0[idut].ToString("X2"));
+                    DisplayOperateMes("0x81 = 0x" + MultiSiteReg1[idut].ToString("X2"));
+                    DisplayOperateMes("0x82 = 0x" + MultiSiteReg2[idut].ToString("X2"));
+                    DisplayOperateMes("0x83 = 0x" + MultiSiteReg3[idut].ToString("X2"));
                     //SaveMultiSiteRegData(idut);
                     bValidRound |= bDutValid[idut];
                 }
@@ -3826,13 +3833,15 @@ namespace CurrentSensorV3
                 if (bDutValid[idut])
                 {
                     //RestoreReg80ToReg83Value();
-                    tempG1 = RoughTable_Customer[0][MultiSiteRoughGainCodeIndex[idut]] / 100d;
+                    tempG1 = RoughTable_Customer[0][Ix_ForRoughGainCtrl] / 100d;
                     tempG2 = (TargetGain_customer / ((dMultiSiteVoutIP[idut] - dMultiSiteVout0A[idut]) / IP)) / 1000d;
 
                     if( bGainBoost[idut] )
-                        autoAdaptingGoughGain = 1.5d*tempG1 * tempG2 * 100d;
+                        autoAdaptingGoughGain = tempG1 * tempG2/1.5d * 100d;
                     else
                         autoAdaptingGoughGain = tempG1 * tempG2 * 100d;
+
+                    DisplayOperateMes( "TuningGoughGain = " + autoAdaptingGoughGain.ToString("F3") );
 
                     Ix_forAutoAdaptingRoughGain = LookupRoughGain_Customer(autoAdaptingGoughGain, RoughTable_Customer);
                     autoAdaptingPresionGain = 100d * autoAdaptingGoughGain / RoughTable_Customer[0][Ix_forAutoAdaptingRoughGain];
@@ -3943,6 +3952,7 @@ namespace CurrentSensorV3
             #region Bin
             /* Repower on 5V */
             oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VDD_FROM_5V);
+            RePower();
             oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VIN_TO_VOUT);
             oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VOUT_WITH_CAP);
             for (uint idut = 0; idut < uDutCount; idut++)
@@ -3950,7 +3960,7 @@ namespace CurrentSensorV3
                 if (bDutValid[idut] || bDutNoNeedTrim[idut])
                 {
                     oneWrie_device.SDPSignalPathSocketSel(idut);
-                    Delay(Delay_Operation);
+                    Delay(Delay_Operation*2);
                     dMultiSiteVout0A[idut] = AverageVout();
                     DisplayOperateMes("Vout[" + idut.ToString("D2") + "] @ 0A = " + dMultiSiteVout0A[idut].ToString("F3"));
                 }
