@@ -102,8 +102,8 @@ namespace CurrentSensorV3
             }
         }
         double saturationVout = 4.85;
-        uint bin2accuracy = 2;
-        uint bin3accuracy = 3;
+        double bin2accuracy = 2;
+        double bin3accuracy = 3;
 
         double targetVoltage_customer = 2;
         double TargetVoltage_customer
@@ -2510,7 +2510,7 @@ namespace CurrentSensorV3
                 return;
             }
 
-            Delay(Delay_Operation);
+            //Delay(Delay_Operation);
 
             _reg_addr = 0x43;
             _reg_data = 0x06;
@@ -2521,7 +2521,7 @@ namespace CurrentSensorV3
                 return;
             }
 
-            Delay(Delay_Operation);
+            //Delay(Delay_Operation);
 
             _reg_addr = 0x43;
             _reg_data = 0x0E;
@@ -2532,7 +2532,7 @@ namespace CurrentSensorV3
                 return;
             }
 
-            Delay(Delay_Operation); //delay 300ms
+            //Delay(Delay_Operation); //delay 300ms
 
             _reg_addr = 0x43;
             _reg_data = 0x0;
@@ -3399,7 +3399,7 @@ namespace CurrentSensorV3
                 if (SocketType == 0)
                     AutomaticaTrim_5V_SingleSite();
                 else if (SocketType == 1)
-                    btn_AutomaticaTrim5V_Click(null, null);
+                    btn_AutomaticaTrim5V_MultiSite(null, null);
                 else
                     return;
             }
@@ -3408,14 +3408,14 @@ namespace CurrentSensorV3
                 if (SocketType == 0)
                     AutomaticaTrim_15V_SingleSite();
                 else if (SocketType == 1)
-                    btn_AutomaticaTrim15V_Click(null, null);
+                    btn_AutomaticaTrim15V_MultiSite(null, null);
                 else
                     return;
             }
 
         }
         //Multi-Site
-        private void btn_AutomaticaTrim5V_Click(object sender, EventArgs e)
+        private void btn_AutomaticaTrim5V_MultiSite(object sender, EventArgs e)
         {
             
             #region Define Parameters
@@ -4274,7 +4274,7 @@ namespace CurrentSensorV3
             #endregion Display Result and Reset parameters
         }     
         //Multi-Site
-        private void btn_AutomaticaTrim15V_Click(object sender, EventArgs e)
+        private void btn_AutomaticaTrim15V_MultiSite(object sender, EventArgs e)
         {
             DialogResult dr;
             bool bMarginal = false;
@@ -5235,12 +5235,23 @@ namespace CurrentSensorV3
             RegisterWrite(5, new uint[10] { 0x80, MultiSiteReg0[idut], 0x81, MultiSiteReg1[idut], 0x82, MultiSiteReg2[idut], 0x83, MultiSiteReg3[idut], 0x84, 0x07 });
             BurstRead(0x80, 5, tempReadback);
             FuseClockOn(DeviceAddress, (double)num_UD_pulsewidth_ow_EngT.Value, (double)numUD_pulsedurationtime_ow_EngT.Value);
-            DisplayOperateMes("Processing...\r\n");
+            DisplayOperateMes("Trimming...");
             Delay(Delay_Fuse);
 
             ReloadPreset();
             Delay(Delay_Operation);
             BurstRead(0x80, 5, tempReadback);
+            if (tempReadback[4] == 0)
+            {
+                RePower();
+                Delay(Delay_Sync);
+                EnterTestMode();
+                RegisterWrite(5, new uint[10] { 0x80, MultiSiteReg0[idut], 0x81, MultiSiteReg1[idut], 0x82, MultiSiteReg2[idut], 0x83, MultiSiteReg3[idut], 0x84, 0x07 });
+                BurstRead(0x80, 5, tempReadback);
+                FuseClockOn(DeviceAddress, (double)num_UD_pulsewidth_ow_EngT.Value, (double)numUD_pulsedurationtime_ow_EngT.Value);
+                DisplayOperateMes("Trimming...");
+                Delay(Delay_Fuse);
+            }
             Delay(Delay_Operation);
             /* Margianl read, compare with writed code; 
                 * if ( = ), go on
@@ -5351,7 +5362,7 @@ namespace CurrentSensorV3
             #endregion Bin
 
             #region Display Result and Reset parameters
-            DisplayOperateMes("Dut" + " = " + uDutTrimResult[idut].ToString());
+            DisplayOperateMes("Bin" + " = " + uDutTrimResult[idut].ToString());
             MultiSiteDisplayResult(uDutTrimResult);
             //reset vout_0A, vout_IP and power off
             PowerOff();
@@ -6084,12 +6095,16 @@ namespace CurrentSensorV3
                 // bin2 accuracy
                 msg = sr.ReadLine().Split("|".ToCharArray());
                 //ix = int.Parse(msg[1]);
-                bin2accuracy = uint.Parse(msg[1]);
+                bin2accuracy = double.Parse(msg[1]);
+                //this.txt_bin2accuracy_PreT.Text = msg[1];
+                this.txt_bin2accuracy_PreT.Text = bin2accuracy.ToString();
 
                 // bin3 accuracy
                 msg = sr.ReadLine().Split("|".ToCharArray());
                 //ix = int.Parse(msg[1]);
-                bin3accuracy = uint.Parse(msg[1]);
+                bin3accuracy = double.Parse(msg[1]);
+                //this.txt_bin3accuracy_PreT.Text = msg[1];
+                this.txt_bin3accuracy_PreT.Text = bin3accuracy.ToString();
 
                 // Tab visible code
                 msg = sr.ReadLine().Split("|".ToCharArray());
@@ -6233,6 +6248,33 @@ namespace CurrentSensorV3
 
             MultiSiteDisplayVout(uVout);
         }
+
+        private void btn_EngTab_Connect_Click(object sender, EventArgs e)
+        {
+            bool result = false;
+            //#region One wire
+            //if (!bUsbConnected)
+            result = oneWrie_device.ConnectDevice();
+
+            if (result)
+            {
+                this.toolStripStatusLabel_Connection.BackColor = Color.YellowGreen;
+                this.toolStripStatusLabel_Connection.Text = "Connected";
+                btn_GetFW_OneWire_Click(null, null);
+                bUsbConnected = true;
+            }
+            else
+            {
+                this.toolStripStatusLabel_Connection.BackColor = Color.IndianRed;
+                this.toolStripStatusLabel_Connection.Text = "Disconnected";
+            }
+            //#endregion
+
+            //numUD_pilotwidth_ow_ValueChanged(null,null);
+            //numUD_pilotwidth_ow_ValueChanged(null,null);
+            //num_UD_pulsewidth_ow_ValueChanged
+        }
+
 
         #endregion Events
 

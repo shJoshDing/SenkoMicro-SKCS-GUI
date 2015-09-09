@@ -43,6 +43,7 @@
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.EngineeringTab = new System.Windows.Forms.TabPage();
+            this.btn_EngTab_Connect = new System.Windows.Forms.Button();
             this.btn_AdcOut_EngT = new System.Windows.Forms.Button();
             this.txt_AdcOut_EngT = new System.Windows.Forms.TextBox();
             this.numUD_OffsetB = new System.Windows.Forms.NumericUpDown();
@@ -421,6 +422,7 @@
             // 
             // EngineeringTab
             // 
+            this.EngineeringTab.Controls.Add(this.btn_EngTab_Connect);
             this.EngineeringTab.Controls.Add(this.btn_AdcOut_EngT);
             this.EngineeringTab.Controls.Add(this.txt_AdcOut_EngT);
             this.EngineeringTab.Controls.Add(this.numUD_OffsetB);
@@ -445,6 +447,16 @@
             this.EngineeringTab.TabIndex = 0;
             this.EngineeringTab.Text = "Engineering";
             this.EngineeringTab.UseVisualStyleBackColor = true;
+            // 
+            // btn_EngTab_Connect
+            // 
+            this.btn_EngTab_Connect.Location = new System.Drawing.Point(722, 414);
+            this.btn_EngTab_Connect.Name = "btn_EngTab_Connect";
+            this.btn_EngTab_Connect.Size = new System.Drawing.Size(56, 40);
+            this.btn_EngTab_Connect.TabIndex = 89;
+            this.btn_EngTab_Connect.Text = "Connect";
+            this.btn_EngTab_Connect.UseVisualStyleBackColor = true;
+            this.btn_EngTab_Connect.Click += new System.EventHandler(this.btn_EngTab_Connect_Click);
             // 
             // btn_AdcOut_EngT
             // 
@@ -2771,7 +2783,7 @@
             this.btn_AutomaticaTrim15V.Text = "15V Auto-Trim";
             this.btn_AutomaticaTrim15V.UseVisualStyleBackColor = true;
             this.btn_AutomaticaTrim15V.Visible = false;
-            this.btn_AutomaticaTrim15V.Click += new System.EventHandler(this.btn_AutomaticaTrim15V_Click);
+            this.btn_AutomaticaTrim15V.Click += new System.EventHandler(this.btn_AutomaticaTrim15V_MultiSite);
             // 
             // btn_AutomaticaTrim5V
             // 
@@ -2783,7 +2795,7 @@
             this.btn_AutomaticaTrim5V.Text = "5V Auto-Trim";
             this.btn_AutomaticaTrim5V.UseVisualStyleBackColor = true;
             this.btn_AutomaticaTrim5V.Visible = false;
-            this.btn_AutomaticaTrim5V.Click += new System.EventHandler(this.btn_AutomaticaTrim5V_Click);
+            this.btn_AutomaticaTrim5V.Click += new System.EventHandler(this.btn_AutomaticaTrim5V_MultiSite);
             // 
             // btn_AutomaticaTrim
             // 
@@ -3237,7 +3249,7 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "CurrentSensorConsole";
-            this.Text = "Current Sensor Console v4.0.5 - CopyRight of SenkoMicro, Inc";
+            this.Text = "Current Sensor Console v4.0.6 - CopyRight of SenkoMicro, Inc";
             this.statusStrip.ResumeLayout(false);
             this.statusStrip.PerformLayout();
             this.toolStrip.ResumeLayout(false);
@@ -3536,5 +3548,6 @@
         private System.Windows.Forms.Button btn_Vout_AutoT;
         private System.Windows.Forms.ComboBox cmb_SocketType_AutoT;
         private System.Windows.Forms.Label label21;
+        private System.Windows.Forms.Button btn_EngTab_Connect;
     }
 }
