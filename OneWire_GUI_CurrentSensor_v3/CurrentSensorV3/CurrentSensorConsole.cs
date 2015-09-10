@@ -29,6 +29,7 @@ namespace CurrentSensorV3
         //bool bPretrimOrAuto = false;        //For operator, only auto tab
         //bool bPretrimOrAuto = true;         //For engineer, only PreTrim tab
         uint uTabVisibleCode = 0;
+        uint uMreVisiable = 0;
 
 
         uint DeviceAddress = 0x73;
@@ -488,6 +489,8 @@ namespace CurrentSensorV3
 
             //load config
             btn_loadconfig_AutoT_Click(null, null);
+
+            DisplayOperateMes("MRE = "+ uMreVisiable.ToString());
 
             //Display Tab
             if (uTabVisibleCode == 1)
@@ -1567,15 +1570,36 @@ namespace CurrentSensorV3
             autoTrimResultIndicator.AppendText("--00--\t--01--\t--02--\t--03--\t--04--\t--05--\t--06--\t--07--\t--08--\t--09--\t--10--\t--11--\t--12--\t--13--\t--14--\t--15--\r\n\r\n");
             for (uint idut = 0; idut < 16; idut++)
             {
-                if ( uResult[idut] < 7 && uResult[idut] >0 )
+                if (uMreVisiable == 1)
                 {
-                    autoTrimResultIndicator.SelectionColor = Color.Green;
-                    autoTrimResultIndicator.AppendText("PASS\t");
+                    if (uResult[idut] < 4 && uResult[idut] > 0)
+                    {
+                        autoTrimResultIndicator.SelectionColor = Color.Green;
+                        autoTrimResultIndicator.AppendText("PASS\t");
+                    }
+                    else if (uResult[idut] < 7 && uResult[idut] > 3)
+                    {
+                        autoTrimResultIndicator.SelectionColor = Color.Red;
+                        autoTrimResultIndicator.AppendText("*MRE\t");
+                    }
+                    else
+                    {
+                        autoTrimResultIndicator.SelectionColor = Color.Red;
+                        autoTrimResultIndicator.AppendText("**" + uResult[idut].ToString() + "**\t");
+                    }
                 }
-                else
+                else if (uMreVisiable == 0)
                 {
-                    autoTrimResultIndicator.SelectionColor = Color.Red;
-                    autoTrimResultIndicator.AppendText("**" + uResult[idut].ToString() + "**\t");
+                    if (uResult[idut] < 7 && uResult[idut] > 0)
+                    {
+                        autoTrimResultIndicator.SelectionColor = Color.Green;
+                        autoTrimResultIndicator.AppendText("PASS\t");
+                    }
+                    else
+                    {
+                        autoTrimResultIndicator.SelectionColor = Color.Red;
+                        autoTrimResultIndicator.AppendText("**" + uResult[idut].ToString() + "**\t");
+                    }
                 }
             }
         }
@@ -4221,15 +4245,19 @@ namespace CurrentSensorV3
                             uDutTrimResult[idut] = (uint)PRGMRSULT.DUT_BIN_4;
                             //DisplayOperateMes("Pass! Bin4");
                             //this.lbl_passOrFailed.ForeColor = Color.Green;
-                            //this.lbl_passOrFailed.Text = "Pass!";
+                            //this.lbl_passOrFailed.Text = "MRE!";
                         }
                         else if (targetOffset * (1 - bin2accuracy / 100d) <= dMultiSiteVout0A[idut] && dMultiSiteVout0A[idut] <= targetOffset * (1 + bin2accuracy / 100d) && (dMultiSiteVoutIP[idut] - dMultiSiteVout0A[idut]) <= TargetVoltage_customer * (1 + bin2accuracy / 100d) && (dMultiSiteVoutIP[idut] - dMultiSiteVout0A[idut]) >= TargetVoltage_customer * (1 - bin2accuracy / 100d))
                         {
                             uDutTrimResult[idut] = (uint)PRGMRSULT.DUT_BIN_5;
+                            //this.lbl_passOrFailed.ForeColor = Color.Green;
+                            //this.lbl_passOrFailed.Text = "MRE!";
                         }
                         else if (targetOffset * (1 - bin3accuracy / 100d) <= dMultiSiteVout0A[idut] && dMultiSiteVout0A[idut] <= targetOffset * (1 + bin3accuracy / 100d) && (dMultiSiteVoutIP[idut] - dMultiSiteVout0A[idut]) <= TargetVoltage_customer * (1 + bin3accuracy / 100d) && (dMultiSiteVoutIP[idut] - dMultiSiteVout0A[idut]) >= TargetVoltage_customer * (1 - bin3accuracy / 100d))
                         {
                             uDutTrimResult[idut] = (uint)PRGMRSULT.DUT_BIN_6;
+                            //this.lbl_passOrFailed.ForeColor = Color.Green;
+                            //this.lbl_passOrFailed.Text = "MRE!";
                         }
 
                     }
@@ -4241,16 +4269,24 @@ namespace CurrentSensorV3
                         if (targetOffset * (1 - 0.01) <= dMultiSiteVout0A[idut] && dMultiSiteVout0A[idut] <= targetOffset * (1 + 0.01) && (dMultiSiteVoutIP[idut] - dMultiSiteVout0A[idut]) <= TargetVoltage_customer * (1 + 0.01) && (dMultiSiteVoutIP[idut] - dMultiSiteVout0A[idut]) >= TargetVoltage_customer * (1 - 0.01))
                         {
                             uDutTrimResult[idut] = (uint)PRGMRSULT.DUT_BIN_1;
+                            //this.lbl_passOrFailed.ForeColor = Color.Green;
+                            //this.lbl_passOrFailed.Text = "PASS!";
                         }
                         else if (targetOffset * (1 - bin2accuracy / 100d) <= dMultiSiteVout0A[idut] && dMultiSiteVout0A[idut] <= targetOffset * (1 + bin2accuracy / 100d) && (dMultiSiteVoutIP[idut] - dMultiSiteVout0A[idut]) <= TargetVoltage_customer * (1 + bin2accuracy / 100d) && (dMultiSiteVoutIP[idut] - dMultiSiteVout0A[idut]) >= TargetVoltage_customer * (1 - bin2accuracy / 100d))
                         {
                             uDutTrimResult[idut] = (uint)PRGMRSULT.DUT_BIN_2;
+                            //this.lbl_passOrFailed.ForeColor = Color.Green;
+                            //this.lbl_passOrFailed.Text = "PASS!";
                         }
                         else if (targetOffset * (1 - bin3accuracy / 100d) <= dMultiSiteVout0A[idut] && dMultiSiteVout0A[idut] <= targetOffset * (1 + bin3accuracy / 100d) && (dMultiSiteVoutIP[idut] - dMultiSiteVout0A[idut]) <= TargetVoltage_customer * (1 + bin3accuracy / 100d) && (dMultiSiteVoutIP[idut] - dMultiSiteVout0A[idut]) >= TargetVoltage_customer * (1 - bin3accuracy / 100d))
                         {
                             uDutTrimResult[idut] = (uint)PRGMRSULT.DUT_BIN_3;
+                            //this.lbl_passOrFailed.ForeColor = Color.Green;
+                            //this.lbl_passOrFailed.Text = "PASS!";
                         }
                     }
+                    //else
+                    //{ }
                 }
             }
 
@@ -5306,21 +5342,45 @@ namespace CurrentSensorV3
             {
                 if (targetOffset * (1 - 0.01) <= dMultiSiteVout0A[idut] && dMultiSiteVout0A[idut] <= targetOffset * (1 + 0.01) && (dMultiSiteVoutIP[idut] - dMultiSiteVout0A[idut]) <= TargetVoltage_customer * (1 + 0.01) && (dMultiSiteVoutIP[idut] - dMultiSiteVout0A[idut]) >= TargetVoltage_customer * (1 - 0.01))
                 {
-                    uDutTrimResult[idut] = (uint)PRGMRSULT.DUT_BIN_4;      
-                    this.lbl_passOrFailed.ForeColor = Color.Green;
-                    this.lbl_passOrFailed.Text = "M.R.E!";              
+                    uDutTrimResult[idut] = (uint)PRGMRSULT.DUT_BIN_4;
+                    if (uMreVisiable == 1)
+                    {
+                        this.lbl_passOrFailed.ForeColor = Color.Green;
+                        this.lbl_passOrFailed.Text = "MRE!";
+                    }
+                    else
+                    {
+                        this.lbl_passOrFailed.ForeColor = Color.Green;
+                        this.lbl_passOrFailed.Text = "PASS!";
+                    }
                 }
                 else if (targetOffset * (1 - bin2accuracy / 100d) <= dMultiSiteVout0A[idut] && dMultiSiteVout0A[idut] <= targetOffset * (1 + bin2accuracy / 100d) && (dMultiSiteVoutIP[idut] - dMultiSiteVout0A[idut]) <= TargetVoltage_customer * (1 + bin2accuracy / 100d) && (dMultiSiteVoutIP[idut] - dMultiSiteVout0A[idut]) >= TargetVoltage_customer * (1 - bin2accuracy / 100d))
                 {
                     uDutTrimResult[idut] = (uint)PRGMRSULT.DUT_BIN_5;
-                    this.lbl_passOrFailed.ForeColor = Color.Green;
-                    this.lbl_passOrFailed.Text = "M.R.E!";
+                    if (uMreVisiable == 1)
+                    {
+                        this.lbl_passOrFailed.ForeColor = Color.Green;
+                        this.lbl_passOrFailed.Text = "MRE!";
+                    }
+                    else
+                    {
+                        this.lbl_passOrFailed.ForeColor = Color.Green;
+                        this.lbl_passOrFailed.Text = "PASS!";
+                    }
                 }
                 else if (targetOffset * (1 - bin3accuracy / 100d) <= dMultiSiteVout0A[idut] && dMultiSiteVout0A[idut] <= targetOffset * (1 + bin3accuracy / 100d) && (dMultiSiteVoutIP[idut] - dMultiSiteVout0A[idut]) <= TargetVoltage_customer * (1 + bin3accuracy / 100d) && (dMultiSiteVoutIP[idut] - dMultiSiteVout0A[idut]) >= TargetVoltage_customer * (1 - bin3accuracy / 100d))
                 {
                     uDutTrimResult[idut] = (uint)PRGMRSULT.DUT_BIN_6;
-                    this.lbl_passOrFailed.ForeColor = Color.Green;
-                    this.lbl_passOrFailed.Text = "M.R.E!";
+                    if (uMreVisiable == 1)
+                    {
+                        this.lbl_passOrFailed.ForeColor = Color.Green;
+                        this.lbl_passOrFailed.Text = "MRE!";
+                    }
+                    else
+                    {
+                        this.lbl_passOrFailed.ForeColor = Color.Green;
+                        this.lbl_passOrFailed.Text = "PASS!";
+                    }
                 }
                 else
                 {
@@ -6010,6 +6070,11 @@ namespace CurrentSensorV3
                     this.uTabVisibleCode);
                 sw.WriteLine(msg);
 
+                // MRE display or not
+                msg = string.Format("MRE|{0}",
+                    this.uMreVisiable);
+                sw.WriteLine(msg);
+
                 sw.Close();
             }
             catch
@@ -6110,6 +6175,11 @@ namespace CurrentSensorV3
                 msg = sr.ReadLine().Split("|".ToCharArray());
                 //ix = int.Parse(msg[1]);
                 uTabVisibleCode = uint.Parse(msg[1]);
+
+                // Tab visible code
+                msg = sr.ReadLine().Split("|".ToCharArray());
+                ////ix = int.Parse(msg[1]);
+                uMreVisiable = uint.Parse(msg[1]);
 
                 sr.Close();
 
