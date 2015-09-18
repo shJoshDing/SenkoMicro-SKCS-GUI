@@ -40,8 +40,8 @@ namespace CurrentSensorV3
         /// <summary>
         /// Delay Define
         /// </summary>
-        int Delay_Power = 100;      //ms
-        int Delay_Operation =300;   //ms
+        int Delay_Power = 200;      //ms
+        int Delay_Operation =400;   //ms
         int Delay_Fuse = 300;       //ms
         int Delay_Sync = 50;        //ms
 
@@ -236,6 +236,17 @@ namespace CurrentSensorV3
                 //this.cmb_SocketType_AutoT.Text = (string)this.cmb_Module_EngT.SelectedItem;
             }
             get { return this.socketType; }
+        }
+
+        int programMode = 0;
+        int ProgramMode
+        {
+            set 
+            {
+                this.programMode = value;
+                this.cmb_ProgramMode_AutoT.SelectedIndex = this.programMode;
+            }
+            get { return this.programMode; }
         }
 
         uint ix_forRoughGainCtrl = 15;
@@ -482,6 +493,7 @@ namespace CurrentSensorV3
             this.cmb_Module_PreT.SelectedIndex = 0;
             this.cmb_Voffset_PreT.SelectedIndex = 0;
             this.cmb_SocketType_AutoT.SelectedIndex = 0;
+            this.cmb_ProgramMode_AutoT.SelectedIndex = 0;
 
             //Serial Num
             this.txt_SerialNum_EngT.Text = SerialNum;
@@ -1305,6 +1317,11 @@ namespace CurrentSensorV3
             txt_OutputLogInfo.Refresh();
         }
 
+        public void DisplayOperateMesClear( )
+        { 
+            txt_OutputLogInfo.Clear();
+        }
+
         private void DisplayAutoTrimOperateMes(string strMes, bool ifSucceeded, int step)
         {
             if (bAutoTrimTest)
@@ -1625,6 +1642,7 @@ namespace CurrentSensorV3
             else
                 oneWrie_device.SDPSignalPathGroupSel(OneWireInterface.SPControlCommand.SP_MULTISITTE_GROUP_B);
 
+            Delay(Delay_Sync);
             oneWrie_device.SDPSignalPathSocketSel(uDut);
         }
 
@@ -2026,13 +2044,14 @@ namespace CurrentSensorV3
 
         private void EnterNomalMode()
         {
+            Delay(Delay_Sync);
             oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VOUT_WITHOUT_CAP);
-            rbt_signalPathSeting_Config_EngT.Checked = true;
+            //rbt_signalPathSeting_Config_EngT.Checked = true;
             //Thread.Sleep(100);
             Delay(Delay_Sync);
 
             oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_CONFIG_TO_VOUT);
-            rbt_signalPathSeting_Config_EngT.Checked = true;
+            //rbt_signalPathSeting_Config_EngT.Checked = true;
             //Thread.Sleep(100);
             Delay(Delay_Sync);
 
@@ -2062,14 +2081,18 @@ namespace CurrentSensorV3
             oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VOUT_WITH_CAP);
 
             Delay(Delay_Sync);
-            rbt_signalPathSeting_AIn_EngT.Checked = true;
+            oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VIN_TO_VOUT);
+            //rbt_signalPathSeting_AIn_EngT.Checked = true;
 
-            Delay(Delay_Sync);
-            rbt_withCap_Vout_EngT.Checked = true;
+            //Delay(Delay_Sync);
+            //rbt_withCap_Vout_EngT.Checked = true;
+
+            //Delay(Delay_Sync);
         }
 
         private void EnterTestMode()
         {
+            Delay(Delay_Sync);
             //set pilot firstly
             numUD_pilotwidth_ow_ValueChanged(null, null);
             Delay(Delay_Sync);
@@ -2099,7 +2122,10 @@ namespace CurrentSensorV3
             Delay(Delay_Sync);
             oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_CONFIG_TO_VOUT);
             Delay(Delay_Sync);
-            rbt_signalPathSeting_Config_EngT.Checked = true;
+            oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VOUT_WITHOUT_CAP);
+            Delay(Delay_Sync);
+
+            //rbt_signalPathSeting_Config_EngT.Checked = true;
 
             oneWrie_device.I2CWrite_Single(this.DeviceAddress, 0x55, 0xAA);
 
@@ -2592,8 +2618,14 @@ namespace CurrentSensorV3
 
         private bool BurstRead(uint _reg_addr_start, int num, uint[] _readBack_data)
         {
+            Delay(Delay_Sync);
             //set pilot firstly
             numUD_pilotwidth_ow_ValueChanged(null, null);
+            Delay(Delay_Sync);
+
+            oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VOUT_WITHOUT_CAP);
+            Delay(Delay_Sync);
+
 
             if (bAutoTrimTest)
                 DisplayOperateMes("ReadData:");
@@ -3545,6 +3577,8 @@ namespace CurrentSensorV3
             #endregion UART Initialize
 
             #region Get module current
+            //clear log
+            DisplayOperateMesClear();
             /*  power on */
             RePower();
             Delay(Delay_Sync);
@@ -3617,7 +3651,7 @@ namespace CurrentSensorV3
                 if (bDutValid[idut])
                 {
                     MultiSiteSocketSelect(idut);
-                    Delay(Delay_Sync);
+                    //Delay(Delay_Sync);
                     EnterTestMode();
                     BurstRead(0x80, 5, tempReadback);
                     if (tempReadback[0] + tempReadback[1] + tempReadback[2] + tempReadback[3] + tempReadback[4] != 0)
@@ -3632,7 +3666,7 @@ namespace CurrentSensorV3
                     BurstRead(0x80, 5, tempReadback);
                     /* Get vout @ IP */
                     EnterNomalMode();
-                    oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VOUT_WITH_CAP);
+                    //oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VOUT_WITH_CAP);
                     Delay(Delay_Operation);
                     dMultiSiteVoutIP[idut] = AverageVout();
                     DisplayOperateMes("Vout[" + idut.ToString() + "] @ IP = " + dMultiSiteVoutIP[idut].ToString("F3"));
@@ -3689,7 +3723,7 @@ namespace CurrentSensorV3
                 if (bDutValid[idut])
                 {
                     MultiSiteSocketSelect(idut);
-                    Delay(Delay_Sync);
+                    //Delay(Delay_Sync);
                     EnterTestMode();
                     BurstRead(0x80, 5, tempReadback);
                     if (tempReadback[0] + tempReadback[1] + tempReadback[2] + tempReadback[3] + tempReadback[4] != 0)
@@ -3700,7 +3734,7 @@ namespace CurrentSensorV3
                     BurstRead(0x80, 5, tempReadback);
                     /* Get vout @ 0A */
                     EnterNomalMode();
-                    oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VOUT_WITH_CAP);
+                    //oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VOUT_WITH_CAP);
                     Delay(Delay_Operation);
                     dMultiSiteVout0A[idut] = AverageVout();
                     DisplayOperateMes("Vout[" + idut.ToString() + "] @ 0A = " + dMultiSiteVout0A[idut].ToString("F3"));
@@ -3740,7 +3774,7 @@ namespace CurrentSensorV3
                         oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VDD_FROM_EXT);
                         Delay(Delay_Sync);
                         MultiSiteSocketSelect(idut);
-                        Delay(Delay_Sync);
+                        //Delay(Delay_Sync);
                         //RePower();
                         EnterTestMode();
                         //RegisterWrite(5, new uint[10] { 0x80, Reg80Value, 0x81, Reg81Value, 0x82, Reg82Value, 0x83, Reg83Value, 0x84, 0x07 });
@@ -3917,7 +3951,7 @@ namespace CurrentSensorV3
                         /*  power on */
                         //RePower();
                         MultiSiteSocketSelect(idut);
-                        Delay(Delay_Sync);
+                        //Delay(Delay_Sync);
                         this.lbl_passOrFailed.Text = "Processing!";
                         EnterTestMode();
                         //RegisterWrite(4, new uint[8] { 0x80, Reg80Value, 0x81, Reg81Value, 0x82, Reg82Value, 0x83, Reg83Value });
@@ -3925,7 +3959,7 @@ namespace CurrentSensorV3
                         BurstRead(0x80, 5, tempReadback);
                         /* Get vout @ IP */
                         EnterNomalMode();
-                        oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VOUT_WITH_CAP);
+                        //oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VOUT_WITH_CAP);
                         Delay(Delay_Operation);
                         dMultiSiteVoutIP[idut] = AverageVout();
                         DisplayOperateMes("Vout[" + idut.ToString() + "] @ IP = " + dMultiSiteVoutIP[idut].ToString("F3"));
@@ -3979,7 +4013,7 @@ namespace CurrentSensorV3
                         /*  power on */
                         //RePower();
                         MultiSiteSocketSelect(idut);
-                        Delay(Delay_Sync);
+                        //Delay(Delay_Sync);
                         this.lbl_passOrFailed.Text = "Processing!";
                         EnterTestMode();
                         //RegisterWrite(4, new uint[8] { 0x80, Reg80Value, 0x81, Reg81Value, 0x82, Reg82Value, 0x83, Reg83Value });
@@ -3987,7 +4021,7 @@ namespace CurrentSensorV3
                         BurstRead(0x80, 5, tempReadback);
                         /* Get vout @ IP */
                         EnterNomalMode();
-                        oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VOUT_WITH_CAP);
+                        //oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VOUT_WITH_CAP);
                         Delay(Delay_Operation);
                         dMultiSiteVout0A[idut] = AverageVout();
                         DisplayOperateMes("Vout[" + idut.ToString() + "] @ 0A = " + dMultiSiteVout0A[idut].ToString("F3"));
@@ -4055,12 +4089,12 @@ namespace CurrentSensorV3
 
 
                     MultiSiteSocketSelect(idut);
-                    Delay(Delay_Sync);
+                    //Delay(Delay_Sync);
                     EnterTestMode();
                     //RegisterWrite(4, new uint[8] { 0x80, Reg80Value, 0x81, Reg81Value, 0x82, Reg82Value, 0x83, Reg83Value });
                     RegisterWrite(4, new uint[8] { 0x80, MultiSiteReg0[idut], 0x81, MultiSiteReg1[idut], 0x82, MultiSiteReg2[idut], 0x83, MultiSiteReg3[idut] });
                     EnterNomalMode();
-                    oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VOUT_WITH_CAP);
+                    //oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VOUT_WITH_CAP);
                     Delay(Delay_Operation);
                     dMultiSiteVout0A[idut] = AverageVout();
                     if (bAutoTrimTest)
@@ -4086,11 +4120,11 @@ namespace CurrentSensorV3
                     oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VDD_FROM_5V);
                     Delay(Delay_Sync);
                     RePower();
-                    Delay(Delay_Sync);
+                    //Delay(Delay_Sync);
                     EnterTestMode();
                     RegisterWrite(4, new uint[8] { 0x80, MultiSiteReg0[idut], 0x81, MultiSiteReg1[idut], 0x82, MultiSiteReg2[idut], 0x83, MultiSiteReg3[idut] });
                     EnterNomalMode();
-                    oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VIN_TO_VOUT);
+                    //oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VIN_TO_VOUT);
                     Delay(Delay_Operation);
                     dMultiSiteVout0A[idut] = AverageVout();
                     DisplayOperateMes("MultiSiteReg3[idut] = 0x" + MultiSiteReg3[idut].ToString("X2"));
@@ -4121,11 +4155,11 @@ namespace CurrentSensorV3
                     //DisplayOperateMes("MultiSiteReg3[idut] = 0x" + MultiSiteReg3[idut].ToString("X2"));
 
                     RePower();
-                    Delay(Delay_Sync);
+                    //Delay(Delay_Sync);
                     EnterTestMode();
                     RegisterWrite(4, new uint[8] { 0x80, MultiSiteReg0[idut], 0x81, MultiSiteReg1[idut], 0x82, MultiSiteReg2[idut], 0x83, MultiSiteReg3[idut] });
                     EnterNomalMode();
-                    oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VIN_TO_VOUT);
+                    //oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VIN_TO_VOUT);
                     Delay(Delay_Operation);
                     dMultiSiteVout_0A_Complementary = AverageVout();
                     DisplayOperateMes("\r\nMultiSiteReg3[idut] = 0x" + MultiSiteReg3[idut].ToString("X2"));
@@ -4153,7 +4187,7 @@ namespace CurrentSensorV3
                     oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VDD_FROM_EXT);
                     Delay(Delay_Sync);
                     RePower();
-                    Delay(Delay_Sync);
+                    //Delay(Delay_Sync);
                     EnterTestMode();
                     //RegisterWrite(5, new uint[10] { 0x80, Reg80Value, 0x81, Reg81Value, 0x82, Reg82Value, 0x83, Reg83Value, 0x84, 0x07 });
                     RegisterWrite(5, new uint[10] { 0x80, MultiSiteReg0[idut], 0x81, MultiSiteReg1[idut], 0x82, MultiSiteReg2[idut], 0x83, MultiSiteReg3[idut], 0x84, 0x07 });
@@ -4198,16 +4232,19 @@ namespace CurrentSensorV3
 
             #region Bin
             /* Repower on 5V */
+            Delay(Delay_Sync);
             oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VDD_FROM_5V);
             RePower();
             oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VIN_TO_VOUT);
+            Delay(Delay_Sync);
             oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VOUT_WITH_CAP);
+            Delay(Delay_Sync);
             for (uint idut = 0; idut < uDutCount; idut++)
             {
                 if (bDutValid[idut] || bDutNoNeedTrim[idut])
                 {
                     MultiSiteSocketSelect(idut);
-                    Delay(Delay_Operation*2);
+                    Delay(Delay_Operation);
                     dMultiSiteVout0A[idut] = AverageVout();
                     DisplayOperateMes("Vout[" + idut.ToString("D2") + "] @ 0A = " + dMultiSiteVout0A[idut].ToString("F3"));
                 }
@@ -4304,6 +4341,7 @@ namespace CurrentSensorV3
             MultiSiteDisplayResult(uDutTrimResult);
 
             //reset vout_0A, vout_IP and power off
+            Delay(Delay_Sync);
             oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VDD_POWER_OFF);
             RestoreReg80ToReg83Value();
             DisplayOperateMes("Next...\r\n");
@@ -4797,7 +4835,56 @@ namespace CurrentSensorV3
             }
             #endregion Define Parameters
 
+            if( ProgramMode == 0)
+            {
+                #region UART Initialize
+            //UART Initialization
+            if (oneWrie_device.UARTInitilize(9600, 1))
+                DisplayOperateMes("UART Initilize succeeded!");
+            else
+                DisplayOperateMes("UART Initilize failed!");
+            //ding hao
+            Delay(Delay_Operation);
+            //DisplayAutoTrimOperateMes("Delay 300ms");
+
+            //1. Current Remote CTL
+            if (oneWrie_device.UARTWrite(OneWireInterface.UARTControlCommand.ADI_SDP_CMD_UART_REMOTE, 0))
+                DisplayOperateMes("Set Current Remote succeeded!");
+            else
+                DisplayOperateMes("Set Current Remote failed!");
+
+            //Delay 300ms
+            //Thread.Sleep(300);
+            Delay(Delay_Operation);
+            //DisplayAutoTrimOperateMes("Delay 300ms");
+
+            //2. Current On
+            if (oneWrie_device.UARTWrite(OneWireInterface.UARTControlCommand.ADI_SDP_CMD_UART_OUTPUTON, 0))
+                DisplayOperateMes("Set Current On succeeded!");
+            else
+                DisplayOperateMes("Set Current On failed!");
+
+            //Delay 300ms
+            Delay(Delay_Operation);
+            //DisplayOperateMes("Delay 300ms");
+
+            //3. Set Voltage
+            if (oneWrie_device.UARTWrite(OneWireInterface.UARTControlCommand.ADI_SDP_CMD_UART_SETVOLT, 2u))
+                DisplayOperateMes(string.Format("Set Voltage to {0}V succeeded!", 2));
+            else
+                DisplayOperateMes(string.Format("Set Voltage to {0}V failed!", 2));
+
+
+            //Delay 300ms
+            Delay(Delay_Operation);
+            //DisplayOperateMes("Delay 300ms");
+
+            #endregion UART Initialize
+            }
+
             #region Get module current
+            //clear log
+            DisplayOperateMesClear();
             /*  power on */
             RePower();
             Delay(Delay_Sync);
@@ -4840,17 +4927,32 @@ namespace CurrentSensorV3
 
             #region Saturation judgement
             /* Change Current to IP  */
-            dr = MessageBox.Show(String.Format("Please Change Current To {0}A", IP), "Change Current", MessageBoxButtons.OKCancel);
-            if (dr == DialogResult.Cancel)
+            if( ProgramMode == 0)
             {
-                DisplayOperateMes("AutoTrim Canceled!", Color.Red);
-                PowerOff();
-                RestoreReg80ToReg83Value();
-                return;
+                if (oneWrie_device.UARTWrite(OneWireInterface.UARTControlCommand.ADI_SDP_CMD_UART_SETCURR, Convert.ToUInt32(IP)))
+                    DisplayOperateMes(string.Format("Set Current to {0}A succeeded!", IP));
+                else
+                {
+                    DisplayOperateMes(string.Format("Set Current to {0}A failed!", IP));
+                    PowerOff();
+                    RestoreReg80ToReg83Value();
+                    return;
+                }
+            }
+            else
+            {
+                dr = MessageBox.Show(String.Format("Please Change Current To {0}A", IP), "Change Current", MessageBoxButtons.OKCancel);
+                if (dr == DialogResult.Cancel)
+                {
+                    DisplayOperateMes("AutoTrim Canceled!", Color.Red);
+                    PowerOff();
+                    RestoreReg80ToReg83Value();
+                    return;
+                }
             }
 
             EnterTestMode();
-            Delay(Delay_Sync);
+            //Delay(Delay_Sync);
             BurstRead(0x80, 5, tempReadback);
             if (tempReadback[0] + tempReadback[1] + tempReadback[2] + tempReadback[3] + tempReadback[4] != 0)
             {
@@ -4888,13 +4990,30 @@ namespace CurrentSensorV3
 
             #region Get Vout@0A
             /* Change Current to 0A */
-            dr = MessageBox.Show(String.Format("Please Change Current To 0A"), "Change Current", MessageBoxButtons.OKCancel);
-            if (dr == DialogResult.Cancel)
+            if( ProgramMode == 0)
             {
-                DisplayOperateMes("AutoTrim Canceled!", Color.Red);
-                PowerOff();
-                RestoreReg80ToReg83Value();
-                return;
+                if (oneWrie_device.UARTWrite(OneWireInterface.UARTControlCommand.ADI_SDP_CMD_UART_SETCURR, 0u))
+                    DisplayOperateMes(string.Format("Set Current to {0}A succeeded!", 0u));
+                else
+                {
+                    DisplayOperateMes(string.Format("Set Current to {0}A failed!", 0u));
+                    DisplayOperateMes("AutoTrim Canceled!", Color.Red);
+                    PowerOff();
+                    RestoreReg80ToReg83Value();
+                    //TrimFinish();
+                    return;
+                }
+            }
+            else
+            {
+                dr = MessageBox.Show(String.Format("Please Change Current To 0A"), "Change Current", MessageBoxButtons.OKCancel);
+                if (dr == DialogResult.Cancel)
+                {
+                    DisplayOperateMes("AutoTrim Canceled!", Color.Red);
+                    PowerOff();
+                    RestoreReg80ToReg83Value();
+                    return;
+                }
             }
 
             Delay(Delay_Operation);
@@ -4947,7 +5066,7 @@ namespace CurrentSensorV3
                 oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VDD_FROM_EXT);
                 Delay(Delay_Sync);
                 RePower();
-                Delay(Delay_Sync);
+                //Delay(Delay_Sync);
                 EnterTestMode();
                 RegisterWrite(5, new uint[10] { 0x80, MultiSiteReg0[idut], 0x81, MultiSiteReg1[idut], 0x82, MultiSiteReg2[idut], 0x83, MultiSiteReg3[idut], 0x84, 0x07 });
                 BurstRead(0x80, 5, tempReadback);
@@ -5070,18 +5189,33 @@ namespace CurrentSensorV3
                 DisplayOperateMes("0x83 = 0x" + MultiSiteReg3[idut].ToString("X2"));
 
                 /* Change Current to IP  */
-                dr = MessageBox.Show(String.Format("Please Change Current To {0}A", IP), "Change Current", MessageBoxButtons.OKCancel);
-                if (dr == DialogResult.Cancel)
+                if (ProgramMode == 0)
                 {
-                    DisplayOperateMes("AutoTrim Canceled!", Color.Red);
-                    PowerOff();
-                    RestoreReg80ToReg83Value();
-                    return;
+                    if (oneWrie_device.UARTWrite(OneWireInterface.UARTControlCommand.ADI_SDP_CMD_UART_SETCURR, Convert.ToUInt32(IP)))
+                        DisplayOperateMes(string.Format("Set Current to {0}A succeeded!", IP));
+                    else
+                    {
+                        DisplayOperateMes(string.Format("Set Current to {0}A failed!", IP));
+                        PowerOff();
+                        RestoreReg80ToReg83Value();
+                        return;
+                    }
+                }
+                else
+                {
+                    dr = MessageBox.Show(String.Format("Please Change Current To {0}A", IP), "Change Current", MessageBoxButtons.OKCancel);
+                    if (dr == DialogResult.Cancel)
+                    {
+                        DisplayOperateMes("AutoTrim Canceled!", Color.Red);
+                        PowerOff();
+                        RestoreReg80ToReg83Value();
+                        return;
+                    }
                 }
 
                 /*  power on */
                 RePower();
-                Delay(Delay_Sync);
+                //Delay(Delay_Sync);
                 this.lbl_passOrFailed.Text = "Processing!";
                 EnterTestMode();
                 RegisterWrite(4, new uint[8] { 0x80, MultiSiteReg0[idut], 0x81, MultiSiteReg1[idut], 0x82, MultiSiteReg2[idut], 0x83, MultiSiteReg3[idut] });
@@ -5105,13 +5239,30 @@ namespace CurrentSensorV3
                 }
 
                 /* Change Current to 0A */
-                dr = MessageBox.Show(String.Format("Please Change Current To 0A"), "Change Current", MessageBoxButtons.OKCancel);
-                if (dr == DialogResult.Cancel)
+                if (ProgramMode == 0)
                 {
-                    DisplayOperateMes("AutoTrim Canceled!", Color.Red);
-                    PowerOff();
-                    RestoreReg80ToReg83Value();
-                    return;
+                    if (oneWrie_device.UARTWrite(OneWireInterface.UARTControlCommand.ADI_SDP_CMD_UART_SETCURR, 0u))
+                        DisplayOperateMes(string.Format("Set Current to {0}A succeeded!", 0u));
+                    else
+                    {
+                        DisplayOperateMes(string.Format("Set Current to {0}A failed!", 0u));
+                        DisplayOperateMes("AutoTrim Canceled!", Color.Red);
+                        PowerOff();
+                        RestoreReg80ToReg83Value();
+                        //TrimFinish();
+                        return;
+                    }
+                }
+                else
+                {
+                    dr = MessageBox.Show(String.Format("Please Change Current To 0A"), "Change Current", MessageBoxButtons.OKCancel);
+                    if (dr == DialogResult.Cancel)
+                    {
+                        DisplayOperateMes("AutoTrim Canceled!", Color.Red);
+                        PowerOff();
+                        RestoreReg80ToReg83Value();
+                        return;
+                    }
                 }
 
                 /*  power on */
@@ -5175,7 +5326,7 @@ namespace CurrentSensorV3
             EnterTestMode();
             RegisterWrite(4, new uint[8] { 0x80, MultiSiteReg0[idut], 0x81, MultiSiteReg1[idut], 0x82, MultiSiteReg2[idut], 0x83, MultiSiteReg3[idut] });
             EnterNomalMode();
-            oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VOUT_WITH_CAP);
+            //oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VOUT_WITH_CAP);
             Delay(Delay_Operation);
             dMultiSiteVout0A[idut] = AverageVout();
             if (bAutoTrimTest)
@@ -5200,11 +5351,11 @@ namespace CurrentSensorV3
             /* Repower on 5V */
             //oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VDD_FROM_5V);
             RePower();
-            Delay(Delay_Sync);
+            //Delay(Delay_Sync);
             EnterTestMode();
             RegisterWrite(4, new uint[8] { 0x80, MultiSiteReg0[idut], 0x81, MultiSiteReg1[idut], 0x82, MultiSiteReg2[idut], 0x83, MultiSiteReg3[idut] });
             EnterNomalMode();
-            oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VIN_TO_VOUT);
+            //oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VIN_TO_VOUT);
             Delay(Delay_Operation);
             dMultiSiteVout0A[idut] = AverageVout();
             DisplayOperateMes("MultiSiteReg3 = 0x" + MultiSiteReg3[idut].ToString("X2"));
@@ -5234,11 +5385,11 @@ namespace CurrentSensorV3
             MultiSiteReg3[idut] |= Convert.ToUInt32(OffsetTableB_Customer[1][ix_forOffsetIndex_Rough]);
 
             RePower();
-            Delay(Delay_Sync);
+            //Delay(Delay_Sync);
             EnterTestMode();
             RegisterWrite(4, new uint[8] { 0x80, MultiSiteReg0[idut], 0x81, MultiSiteReg1[idut], 0x82, MultiSiteReg2[idut], 0x83, MultiSiteReg3[idut] });
             EnterNomalMode();
-            oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VIN_TO_VOUT);
+            //oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VIN_TO_VOUT);
             Delay(Delay_Operation);
             dMultiSiteVout_0A_Complementary = AverageVout();
             DisplayOperateMes("\r\nMultiSiteReg3 = 0x" + MultiSiteReg3[idut].ToString("X2"));
@@ -5266,7 +5417,7 @@ namespace CurrentSensorV3
             oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VDD_FROM_EXT);
             Delay(Delay_Sync);
             RePower();
-            Delay(Delay_Sync);
+            //Delay(Delay_Sync);
             EnterTestMode();
             RegisterWrite(5, new uint[10] { 0x80, MultiSiteReg0[idut], 0x81, MultiSiteReg1[idut], 0x82, MultiSiteReg2[idut], 0x83, MultiSiteReg3[idut], 0x84, 0x07 });
             BurstRead(0x80, 5, tempReadback);
@@ -5280,7 +5431,7 @@ namespace CurrentSensorV3
             if (tempReadback[4] == 0)
             {
                 RePower();
-                Delay(Delay_Sync);
+                //Delay(Delay_Sync);
                 EnterTestMode();
                 RegisterWrite(5, new uint[10] { 0x80, MultiSiteReg0[idut], 0x81, MultiSiteReg1[idut], 0x82, MultiSiteReg2[idut], 0x83, MultiSiteReg3[idut], 0x84, 0x07 });
                 BurstRead(0x80, 5, tempReadback);
@@ -5316,22 +5467,39 @@ namespace CurrentSensorV3
             #region Bin
             /* Repower on 5V */
             oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VDD_FROM_5V);
+            Delay(Delay_Sync);
             RePower();
+            Delay(Delay_Sync);
             oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VIN_TO_VOUT);
+            Delay(Delay_Sync);
             oneWrie_device.SDPSignalPathSet(OneWireInterface.SPControlCommand.SP_VOUT_WITH_CAP);
-
             Delay(Delay_Operation);
             dMultiSiteVout0A[idut] = AverageVout();
-            DisplayOperateMes("Vout" + " @ 0A = " + dMultiSiteVout0A[idut].ToString("F3"));            
+            DisplayOperateMes("Vout" + " @ 0A = " + dMultiSiteVout0A[idut].ToString("F3"));
 
             /* Change Current to IP  */
-            dr = MessageBox.Show(String.Format("Please Change Current To {0}A", IP), "Change Current", MessageBoxButtons.OKCancel);
-            if (dr == DialogResult.Cancel)
+            if (ProgramMode == 0)
             {
-                DisplayOperateMes("AutoTrim Canceled!", Color.Red);
-                PowerOff();
-                RestoreReg80ToReg83Value();
-                return;
+                if (oneWrie_device.UARTWrite(OneWireInterface.UARTControlCommand.ADI_SDP_CMD_UART_SETCURR, Convert.ToUInt32(IP)))
+                    DisplayOperateMes(string.Format("Set Current to {0}A succeeded!", IP));
+                else
+                {
+                    DisplayOperateMes(string.Format("Set Current to {0}A failed!", IP));
+                    PowerOff();
+                    RestoreReg80ToReg83Value();
+                    return;
+                }
+            }
+            else
+            {
+                dr = MessageBox.Show(String.Format("Please Change Current To {0}A", IP), "Change Current", MessageBoxButtons.OKCancel);
+                if (dr == DialogResult.Cancel)
+                {
+                    DisplayOperateMes("AutoTrim Canceled!", Color.Red);
+                    PowerOff();
+                    RestoreReg80ToReg83Value();
+                    return;
+                }
             }
 
             Delay(Delay_Operation);
@@ -5950,7 +6118,7 @@ namespace CurrentSensorV3
             else if (SocketType == 1)
                 DisplayOperateMes("Multi-Side Socket");
             else
-                DisplayOperateMes("Invalid Socket Type", Color.DarkRed); ;
+                DisplayOperateMes("Invalid Socket Type", Color.DarkRed); 
         }
 
         private void rbtn_VoutOptionHigh_EngT_CheckedChanged(object sender, EventArgs e)
@@ -6345,9 +6513,18 @@ namespace CurrentSensorV3
             //num_UD_pulsewidth_ow_ValueChanged
         }
 
+        private void cmb_ProgramMode_AutoT_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            ProgramMode = this.cmb_ProgramMode_AutoT.SelectedIndex;
+            if (ProgramMode == 0)
+                DisplayOperateMes("Automatic Program");
+            else if (ProgramMode == 1)
+                DisplayOperateMes("Manual Program");
+            else
+                DisplayOperateMes("Invalid Program Mode", Color.DarkRed);
+        }
 
         #endregion Events
-
     }
 
     

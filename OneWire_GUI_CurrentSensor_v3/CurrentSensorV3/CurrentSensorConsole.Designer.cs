@@ -266,6 +266,8 @@
             this.contextMenuStrip_Clear = new System.Windows.Forms.ToolStripMenuItem();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.txt_OutputLogInfo = new System.Windows.Forms.RichTextBox();
+            this.label77 = new System.Windows.Forms.Label();
+            this.cmb_ProgramMode_AutoT = new System.Windows.Forms.ComboBox();
             this.statusStrip.SuspendLayout();
             this.toolStrip.SuspendLayout();
             this.tabControl1.SuspendLayout();
@@ -2580,7 +2582,9 @@
             // 
             // AutoTrimTab
             // 
+            this.AutoTrimTab.Controls.Add(this.cmb_ProgramMode_AutoT);
             this.AutoTrimTab.Controls.Add(this.cmb_SocketType_AutoT);
+            this.AutoTrimTab.Controls.Add(this.label77);
             this.AutoTrimTab.Controls.Add(this.label21);
             this.AutoTrimTab.Controls.Add(this.btn_Vout_AutoT);
             this.AutoTrimTab.Controls.Add(this.btn_loadconfig_AutoT);
@@ -2607,14 +2611,14 @@
             // 
             // cmb_SocketType_AutoT
             // 
-            this.cmb_SocketType_AutoT.Font = new System.Drawing.Font("Microsoft Sans Serif", 17F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.cmb_SocketType_AutoT.Font = new System.Drawing.Font("Microsoft Sans Serif", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.cmb_SocketType_AutoT.FormattingEnabled = true;
             this.cmb_SocketType_AutoT.Items.AddRange(new object[] {
             "SingleSite",
             "MultiSite"});
-            this.cmb_SocketType_AutoT.Location = new System.Drawing.Point(378, 215);
+            this.cmb_SocketType_AutoT.Location = new System.Drawing.Point(293, 249);
             this.cmb_SocketType_AutoT.Name = "cmb_SocketType_AutoT";
-            this.cmb_SocketType_AutoT.Size = new System.Drawing.Size(103, 28);
+            this.cmb_SocketType_AutoT.Size = new System.Drawing.Size(105, 26);
             this.cmb_SocketType_AutoT.TabIndex = 115;
             this.cmb_SocketType_AutoT.SelectedIndexChanged += new System.EventHandler(this.cmb_SocketType_AutoT_SelectedIndexChanged);
             // 
@@ -2623,7 +2627,7 @@
             this.label21.AutoSize = true;
             this.label21.Font = new System.Drawing.Font("Times New Roman", 17F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.label21.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.label21.Location = new System.Drawing.Point(284, 218);
+            this.label21.Location = new System.Drawing.Point(190, 252);
             this.label21.Name = "label21";
             this.label21.Size = new System.Drawing.Size(92, 19);
             this.label21.TabIndex = 114;
@@ -2766,7 +2770,7 @@
             // 
             this.lbl_passOrFailed.Font = new System.Drawing.Font("Microsoft Sans Serif", 48F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Pixel);
             this.lbl_passOrFailed.ForeColor = System.Drawing.Color.DarkGreen;
-            this.lbl_passOrFailed.Location = new System.Drawing.Point(238, 313);
+            this.lbl_passOrFailed.Location = new System.Drawing.Point(250, 313);
             this.lbl_passOrFailed.Name = "lbl_passOrFailed";
             this.lbl_passOrFailed.Size = new System.Drawing.Size(290, 81);
             this.lbl_passOrFailed.TabIndex = 58;
@@ -2800,9 +2804,9 @@
             // btn_AutomaticaTrim
             // 
             this.btn_AutomaticaTrim.Font = new System.Drawing.Font("Microsoft Sans Serif", 21F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Pixel);
-            this.btn_AutomaticaTrim.Location = new System.Drawing.Point(288, 252);
+            this.btn_AutomaticaTrim.Location = new System.Drawing.Point(404, 249);
             this.btn_AutomaticaTrim.Name = "btn_AutomaticaTrim";
-            this.btn_AutomaticaTrim.Size = new System.Drawing.Size(194, 59);
+            this.btn_AutomaticaTrim.Size = new System.Drawing.Size(168, 61);
             this.btn_AutomaticaTrim.TabIndex = 57;
             this.btn_AutomaticaTrim.Text = "PROGRAM";
             this.btn_AutomaticaTrim.UseVisualStyleBackColor = true;
@@ -2838,7 +2842,7 @@
             this.groupBox8.Controls.Add(this.label61);
             this.groupBox8.Location = new System.Drawing.Point(88, 20);
             this.groupBox8.Name = "groupBox8";
-            this.groupBox8.Size = new System.Drawing.Size(610, 172);
+            this.groupBox8.Size = new System.Drawing.Size(610, 214);
             this.groupBox8.TabIndex = 109;
             this.groupBox8.TabStop = false;
             this.groupBox8.Text = "Preset";
@@ -2866,7 +2870,6 @@
             this.label57.Size = new System.Drawing.Size(23, 19);
             this.label57.TabIndex = 112;
             this.label57.Text = "%";
-            this.label57.Visible = false;
             // 
             // txt_ChosenGain_AutoT
             // 
@@ -2880,7 +2883,6 @@
             this.txt_ChosenGain_AutoT.TabIndex = 111;
             this.txt_ChosenGain_AutoT.Text = "100";
             this.txt_ChosenGain_AutoT.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.txt_ChosenGain_AutoT.Visible = false;
             // 
             // label58
             // 
@@ -2892,7 +2894,6 @@
             this.label58.Size = new System.Drawing.Size(96, 19);
             this.label58.TabIndex = 109;
             this.label58.Text = "Chosen Gain";
-            this.label58.Visible = false;
             // 
             // txt_IP_AutoT
             // 
@@ -2945,7 +2946,6 @@
             this.txt_AdcOffset_AutoT.TabIndex = 107;
             this.txt_AdcOffset_AutoT.Text = "0";
             this.txt_AdcOffset_AutoT.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.txt_AdcOffset_AutoT.Visible = false;
             // 
             // txt_SensitivityAdapt_AutoT
             // 
@@ -3053,7 +3053,6 @@
             this.label68.Size = new System.Drawing.Size(91, 19);
             this.label68.TabIndex = 91;
             this.label68.Text = "ADC Offset";
-            this.label68.Visible = false;
             // 
             // label49
             // 
@@ -3098,7 +3097,6 @@
             this.label67.Size = new System.Drawing.Size(33, 19);
             this.label67.TabIndex = 95;
             this.label67.Text = "mV";
-            this.label67.Visible = false;
             // 
             // label47
             // 
@@ -3237,6 +3235,30 @@
             this.txt_OutputLogInfo.TabIndex = 88;
             this.txt_OutputLogInfo.Text = "";
             // 
+            // label77
+            // 
+            this.label77.AutoSize = true;
+            this.label77.Font = new System.Drawing.Font("Times New Roman", 17F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.label77.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.label77.Location = new System.Drawing.Point(179, 286);
+            this.label77.Name = "label77";
+            this.label77.Size = new System.Drawing.Size(112, 19);
+            this.label77.TabIndex = 114;
+            this.label77.Text = "Program Mode";
+            // 
+            // cmb_ProgramMode_AutoT
+            // 
+            this.cmb_ProgramMode_AutoT.Font = new System.Drawing.Font("Microsoft Sans Serif", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.cmb_ProgramMode_AutoT.FormattingEnabled = true;
+            this.cmb_ProgramMode_AutoT.Items.AddRange(new object[] {
+            "Automatic",
+            "Manual"});
+            this.cmb_ProgramMode_AutoT.Location = new System.Drawing.Point(293, 284);
+            this.cmb_ProgramMode_AutoT.Name = "cmb_ProgramMode_AutoT";
+            this.cmb_ProgramMode_AutoT.Size = new System.Drawing.Size(105, 26);
+            this.cmb_ProgramMode_AutoT.TabIndex = 115;
+            this.cmb_ProgramMode_AutoT.SelectedIndexChanged += new System.EventHandler(this.cmb_ProgramMode_AutoT_SelectedIndexChanged);
+            // 
             // CurrentSensorConsole
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -3249,7 +3271,7 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "CurrentSensorConsole";
-            this.Text = "Current Sensor Console v4.0.7 - CopyRight of SenkoMicro, Inc";
+            this.Text = "Current Sensor Console v4.1.1 - CopyRight of SenkoMicro, Inc";
             this.statusStrip.ResumeLayout(false);
             this.statusStrip.PerformLayout();
             this.toolStrip.ResumeLayout(false);
@@ -3549,5 +3571,7 @@
         private System.Windows.Forms.ComboBox cmb_SocketType_AutoT;
         private System.Windows.Forms.Label label21;
         private System.Windows.Forms.Button btn_EngTab_Connect;
+        private System.Windows.Forms.ComboBox cmb_ProgramMode_AutoT;
+        private System.Windows.Forms.Label label77;
     }
 }
